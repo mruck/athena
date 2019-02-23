@@ -8,6 +8,7 @@
 # from process.py as that does STATE validation, directory setup, etc.
 
 import argparse
+import json
 import logging
 import os
 import random
@@ -136,9 +137,10 @@ def run(target, state, target_route=None, infinite=False):
         print("\n\tcumulative cov: %f" % percentage)
         stats.save(target.results_path)
 
+    counts = json.dumps(stats.get_code_counts())
+    print("Code Counts: {}".format(counts))
     print("Final Coverage: {}".format(stats.final_coverage()))
     print("Success Ratio: {}".format(stats.get_success_ratio()))
-    print("Code Counts: {}".format(stats.get_code_counts()))
     print("Total requests: {}".format(len(stats.get_results())))
 
 
