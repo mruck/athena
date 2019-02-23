@@ -1,0 +1,321 @@
+Last login: Wed Feb 13 20:05:15 on ttys008
+Sourcing /Users/marli/.oh-my-zsh/oh-my-zsh.sh
+Sourcing .zshrc.bip
+Sourcing .zshrc.d
+Sourcing .zshrc.marsbar
+Sourcing /Users/marli/.zshrc.d/git.sh
+Sourcing /Users/marli/.zshrc.d/go.sh
+Sourcing /Users/marli/.zshrc.d/k8s.sh
+Sourcing /Users/marli/.zshrc.d/misc.sh
+Sourcing /Users/marli/.zshrc.d/nodejs.sh
+/Users/marli/.zshrc.d/nodejs.sh:1: command not found: npm
+Sourcing /Users/marli/.zshrc.d/path.sh
+Sourcing /Users/marli/.zshrc.d/python.sh
+marli 20:07:20 ~ () cd rails-dev-box/fuzzer
+marli 20:07:23 ~/rails-dev-box/fuzzer (master*) cd guesstype
+marli 20:07:24 rails-dev-box/fuzzer/guesstype (master*) ls
+__init__.py
+__main__.py
+__pycache__
+easy.py
+guesskeygroups.py
+guessstring.py
+stats.py
+test.py
+marli 20:07:25 rails-dev-box/fuzzer/guesstype (master*) python3 -m pip install guesstype
+Collecting guesstype
+  Could not find a version that satisfies the requirement guesstype (from versions: )
+No matching distribution found for guesstype
+You are using pip version 10.0.1, however version 19.0.2 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
+marli 20:07:43 rails-dev-box/fuzzer/guesstype (master*) python3 -m pip install .
+Directory '.' is not installable. File 'setup.py' not found.
+You are using pip version 10.0.1, however version 19.0.2 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
+marli 20:07:50 rails-dev-box/fuzzer/guesstype (master*) pwd
+/Users/marli/rails-dev-box/fuzzer/guesstype
+marli 20:08:01 rails-dev-box/fuzzer/guesstype (master*) cd ../
+marli 20:51:37 ~/rails-dev-box/fuzzer (master*) python -m guesstype
+Traceback (most recent call last):
+  File "/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/runpy.py", line 151, in _run_module_as_main
+    mod_name, loader, code, fname = _get_module_details(mod_name)
+  File "/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/runpy.py", line 109, in _get_module_details
+    return _get_module_details(pkg_main_name)
+  File "/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/runpy.py", line 101, in _get_module_details
+    loader = get_loader(mod_name)
+  File "/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/pkgutil.py", line 464, in get_loader
+    return find_loader(fullname)
+  File "/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/pkgutil.py", line 474, in find_loader
+    for importer in iter_importers(fullname):
+  File "/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/pkgutil.py", line 430, in iter_importers
+    __import__(pkg)
+  File "guesstype/__init__.py", line 1, in <module>
+Help on AnyStats in module guesstype.stats object:
+
+class AnyStats(builtins.object)
+ |  Methods defined here:
+ |
+ |  __init__(self)
+ |      Initialize self.  See help(type(self)) for accurate signature.
+ |
+ |  add(self, obj)
+ |
+ |  add_missing(self)
+ |
+ |  best_type(self)
+ |
+ |  copy(self)
+ |
+ |  from_pathvals(self, pathvals)
+ |
+ |  good_types(self)
+ |
+ |  paths(self, *, prefix=(), props=PathProperties(mono=True))
+ |
+ |  ----------------------------------------------------------------------
+ |  Data descriptors defined here:
+ |
+ |  __dict__
+ |      dictionary for instance variables (if defined)
+ |
+ |  __weakref__
+ |      list of weak references to the object (if defined)
+ ESCOC
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+ ESCOD
+    from .easy import *
+  File "guesstype/easy.py", line 39
+    def indicator_values(self, *, R=None, discard_optional=False):
+                                ^
+SyntaxError: invalid syntax
+marli 20:51:53 ~/rails-dev-box/fuzzer (master*) python3 -m guesstype
+Usage: /Users/marli/rails-dev-box/fuzzer/guesstype/__main__.py value_string
+	Shows internal values of the string
+Usage: /Users/marli/rails-dev-box/fuzzer/guesstype/__main__.py value_string1 value_string2 ...
+	Uses aggregate type guess to generate a randomized value.
+marli 20:52:01 ~/rails-dev-box/fuzzer (master*) python3 -m guesstype '{"numbers":"867 4678 23", "b64":"aGVsbG8K", "nested":"{\"k\":123}"}'
+('str', StrJSON(type='dict'), 'b64', 'str', StrB64(altchars='+/'), StrStr()) : 'hello\n'
+('str', StrJSON(type='dict'), 'nested', 'str', StrJSON(type='dict'), 'k', 'num') : 123
+('str', StrJSON(type='dict'), 'numbers', 'str', StrList(before='', delimiter=' ', after=''), 0, 'str', StrNum()) : 867
+('str', StrJSON(type='dict'), 'numbers', 'str', StrList(before='', delimiter=' ', after=''), 1, 'str', StrNum()) : 4678
+('str', StrJSON(type='dict'), 'numbers', 'str', StrList(before='', delimiter=' ', after=''), 2, 'str', StrNum()) : 23
+marli 20:52:37 ~/rails-dev-box/fuzzer (master*) python3 -m guesstype '{"numbers":"867 4678 23", "b64":"aGVsbG8K", "nested":"{\"k\":123}"}'
+('str', StrJSON(type='dict'), 'nested', 'str', StrJSON(type='dict'), 'k', 'num') : 123
+('str', StrJSON(type='dict'), 'b64', 'str', StrB64(altchars='+/'), StrStr()) : 'hello\n'
+('str', StrJSON(type='dict'), 'numbers', 'str', StrList(before='', delimiter=' ', after=''), 0, 'str', StrNum()) : 867
+('str', StrJSON(type='dict'), 'numbers', 'str', StrList(before='', delimiter=' ', after=''), 1, 'str', StrNum()) : 4678
+('str', StrJSON(type='dict'), 'numbers', 'str', StrList(before='', delimiter=' ', after=''), 2, 'str', StrNum()) : 23
+marli 20:56:48 ~/rails-dev-box/fuzzer (master*)
+marli 20:56:48 ~/rails-dev-box/fuzzer (master*) python3
+Python 3.7.1 (v3.7.1:260ec2c36a, Oct 20 2018, 03:13:28)
+[Clang 6.0 (clang-600.0.57)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from guesstype import GuessType
+>>> GuessType(['{"numbers":"867 4678 23", "b64":"aGVsbG8K", "nested":"{\"k\":123}"}'])
+<guesstype.easy.GuessType object at 0x1094804e0>
+>>> G = _
+>>> G
+<guesstype.easy.GuessType object at 0x1094804e0>
+>>> G.flatten()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'GuessType' object has no attribute 'flatten'
+>>> G.flatten_path
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'GuessType' object has no attribute 'flatten_path'
+>>> G.flatten_paths
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'GuessType' object has no attribute 'flatten_paths'
+>>> help(G)
+
+>>> G.flatten_stats()
+{('str', StrList(before='', delimiter=':', after=''), 0, 'str', StrStr()): <guesstype.stats.BasicStrStats object at 0x109660978>, ('str', StrList(before='', delimiter=':', after=''), 1, 'str', StrStr()): <guesstype.stats.BasicStrStats object at 0x109660c18>, ('str', StrList(before='', delimiter=':', after=''), 2, 'str', StrStr()): <guesstype.stats.BasicStrStats object at 0x109660da0>, ('str', StrList(before='', delimiter=':', after=''), 3, 'str', StrStr()): <guesstype.stats.BasicStrStats object at 0x109660e48>, ('str', StrList(before='', delimiter=':', after=''), 4, 'str', StrStr()): <guesstype.stats.BasicStrStats object at 0x109660dd8>}
+>>> G.stats
+<guesstype.stats.AnyStats object at 0x1094804a8>
+>>> help(G.stats)
+
+>>> help(G.stats)
+
+>>> G.stats.__dict__.keys()
+dict_keys(['total', 'stats'])
+>>> G.stats
+<guesstype.stats.AnyStats object at 0x1094804a8>
+>>> G = GuessType(['{"numbers":"867 4678 23", "b64":"aGVsbG8K", "nested":"{\\"k\\":123}"}'])
+>>> G.flatten_stats()
+{('str', StrJSON(type='dict'), 'b64', 'str', StrB64(altchars='+/'), StrStr()): <guesstype.stats.BasicStrStats object at 0x109b26f98>, ('str', StrJSON(type='dict'), 'numbers', 'str', StrList(before='', delimiter=' ', after=''), 0, 'str', StrNum()): <guesstype.stats.NumStats object at 0x109b267b8>, ('str', StrJSON(type='dict'), 'numbers', 'str', StrList(before='', delimiter=' ', after=''), 1, 'str', StrNum()): <guesstype.stats.NumStats object at 0x109b26898>, ('str', StrJSON(type='dict'), 'numbers', 'str', StrList(before='', delimiter=' ', after=''), 2, 'str', StrNum()): <guesstype.stats.NumStats object at 0x109b26908>, ('str', StrJSON(type='dict'), 'nested', 'str', StrJSON(type='dict'), 'k', 'num'): <guesstype.stats.NumStats object at 0x109b2f080>}
+>>> G.stats
+<guesstype.stats.AnyStats object at 0x109688e80>
+>>> G.stats.__dict__
+{'total': 1, 'stats': {'str': <guesstype.stats.StrStats object at 0x109572048>}}
+>>> G.stats
+<guesstype.stats.AnyStats object at 0x109688e80>
+>>> G.stats.stats['str']
+<guesstype.stats.StrStats object at 0x109572048>
+>>> G.stats.stats['str']
+<guesstype.stats.StrStats object at 0x109572048>
+>>> G.stats.stats['str']
+<guesstype.stats.StrStats object at 0x109572048>
+>>> G.stats.stats['str'].__dict__
+{'total': 1, 'min_len': 67, 'max_len': 67, 'guess_counts': Counter({StrJSON(type='dict'): 1}), 'guess_info': {StrJSON(type='dict'): <guesstype.stats.DictStats object at 0x109b00908>}}
+>>> G.stats.stats['str'].guess_info
+{StrJSON(type='dict'): <guesstype.stats.DictStats object at 0x109b00908>}
+>>> G.stats.stats['str'].guess_info.values()[0]
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: 'dict_values' object does not support indexing
+>>> list(G.stats.stats['str'].guess_info.values())[0]
+<guesstype.stats.DictStats object at 0x109b00908>
+>>> list(G.stats.stats['str'].guess_info.values())[0]
+<guesstype.stats.DictStats object at 0x109b00908>
+>>> list(G.stats.stats['str'].guess_info.values())[0].__dict__
+{'total': 1, 'items': {'numbers': <guesstype.stats.AnyStats object at 0x109b00c50>, 'b64': <guesstype.stats.AnyStats object at 0x109b00e80>, 'nested': <guesstype.stats.AnyStats object at 0x109b00e48>}, 'always_keys': {'b64', 'numbers', 'nested'}, 'alone_keys': set(), 'sibling_keys': {'numbers': {'b64', 'numbers', 'nested'}, 'b64': {'b64', 'numbers', 'nested'}, 'nested': {'b64', 'numbers', 'nested'}}, 'spousal_keys': {'numbers': {'b64', 'numbers', 'nested'}, 'b64': {'b64', 'numbers', 'nested'}, 'nested': {'b64', 'numbers', 'nested'}}}
+>>> list(G.stats.stats['str'].guess_info.values())[0].items
+{'numbers': <guesstype.stats.AnyStats object at 0x109b00c50>, 'b64': <guesstype.stats.AnyStats object at 0x109b00e80>, 'nested': <guesstype.stats.AnyStats object at 0x109b00e48>}
+>>> list(G.stats.stats['str'].guess_info.values())[0].items['numbers']
+<guesstype.stats.AnyStats object at 0x109b00c50>
+>>> G = GuessType([{'k':'v'}]))
+  File "<stdin>", line 1
+    G = GuessType([{'k':'v'}]))
+                              ^
+SyntaxError: invalid syntax
+>>> G = GuessType([{'k':'v'}])
+>>> G
+<guesstype.easy.GuessType object at 0x109660898>
+>>> G.stats
+<guesstype.stats.AnyStats object at 0x1096609b0>
+>>> G.stats.stats['dict']
+<guesstype.stats.DictStats object at 0x1096609e8>
+>>> G.stats.stats
+{'dict': <guesstype.stats.DictStats object at 0x1096609e8>}
+>>> G.stats.stats['dict']
+<guesstype.stats.DictStats object at 0x1096609e8>
+>>> G.stats.stats['dict'].items
+{'k': <guesstype.stats.AnyStats object at 0x109660978>}
+>>> G.stats.stats['dict'].items['k]
+  File "<stdin>", line 1
+    G.stats.stats['dict'].items['k]
+                                  ^
+SyntaxError: EOL while scanning string literal
+>>> G.stats.stats['dict'].items['k']
+<guesstype.stats.AnyStats object at 0x109660978>
+>>> G.stats.stats['dict'].items['k'].stats
+{'str': <guesstype.stats.StrStats object at 0x109660940>}
+>>> G = GuessType([{'k':'v'}, {'k':5}])
+>>> G.stats.stats['dict'].items['k']
+<guesstype.stats.AnyStats object at 0x109660a58>
+>>> G.stats.stats['dict'].items['k'].stats
+{'str': <guesstype.stats.StrStats object at 0x109660c18>, 'num': <guesstype.stats.NumStats object at 0x109660da0>}
+>>> G.stats.stats['dict'].items['k'].stats['str'].total
+1
+>>> G.stats.stats['dict'].items['k'].stats['num'].total
+1
+>>> G.stats.stats['dict'].items['k'].stats['str']
+<guesstype.stats.StrStats object at 0x109660c18>
+>>> G.stats.stats['dict'].items['k'].stats['str']
+<guesstype.stats.StrStats object at 0x109660c18>
+>>> G.stats.stats['dict'].items['k'].stats['str'].__dict__
+{'total': 1, 'min_len': 1, 'max_len': 1, 'guess_counts': Counter({StrStr(): 1}), 'guess_info': {StrStr(): <guesstype.stats.BasicStrStats object at 0x109660e48>}}
+>>> G.stats.stats['dict'].items['k'].stats['str'].guess_info
+{StrStr(): <guesstype.stats.BasicStrStats object at 0x109660e48>}
+>>> G.stats.stats['dict'].items['k'].stats['num']
+<guesstype.stats.NumStats object at 0x109660da0>
+>>> G = GuessType([{'k':9}, {'k':5}])
+>>> G
+<guesstype.easy.GuessType object at 0x109660898>
+>>> G.flatten_stats
+<bound method GuessType.flatten_stats of <guesstype.easy.GuessType object at 0x109660898>>
+>>> G.flatten_stats()
+{('dict', 'k', 'num'): <guesstype.stats.NumStats object at 0x1096609b0>}
+>>> G.flatten_stats()[('dict', 'k', 'num')]
+<guesstype.stats.NumStats object at 0x1096609b0>
+>>> n = G.flatten_stats()[('dict', 'k', 'num')]
+>>> n.__dict__
+{'total': 2, 'record': [9, 5], 'min': 5, 'min_positive': 5, 'max': 9, 'float_count': 0, 'int_count': 2, 'unix_date_count': 0, 'unix_milli_count': 0, 'zeros_count': 0}
+>>> n.record
+[9, 5]
+>>> n.min
+5
+>>> n.max
+9
+>>> n.gen_ident()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: gen_ident() missing 1 required positional argument: 'R'
+>>> f = G.flatten_stats()
+>>> f
+{('dict', 'k', 'num'): <guesstype.stats.NumStats object at 0x1096609b0>}
+>>> f[('dict', 'k', 'num')] = -1
+>>> f
+{('dict', 'k', 'num'): -1}
+>>> G.unflatten(f)
+{'k': -1}
+>>> G = GuessType(['{"k":9}', '{"k":5}'])
+>>> f = G.flatten_stats()
+>>> f
+{('str', StrJSON(type='dict'), 'k', 'num'): <guesstype.stats.NumStats object at 0x1096608d0>}
+>>> for k in f:
+...   f[k] = -1
+...
+>>> f
+{('str', StrJSON(type='dict'), 'k', 'num'): -1}
+>>> G.unflatten(f)
+'{"k": -1}'
+>>>
