@@ -278,6 +278,9 @@ class Query(object):
         for node in literal_expression_nodes:
             for value in param_values:
                 if str(value).upper() in node["literal"].upper():
+                    print("Found param %s in query:" % value)
+                    print(stringify_ast(self.ast))
+                    exit(1)
                     vulns.append(value)
 
         return vulns

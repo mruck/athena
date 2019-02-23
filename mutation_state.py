@@ -31,6 +31,12 @@ def update_params(params_file, route):
     return True
 
 
+def check_for_sql_inj(route):
+    params_sent = route.params_sent()
+    queries = route.queries[0]
+    [q.is_vulnerable(params_sent) for q in queries]
+
+
 # Collect information relevant to the mutation decision.
 # Specifically src cov deltas, query deltas and param deltas
 def update_route_state(target, route):
@@ -38,3 +44,4 @@ def update_route_state(target, route):
     update_params(target.params_file, route)
     # read queries file
     update_queries(target.queries_file, route)
+    check_for_sql_inj(route)
