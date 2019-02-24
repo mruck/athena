@@ -20,6 +20,9 @@ class Mutator(object):
     def next_route(self):
         raise Exception("Not implemented")
 
+    def force_next_route(self):
+        raise Exception("Not implemented")
+
     def on_response(self, target, status_code):
         route = self.current_route()
         self.collect_deltas(target, route)
@@ -43,13 +46,15 @@ class InfiniteMutator(Mutator):
         self.routes = routes
         self.route_index = -1
         self.phase = 0
+        self.skip_current = False
 
-    def next_route(self, skip_current_route=False):
+    def next_route(self):
         # Continue mutating the current route
-        if self.got_new_cov() and not skip_current_route:
+        if self.got_new_cov() and not self.skip_current:
             return self.current_route()
 
         # Pick the next route
+        self.skip_current = False
         if self.phase == 1:
             self._randomize_route()
         else:
@@ -57,7 +62,6 @@ class InfiniteMutator(Mutator):
 
         # Only do this check if we are in finite fuzz phase
         if self.phase == 0 and len(self.routes) <= self.route_index:
-            return None
             self.phase = 1
             self._randomize_route()
 
@@ -69,17 +73,22 @@ class InfiniteMutator(Mutator):
     def current_route(self):
         return self.routes[self.route_index]
 
+    def force_next_route(self):
+        self.skip_current = True
+
 
 class FiniteMutator(Mutator):
     def __init__(self, routes):
         self.routes = routes
         self.route_index = -1
+        self.skip_current = False
 
-    def next_route(self, skip_current_route=False):
+    def next_route(self):
         # Continue mutating the current route
-        if self.got_new_cov() and not skip_current_route:
+        if self.got_new_cov() and not self.skip_current:
             return self.current_route()
 
+        self.skip_current = False
         self.route_index += 1
         if len(self.routes) <= self.route_index:
             return None
@@ -87,3 +96,6 @@ class FiniteMutator(Mutator):
 
     def current_route(self):
         return self.routes[self.route_index]
+
+    def force_next_route(self):
+        self.skip_current = True

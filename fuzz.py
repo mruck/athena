@@ -85,10 +85,8 @@ def run(
 
     last_route = None
     state_dir = None
-    skip_current_route = False
     while True:
-        route = mutator.next_route(skip_current_route=skip_current_route)
-        skip_current_route = False
+        route = mutator.next_route()
         if route is None:
             break
         elif target_route is not None and not route.matches(target_route):
@@ -122,9 +120,9 @@ def run(
             mutator.on_response(target, status_code)
         # Our fuzzer raised an exception
         except:
-            target.on_fuzz_exception(route, state_dir)
             # Skip this route and pick another one
-            skip_current_route = True
+            mutator.force_next_route()
+            target.on_fuzz_exception(route, state_dir)
             keep_snapshot = True
 
         percentage = coverage.calculate_coverage_percentage(

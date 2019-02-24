@@ -61,6 +61,7 @@ class NaiveInfiniteMutator(mutate_base.InfiniteMutator):
         self.phase = HAR_REPLAY
         self.stop_after_har = stop_after_har
         self.stop_after_all_routes = stop_after_all_routes
+        self.skip_current = False
 
     def collect_deltas(self, target, route):
         # Read queries and params dumped by rails and update the route obj
@@ -72,37 +73,47 @@ class NaiveInfiniteMutator(mutate_base.InfiniteMutator):
         # TODO: Keep a list of unique queries in the route obj
         self.queries_delta = query.queries_delta(route.queries[0], route.unique_queries)
 
-    def next_route(self, skip_current_route=False):
+    def next_route(self):
         if self.phase == HAR_REPLAY:
             # Continue fuzzing the current route
-            if self.got_new_cov() and not skip_current_route:
+            if self.got_new_cov() and not self.skip_current:
                 return self.current_route()
+
             # Next route please
+            self.skip_current = False
             self.route_index += 1
             if self.route_index < len(self.har_routes):
                 return self.current_route()
+
             # We are done mutating har requests, should we stop?
             if self.stop_after_har:
                 return None
+
             # We are in the next phase
             self.phase = ALL
             self.route_index = 0
             print("Entering ALL phase")
             return self.current_route()
+
         if self.phase == ALL:
             # Continue fuzzing the current route
-            if self.got_new_cov() and not skip_current_route:
+            if self.got_new_cov() and not self.skip_current:
                 return self.current_route()
+
             # Next route please
+            self.skip_current = False
             self.route_index += 1
             if self.route_index < len(self.all_routes):
                 return self.current_route()
+
             # We have hit all routes, should we stop?
             if self.stop_after_all_routes:
                 return None
+
             # We exhausted all routes.  Pick at random
             self.phase = RANDOM
             print("Entering RANDOM phase")
+
         # We are in the random phase
         self._randomize_route()
         return self.current_route()
@@ -143,3 +154,6 @@ class NaiveInfiniteMutator(mutate_base.InfiniteMutator):
         # We have exhausted query mutation.  Try mutating params we discovered.
         else:
             [p.mutate() for p in params]
+
+    def force_next_route(self):
+        self.skip_current = True
