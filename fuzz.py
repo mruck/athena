@@ -107,17 +107,17 @@ def run(
             print("State saved at %s with %d cookies" % (state_dir, len(state.cookies)))
         last_route = route
 
-        status_code = conn.send_request(
-            route.url(target.port),
-            route.verb,
-            body_params=route.get_body_params(),
-            query_params=route.get_query_params(),
-            headers=route.headers,
-        )
-        stats.record_stats(
-            route.verb, route.path, status_code, target.rails_exceptions, state_dir
-        )
         try:
+            status_code = conn.send_request(
+                route.url(target.port),
+                route.verb,
+                body_params=route.get_body_params(),
+                query_params=route.get_query_params(),
+                headers=route.headers,
+            )
+            stats.record_stats(
+                route.verb, route.path, status_code, target.rails_exceptions, state_dir
+            )
             mutator.on_response(target, status_code)
         # Our fuzzer raised an exception
         except:

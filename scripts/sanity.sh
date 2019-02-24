@@ -1,4 +1,7 @@
 #! /bin/bash
+# Usage:
+#      bash scripts/sanity.sh
+#      bash scripts/sanity.sh all
 set -e
 
 branch=$(git branch | grep \* | cut -d ' ' -f 2)
@@ -19,7 +22,13 @@ echo "Sleeping for 30 seconds to wait for server"
 sleep 30
 
 echo "Tail logs of client at /tmp/sanity/$port/client"
-(./orchestrate.py repro --client --stop_after_har $port 2>&1) > /tmp/sanity/$port/client
+output="misc/sanity.txt"
+if [ -z "$1" ]; then
+    (./orchestrate.py repro --client --stop_after_har $port 2>&1) > /tmp/sanity/$port/client
+elif [ "$1" = "all" ]; then
+    (./orchestrate.py repro --client --stop_after_all_routes $port 2>&1) > /tmp/sanity/$port/client
+    output="misc/all_routes.txt"
+fi
 
 # Remove the server container after the run is over.
 docker rm -f "server_$port" > /dev/null
@@ -47,4 +56,4 @@ echo "{}" | \
     jq ".success_rate = $succ" | \
     jq ".total_requests = $reqs" | \
     jq ".status_codes = $cnt" | \
-    jq -c '.' | tee -a misc/sanity.txt
+    jq -c '.' | tee -a $output
