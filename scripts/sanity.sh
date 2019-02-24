@@ -19,7 +19,7 @@ echo "Sleeping for 30 seconds to wait for server"
 sleep 30
 
 echo "Tail logs of client at /tmp/sanity/$port/client"
-(./orchestrate.py repro --client $port 2>&1) > /tmp/sanity/$port/client
+(./orchestrate.py repro --client --stop_after_har $port 2>&1) > /tmp/sanity/$port/client
 
 # Remove the server container after the run is over.
 docker rm -f "server_$port" > /dev/null

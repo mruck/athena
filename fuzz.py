@@ -70,7 +70,6 @@ def get_snapshot_name(target, state, route):
 def run(
     target, state, target_route=None, stop_after_har=False, stop_after_all_routes=False
 ):
-    stop_after_har = True
     # read in routes dumped by preprocessor
     har_routes = routes_lib.Route.from_har_file(HAR_DUMP)
     # read in routes dumped by rails
@@ -160,6 +159,7 @@ def fuzz(
     output_benchmark_data=None,
     any_route=None,
     stop_after_har=False,
+    stop_after_all_routes=False,
 ):
     random.seed(a=0)
     init_logger(fuzz_dir)
@@ -177,7 +177,13 @@ def fuzz(
 
     target = fuzz_target.Target(fuzz_dir, port, db, snapshot=snapshot)
 
-    run(target, state, target_route=route, stop_after_har=stop_after_har)
+    run(
+        target,
+        state,
+        target_route=route,
+        stop_after_har=stop_after_har,
+        stop_after_all_routes=stop_after_all_routes,
+    )
 
 
 def run_parser():
@@ -193,6 +199,7 @@ def run_parser():
     parser.add_argument("--load_db", action="store_true")
     parser.add_argument("--any-route", action="store_true")
     parser.add_argument("--stop_after_har", action="store_true")
+    parser.add_argument("--stop_after_all_routes", action="store_true")
     args = parser.parse_args()
     return args
 
@@ -211,6 +218,7 @@ def main():
         load_db=args.load_db,
         any_route=args.any_route,
         stop_after_har=args.stop_after_har,
+        stop_after_all_routes=args.stop_after_all_routes,
     )
 
 

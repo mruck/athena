@@ -1,3 +1,4 @@
 {"git_ref":"932264508640be0a88453e5f546f94a4e48784dc--dirty","coverage":45.8386483742483,"success_rate":0.5663430420711975,"total_requests":309,"status_codes":{"200":175,"400":18,"403":15,"404":77,"409":2,"422":12,"500":10}}
 {"git_ref":"--dirty","git_branch":"","coverage":45.90112722255487,"success_rate":0.5676567656765676,"total_requests":303,"status_codes":{"200":172,"400":16,"403":15,"404":77,"409":2,"422":12,"500":9}}
 {"git_ref":"4d600786b41984c78c0ead3cc6373b32d98050af--dirty","git_branch":"master","coverage":45.93496993205425,"success_rate":0.565359477124183,"total_requests":306,"status_codes":{"200":173,"400":17,"403":15,"404":77,"409":2,"422":12,"500":10}}
+{"git_ref":"a0ad7a1a672992c5c0f5ff7b027d6dc256019ffc--dirty","git_branch":"sql","coverage":45.94017650274647,"success_rate":0.5766666666666667,"total_requests":300,"status_codes":{"200":173,"400":16,"403":14,"404":75,"409":2,"422":12,"500":8}}

@@ -45,6 +45,7 @@ def repro(args):
             any_route=args.any_route,
             shell=args.shell,
             stop_after_har=args.stop_after_har,
+            stop_after_all_routes=args.stop_after_all_routes,
         )
         return
 
@@ -69,6 +70,7 @@ def repro(args):
         route=args.route,
         any_route=args.any_route,
         stop_after_har=args.stop_after_har,
+        stop_after_all_routes=args.stop_after_all_routes,
     )
 
 
@@ -127,6 +129,11 @@ def run_parser():
         "--stop_after_har",
         action="store_true",
         help="Stop fuzzer after done mutating har requests",
+    )
+    parser_repro.add_argument(
+        "--stop_after_all_routes",
+        action="store_true",
+        help="Stop fuzzer after we've hit all routes at least once",
     )
     parser_repro.add_argument(
         "--mount-discourse",
