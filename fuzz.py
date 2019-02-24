@@ -12,8 +12,6 @@ import json
 import logging
 import os
 import random
-import sys
-import traceback
 
 from db import init_pluralization, clear_rails_connections
 import fuzzer.naive_mutator as naive_mutator
@@ -107,7 +105,7 @@ def run(
             print("State saved at %s with %d cookies" % (state_dir, len(state.cookies)))
         last_route = route
 
-        had_exceptions = False
+        keep_snapshot = False
         try:
             status_code = conn.send_request(
                 route.url(target.port),
@@ -117,7 +115,7 @@ def run(
                 headers=route.headers,
             )
             exceptions = target.latest_exns()
-            had_exceptions = len(exceptions) > 0
+            keep_snapshot = keep_snapshot or len(exceptions) > 0
             stats.record_stats(
                 route.verb, route.path, status_code, exceptions, state_dir
             )
@@ -127,6 +125,7 @@ def run(
             target.on_fuzz_exception(route, state_dir)
             # Skip this route and pick another one
             skip_current_route = True
+            keep_snapshot = True
 
         percentage = coverage.calculate_coverage_percentage(
             target.cov.cumulative_coverage
@@ -135,7 +134,7 @@ def run(
         print("\n\tcumulative cov: %f" % percentage)
         stats.save(target.results_path)
 
-        if not had_exceptions:
+        if not keep_snapshot:
             state.delete(state_dir)
 
     counts = json.dumps(stats.get_code_counts(), sort_keys=True)
