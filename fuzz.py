@@ -137,7 +137,7 @@ def run(target, state, target_route=None, infinite=False):
         print("\n\tcumulative cov: %f" % percentage)
         stats.save(target.results_path)
 
-    counts = json.dumps(stats.get_code_counts())
+    counts = json.dumps(stats.get_code_counts(), sort_keys=True)
     print("Code Counts: {}".format(counts))
     print("Final Coverage: {}".format(stats.final_coverage()))
     print("Success Ratio: {}".format(stats.get_success_ratio()))

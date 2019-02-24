@@ -21,16 +21,26 @@ echo "Tail logs of client at /tmp/sanity/$port/client"
 docker rm -f "server_$port" > /dev/null
 
 # Parse the client logs for run info. Info should look like this:
+# Code Counts: {"200": 174, "404": 79, "500": 9}
 # Final Coverage: 45.95579621482311
 # Success Ratio: 0.5667752442996743
-# Code Counts: Counter({200: 174, 404: 79, 400: 16, 403: 15, 422: 12, 500: 9, 409: 2})
 # Total requests: 307
-cnt=$(cat /tmp/sanity/$port/client | grep "Code Counts" | cut -d ':' -f 2- | tr -d ' ')
-cov=$(cat /tmp/sanity/$port/client | grep "Final Coverage" | cut -d ':' -f 2 | tr -d ' ')
-succ=$(cat /tmp/sanity/$port/client | grep "Success Ratio" | cut -d ':' -f 2 | tr -d ' ')
-reqs=$(cat /tmp/sanity/$port/client | grep "Total requests" | cut -d ':' -f 2 | tr -d ' ')
+cnt=$(cat /tmp/sanity/$port/client | grep "Code Counts" | cut -d ':' -f 2- | tr -d ' ' | tr -d '\r')
+cov=$(cat /tmp/sanity/$port/client | grep "Final Coverage" | cut -d ':' -f 2 | tr -d ' ' | tr -d '\r')
+succ=$(cat /tmp/sanity/$port/client | grep "Success Ratio" | cut -d ':' -f 2 | tr -d ' ' | tr -d '\r')
+reqs=$(cat /tmp/sanity/$port/client | grep "Total requests" | cut -d ':' -f 2 | tr -d ' ' | tr -d '\r')
 
+mkdir -p misc
 echo "Code counts: $cnt"
 echo "Cov: $cov"
 echo "Success Rate: $succ"
 echo "Requests: $reqs"
+
+ref=$(git rev-parse master --dirty | tr -d '\n')
+echo "{}" | \
+    jq ".git_ref = \"$ref\"" | \
+    jq ".coverage = $cov" | \
+    jq ".success_rate = $succ" | \
+    jq ".total_requests = $reqs" | \
+    jq ".status_codes = $cnt" | \
+    jq -c '.' | tee -a misc/sanity.txt
