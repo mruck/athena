@@ -43,16 +43,10 @@ def repro(args):
             background=False,
             route=args.route,
             any_route=args.any_route,
-            load_db=args.load_db,
             shell=args.shell,
             infinite=args.infinite,
         )
         return
-
-    # Load a fresh db snapshot
-    if args.load_db:
-        duo.server.rm_container()
-        db.create_db(db_name=duo.server.db)
 
     # Spawn only server in foreground
     if args.server:
@@ -74,7 +68,6 @@ def repro(args):
         background=background,
         route=args.route,
         any_route=args.any_route,
-        load_db=args.load_db,
         infinite=args.infinite,
     )
 
@@ -141,7 +134,6 @@ def run_parser():
     parser_repro.add_argument(
         "--restart_server", action="store_true", help="Restart server"
     )
-    parser_repro.add_argument("--load_db", action="store_true", help="Restore the db")
     parser_repro.add_argument(
         "--shell", action="store_true", help="Spawn a shell into the container"
     )

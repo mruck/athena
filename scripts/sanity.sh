@@ -12,14 +12,14 @@ echo "Port number of fuzz duo: $port"
 mkdir -p /tmp/sanity/$port
 
 echo "Tail logs of server at /tmp/sanity/$port/server"
-((./orchestrate.py repro --server --load_db $port 2>&1) > /tmp/sanity/$port/server) &
+((./orchestrate.py repro --server $port 2>&1) > /tmp/sanity/$port/server) &
 
 # TODO remove this in favor of polling a health endpoint or smth.
 echo "Sleeping for 30 seconds to wait for server"
 sleep 30
 
 echo "Tail logs of client at /tmp/sanity/$port/client"
-(./orchestrate.py repro --client --load_db $port 2>&1) > /tmp/sanity/$port/client
+(./orchestrate.py repro --client $port 2>&1) > /tmp/sanity/$port/client
 
 # Remove the server container after the run is over.
 docker rm -f "server_$port" > /dev/null
