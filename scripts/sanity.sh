@@ -1,6 +1,10 @@
 #! /bin/bash
 set -e
 
+branch=$(git branch | grep \* | cut -d ' ' -f 2)
+ref=$(git rev-parse $branch --dirty | tr -d '\n')
+echo "Git branch/ref: $branch/$ref"
+
 # Get a new fuzz duo; parse the output with some shell magic.
 port=$(./orchestrate.py fuzz_duo 1 | grep "Saved" | cut -d ':' -f 2 | tr -d ' ')
 echo "Port number of fuzz duo: $port"
@@ -36,9 +40,9 @@ echo "Cov: $cov"
 echo "Success Rate: $succ"
 echo "Requests: $reqs"
 
-ref=$(git rev-parse master --dirty | tr -d '\n')
 echo "{}" | \
     jq ".git_ref = \"$ref\"" | \
+    jq ".git_branch= \"$branch\"" | \
     jq ".coverage = $cov" | \
     jq ".success_rate = $succ" | \
     jq ".total_requests = $reqs" | \
