@@ -1,6 +1,9 @@
-import coverage
+import json
 import os
+import sys
+import traceback
 
+import coverage
 import util
 
 STATE = "/state"
@@ -35,3 +38,13 @@ class Target(object):
         )
         self.snapshot = snapshot
         os.environ["RESULTS_PATH"] = results_path
+
+    def latest_exns(self):
+        return [json.loads(line.strip()) for line in self.rails_exceptions]
+
+    def on_fuzz_exception(self, route, state_dir):
+        etype, val, tb = sys.exc_info()
+        self.fuzzer_exceptions.write("***%s %s***\n" % (route.verb, route.path))
+        self.fuzzer_exceptions.write("State saved at %s\n" % (state_dir))
+        traceback.print_exception(etype, val, tb, file=self.fuzzer_exceptions)
+        self.fuzzer_exceptions.write("\n")

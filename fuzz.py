@@ -12,8 +12,6 @@ import json
 import logging
 import os
 import random
-import sys
-import traceback
 
 from db import init_pluralization, clear_rails_connections
 import fuzzer.naive_mutator as naive_mutator
@@ -100,13 +98,14 @@ def run(
             print("Blacklisted route {}; skipping".format(route.path))
             continue
 
+        state_dir = get_snapshot_name(target, state, route)
         if last_route != route:
             print("\n\n\n***%s %s***" % (route.verb, route.path))
-            state_dir = get_snapshot_name(target, state, route)
             state.save(state_dir)
             print("State saved at %s with %d cookies" % (state_dir, len(state.cookies)))
         last_route = route
 
+        keep_snapshot = False
         try:
             status_code = conn.send_request(
                 route.url(target.port),
@@ -115,21 +114,18 @@ def run(
                 query_params=route.get_query_params(),
                 headers=route.headers,
             )
+            exceptions = target.latest_exns()
+            keep_snapshot = keep_snapshot or len(exceptions) > 0
             stats.record_stats(
-                route.verb, route.path, status_code, target.rails_exceptions, state_dir
+                route.verb, route.path, status_code, exceptions, state_dir
             )
             mutator.on_response(target, status_code)
         # Our fuzzer raised an exception
         except:
-            # Log exn
-            etype, val, tb = sys.exc_info()
-            target.fuzzer_exceptions.write("***%s %s***\n" % (route.verb, route.path))
-            target.fuzzer_exceptions.write("State saved at %s\n" % (state_dir))
-            traceback.print_exception(etype, val, tb, file=target.fuzzer_exceptions)
-            target.fuzzer_exceptions.write("\n")
-
+            target.on_fuzz_exception(route, state_dir)
             # Skip this route and pick another one
             skip_current_route = True
+            keep_snapshot = True
 
         percentage = coverage.calculate_coverage_percentage(
             target.cov.cumulative_coverage
@@ -137,6 +133,9 @@ def run(
         stats.record_coverage(route.verb, route.path, percentage)
         print("\n\tcumulative cov: %f" % percentage)
         stats.save(target.results_path)
+
+        if not keep_snapshot:
+            state.delete(state_dir)
 
     counts = json.dumps(stats.get_code_counts(), sort_keys=True)
     print("Code Counts: {}".format(counts))

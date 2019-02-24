@@ -38,15 +38,7 @@ class FuzzStats(object):
         routes.add(verb + ":" + path)
         entry[0], entry[1] = count, routes
 
-    def _read_exceptions(self, exn_fp):
-        # Load exceptions from json
-        exns = []
-        for line in exn_fp:
-            exns.append(json.loads(line.strip()))
-        return exns
-
-    def record_stats(self, verb, path, code, exn_fp, snapshot_name):
-        exns = self._read_exceptions(exn_fp)
+    def record_stats(self, verb, path, code, exns, snapshot_name):
         self._record_result(verb, path, code, exns, snapshot_name)
         self._record_code(verb, path, code)
 

@@ -5,6 +5,7 @@ import os.path
 import pathlib
 import pickle
 import random
+import shutil
 
 
 class FuzzState(object):
@@ -45,6 +46,10 @@ class FuzzState(object):
         db_fname = FuzzState.db_file(src)
         self.postgres.load_snapshot(self.db_name, db_fname)
         return self
+
+    def delete(self, path):
+        path = FuzzState.dirname(path)
+        shutil.rmtree(path, ignore_errors=True)
 
     def _ensure_path_exists(self, dest):
         path = FuzzState.dirname(dest)
