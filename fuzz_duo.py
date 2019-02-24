@@ -195,7 +195,8 @@ class FuzzDuo(object):
         any_route=None,
         load_db=False,
         shell=False,
-        infinite=False,
+        stop_after_har=False,
+        stop_after_all_routes=False,
     ):
         """
         Wrapper for client class. Do any necessary setup including
@@ -217,7 +218,8 @@ class FuzzDuo(object):
                     any_route=any_route,
                     snapshot=self.config["snapshot"],
                     load_db=load_db,
-                    infinite=infinite,
+                    stop_after_har=stop_after_har,
+                    stop_after_all_routes=stop_after_all_routes,
                 )
         else:
             self.client.run(
@@ -226,5 +228,6 @@ class FuzzDuo(object):
                 any_route=any_route,
                 load_db=load_db,
                 shell=shell,
-                infinite=infinite,
+                stop_after_har=stop_after_har,
+                stop_after_all_routes=stop_after_all_routes,
             )

@@ -15,7 +15,7 @@ RUN_DOCKER_CLIENT = (
     '-e "FUZZER_NUMBER=%(fuzzer_number)s" -e "INSTANCES=%(instances)s" '
     '-e "PORT=%(port)s" -v %(results_path)s:%(results_path)s -v %(pwd)s:/client '
     "%(snapshot_mount)s %(snapshot_env_var)s %(route_env_var)s %(any_route_env_var)s "
-    "%(load_db_env_var)s %(infinite_env_var)s %(shell)s fuzzer-client"
+    "%(load_db_env_var)s %(stop_after_har_env_var)s %(stop_after_all_routes_env_var)s %(shell)s fuzzer-client"
 )
 
 TIMEOUT = 60 * 25
@@ -45,7 +45,8 @@ class Client(object):
         background=True,
         load_db=False,
         shell=False,
-        infinite=False,
+        stop_after_har=False,
+        stop_after_all_routes=False,
     ):
         if snapshot:
             # Mount the path to the snapshot
@@ -70,10 +71,16 @@ class Client(object):
             shell = "--entrypoint=bash"
         else:
             shell = ""
-        if infinite:
-            infinite_env_var = "-e 'INFINITE=--infinite'"
+        if stop_after_har:
+            stop_after_har_env_var = "-e 'STOP_AFTER_HAR=--stop_after_har'"
         else:
-            infinite_env_var = ""
+            stop_after_har_env_var = ""
+        if stop_after_all_routes:
+            stop_after_all_routes_env_var = (
+                "-e 'STOP_AFTER_ALL_ROUTES=--stop_after_all_routes'"
+            )
+        else:
+            stop_after_all_routes_env_var = ""
 
         # Interactive cmd
         docker_cmd_interactive = RUN_DOCKER_CLIENT % {
@@ -85,7 +92,8 @@ class Client(object):
             "instances": self.instances,
             "snapshot_mount": snapshot_mount,
             "snapshot_env_var": snapshot_env_var,
-            "infinite_env_var": infinite_env_var,
+            "stop_after_har_env_var": stop_after_har_env_var,
+            "stop_after_all_routes_env_var": stop_after_all_routes_env_var,
             "route_env_var": route_env_var,
             "pwd": PWD,
             "any_route_env_var": any_route_env_var,
@@ -112,7 +120,8 @@ class Client(object):
             "name": self.name,
             "snapshot_mount": snapshot_mount,
             "snapshot_env_var": snapshot_env_var,
-            "infinite_env_var": infinite_env_var,
+            "stop_after_har_env_var": stop_after_har_env_var,
+            "stop_after_all_routes_env_var": stop_after_all_routes_env_var,
             "route_env_var": route_env_var,
             "route_env_var": route_env_var,
             "pwd": PWD,

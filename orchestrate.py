@@ -43,16 +43,11 @@ def repro(args):
             background=False,
             route=args.route,
             any_route=args.any_route,
-            load_db=args.load_db,
             shell=args.shell,
-            infinite=args.infinite,
+            stop_after_har=args.stop_after_har,
+            stop_after_all_routes=args.stop_after_all_routes,
         )
         return
-
-    # Load a fresh db snapshot
-    if args.load_db:
-        duo.server.rm_container()
-        db.create_db(db_name=duo.server.db)
 
     # Spawn only server in foreground
     if args.server:
@@ -74,8 +69,8 @@ def repro(args):
         background=background,
         route=args.route,
         any_route=args.any_route,
-        load_db=args.load_db,
-        infinite=args.infinite,
+        stop_after_har=args.stop_after_har,
+        stop_after_all_routes=args.stop_after_all_routes,
     )
 
 
@@ -131,7 +126,14 @@ def run_parser():
     parser_repro.add_argument("id", type=int, help="Id of fuzz duo")
     parser_repro.add_argument("--logs", action="store_true", help="Show logs for ID")
     parser_repro.add_argument(
-        "--infinite", action="store_true", help="Run fuzzer forever"
+        "--stop_after_har",
+        action="store_true",
+        help="Stop fuzzer after done mutating har requests",
+    )
+    parser_repro.add_argument(
+        "--stop_after_all_routes",
+        action="store_true",
+        help="Stop fuzzer after we've hit all routes at least once",
     )
     parser_repro.add_argument(
         "--mount-discourse",
@@ -141,7 +143,6 @@ def run_parser():
     parser_repro.add_argument(
         "--restart_server", action="store_true", help="Restart server"
     )
-    parser_repro.add_argument("--load_db", action="store_true", help="Restore the db")
     parser_repro.add_argument(
         "--shell", action="store_true", help="Spawn a shell into the container"
     )
