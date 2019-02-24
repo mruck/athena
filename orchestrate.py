@@ -44,7 +44,7 @@ def repro(args):
             route=args.route,
             any_route=args.any_route,
             shell=args.shell,
-            infinite=args.infinite,
+            stop_after_har=args.stop_after_har,
         )
         return
 
@@ -68,7 +68,7 @@ def repro(args):
         background=background,
         route=args.route,
         any_route=args.any_route,
-        infinite=args.infinite,
+        stop_after_har=args.stop_after_har,
     )
 
 
@@ -124,7 +124,9 @@ def run_parser():
     parser_repro.add_argument("id", type=int, help="Id of fuzz duo")
     parser_repro.add_argument("--logs", action="store_true", help="Show logs for ID")
     parser_repro.add_argument(
-        "--infinite", action="store_true", help="Run fuzzer forever"
+        "--stop_after_har",
+        action="store_true",
+        help="Stop fuzzer after done mutating har requests",
     )
     parser_repro.add_argument(
         "--mount-discourse",

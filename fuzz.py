@@ -67,20 +67,22 @@ def get_snapshot_name(target, state, route):
     return os.path.join(target.results_path, "snapshots", uid)
 
 
-def run(target, state, target_route=None, infinite=False):
+def run(
+    target, state, target_route=None, stop_after_har=False, stop_after_all_routes=False
+):
+    stop_after_har = True
     # read in routes dumped by preprocessor
     har_routes = routes_lib.Route.from_har_file(HAR_DUMP)
     # read in routes dumped by rails
     all_routes = routes_lib.Route.from_routes_file(ROUTES_DUMP, har_routes)
     # open a connection with the server (need this to keep track of cookies)
     conn = netutils.Connection(state.cookies)
-    # Fuzz forever
-    if infinite:
-        print("Initializing infinite fuzzer")
-        mutator = naive_mutator.NaiveInfiniteMutator(har_routes, all_routes)
-    else:
-        print("Initializing finite fuzzer")
-        mutator = naive_mutator.NaiveFiniteMutator(har_routes)
+    mutator = naive_mutator.NaiveInfiniteMutator(
+        har_routes,
+        all_routes,
+        stop_after_har=stop_after_har,
+        stop_after_all_routes=stop_after_all_routes,
+    )
 
     stats = fuzz_stats.FuzzStats()
 
@@ -157,7 +159,7 @@ def fuzz(
     route_prefix=None,
     output_benchmark_data=None,
     any_route=None,
-    infinite=False,
+    stop_after_har=False,
 ):
     random.seed(a=0)
     init_logger(fuzz_dir)
@@ -175,7 +177,7 @@ def fuzz(
 
     target = fuzz_target.Target(fuzz_dir, port, db, snapshot=snapshot)
 
-    run(target, state, target_route=route, infinite=infinite)
+    run(target, state, target_route=route, stop_after_har=stop_after_har)
 
 
 def run_parser():
@@ -190,7 +192,7 @@ def run_parser():
     parser.add_argument("--snapshot")
     parser.add_argument("--load_db", action="store_true")
     parser.add_argument("--any-route", action="store_true")
-    parser.add_argument("--infinite", action="store_true")
+    parser.add_argument("--stop_after_har", action="store_true")
     args = parser.parse_args()
     return args
 
@@ -208,7 +210,7 @@ def main():
         route=args.route,
         load_db=args.load_db,
         any_route=args.any_route,
-        infinite=args.infinite,
+        stop_after_har=args.stop_after_har,
     )
 
 
