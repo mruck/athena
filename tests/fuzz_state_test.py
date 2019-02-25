@@ -6,7 +6,7 @@ import tempfile
 import urllib.request
 
 import fuzzer.fuzz_state as fuzz_state
-import fuzzer.postgres2 as postgres
+import fuzzer.database.postgres2 as postgres
 
 
 def _req_res_pair():

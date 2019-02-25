@@ -3,7 +3,7 @@ import json
 import random
 import time
 
-import fuzzer.util as util
+import fuzzer.lib.util as util
 
 PARAM_TYPE_UNKNOWN = "unknown"
 PARAM_TYPE_STRING = "string"

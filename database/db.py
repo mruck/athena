@@ -9,8 +9,8 @@ import requests
 import shlex
 import subprocess
 
-import fuzzer.postgres as postgres
-from util import random_int, get_results_path, timestamp
+import fuzzer.database.postgres as postgres
+from fuzzer.lib.util import random_int, get_results_path, timestamp
 
 logger = logging.getLogger("debug")
 

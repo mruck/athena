@@ -3,7 +3,7 @@
 # the query)
 import copy
 
-import query as query_lib
+import fuzzer.query as query_lib
 
 
 class QueryMetaData(object):

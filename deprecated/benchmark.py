@@ -11,8 +11,8 @@ import sys
 import time
 import traceback
 
-from coverage import merge_source_coverages
-from query import stringify_ast
+from fuzzer.lib.coverage import merge_source_coverages
+from fuzzer.query import stringify_ast
 
 BENCHMARKS_DIR_NAME = "benchmarks"
 NO_PREFIX_DIR_NAME = "__BIP_NO_PREFIX"

@@ -3,8 +3,8 @@ import os
 import sys
 import traceback
 
-import coverage
-import util
+import fuzzer.lib.coverage as coverage
+import fuzzer.lib.util as util
 
 STATE = "/state"
 
