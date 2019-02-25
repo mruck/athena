@@ -5,7 +5,7 @@ import subprocess
 
 # Requires postgres and redis container to be running
 DISCOURSE_SERVER_CMD = (
-    'docker run %(interactive)s -p %(port)s:%(port)s --name=%(name)s --rm -e "DISCOURSE_DEV_DB=%(db)s" -v '
+    'docker run %(interactive)s -p %(port)s:%(port)s --name=%(name)s --rm -e "FUZZ_DB=%(db)s" -v '
     "%(results_path)s:%(results_path)s %(shell)s "
     "%(extra_mount_flags)s "
     '--volumes-from my-postgres -e "RESULTS_PATH=%(results_path)s" '
