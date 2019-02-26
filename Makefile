@@ -33,6 +33,10 @@ discourse-server:
 	docker build -t target-server:$(GIT_SHA) -f ../discourse-fork/Dockerfile ..
 	docker tag target-server:$(GIT_SHA) target-server:latest
 
+medium-clone:
+	docker build -t medium:$(GIT_SHA) -f ../dante-stories-fork/Dockerfile ..
+	docker tag medium:$(GIT_SHA) medium:latest
+
 # To get the client to talk to the proxy, make sure to set the following environment
 # variables in the client container:
 # export PORT=5443

@@ -2,7 +2,7 @@
 import json
 import logging
 
-from util import case_insensitive_contains
+from fuzzer.lib.util import case_insensitive_contains
 
 logger = logging.getLogger("debug")
 

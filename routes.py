@@ -1,11 +1,10 @@
 #! /usr/local/bin/python3
 
-import collections
 import json
 
 import fuzzer.params as params
 import fuzzer.preprocess.preprocess as preprocess
-import fuzzer.netutils as netutils
+import fuzzer.lib.netutils as netutils
 
 
 # Check if a route dict is present in a list of route objs

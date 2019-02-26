@@ -1,14 +1,13 @@
 #!/bin/python3
-import json
 import logging
 import os
 import sys
 
+from fuzzer.database.postgres import connect_to_db, load_db_dump
+from fuzzer.database.db import find_text_cols, inject_xss_payload
+
 # Logger for general debugging
 logger = logging.getLogger("xss.log")
-
-from postgres import connect_to_db, load_db_dump
-from db import find_text_cols, inject_xss_payload
 
 try:
     with open("./cookie", "r") as cookie_file:

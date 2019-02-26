@@ -1,10 +1,10 @@
 import random
 
-import fuzzer.mutate_base as mutate_base
-import mutation_state
+import fuzzer.mutation.mutate_base as mutate_base
+import fuzzer.mutation.mutation_state as mutation_state
 import fuzzer.params as params_lib
-import query
-import query_metadata as query_metadata_lib
+import fuzzer.query as query
+import fuzzer.query_metadata as query_metadata_lib
 
 HAR_REPLAY = 0
 ALL = 1

@@ -2,7 +2,7 @@ import glob
 import json
 import os
 
-import util
+import fuzzer.lib.util as util
 
 COVERAGE_FILE = "test_coverage.json"
 

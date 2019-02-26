@@ -5,7 +5,7 @@ import subprocess
 import sys
 import time
 
-import util
+import fuzzer.lib.util as util
 
 logger = logging.getLogger("debug")
 

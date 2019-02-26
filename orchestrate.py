@@ -10,10 +10,8 @@
 
 import argparse
 
-import db
-import coverage
-import fuzz_duo
-import server
+import fuzzer.fuzz_duo as fuzz_duo
+import fuzzer.server as server
 
 
 def repro(args):

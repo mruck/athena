@@ -13,16 +13,16 @@ import logging
 import os
 import random
 
-from db import init_pluralization, clear_rails_connections
-import fuzzer.naive_mutator as naive_mutator
+from fuzzer.database.db import init_pluralization, clear_rails_connections
+import fuzzer.mutation.naive_mutator as naive_mutator
 import fuzzer.routes as routes_lib
-import fuzzer.coverage as coverage
-import fuzzer.postgres as postgres
+import fuzzer.lib.coverage as coverage
+import fuzzer.database.postgres as postgres
 import fuzzer.fuzz_target as fuzz_target
-import fuzzer.postgres2 as postgres2
+import fuzzer.database.postgres2 as postgres2
 import fuzzer.fuzz_state as fuzz_state
 import fuzzer.fuzz_stats as fuzz_stats
-import fuzzer.netutils as netutils
+import fuzzer.lib.netutils as netutils
 
 # DB dump, cookie, routes.json, pluralizations and any other app specific
 # state should be stored here

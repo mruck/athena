@@ -3,10 +3,10 @@ import pprint
 import shutil
 import subprocess
 
-import client
-import db
-import server
-import util
+import fuzzer.client as client
+import fuzzer.database.db as db
+import fuzzer.server as server
+import fuzzer.lib.util as util
 
 
 def load():

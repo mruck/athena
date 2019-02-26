@@ -3,13 +3,16 @@ import shlex
 import stat
 import subprocess
 
+CWD = os.path.dirname(os.path.realpath(__file__))
+RUN_SCRIPT = os.path.join(CWD, "run.sh")
+
 # Requires postgres and redis container to be running
 DISCOURSE_SERVER_CMD = (
-    'docker run %(interactive)s -p %(port)s:%(port)s --name=%(name)s --rm -e "DISCOURSE_DEV_DB=%(db)s" -v '
+    'docker run %(interactive)s -p %(port)s:%(port)s --name=%(name)s --rm -e "FUZZ_DB=%(db)s" -v '
     "%(results_path)s:%(results_path)s %(shell)s "
     "%(extra_mount_flags)s "
     '--volumes-from my-postgres -e "RESULTS_PATH=%(results_path)s" '
-    '-e "PORT=%(port)s"  target-server'
+    '-e "PORT=%(port)s" -v %(run)s:/target/run.sh target-server'
 )
 
 
@@ -36,7 +39,7 @@ class Server(object):
             shell = "--entrypoint=/bin/bash"
         else:
             shell = ""
-        cmd = DISCOURSE_SERVER_CMD % {
+        opts = {
             "db": self.db,
             "port": str(self.port),
             "name": self.name,
@@ -44,16 +47,13 @@ class Server(object):
             "shell": shell,
             "interactive": "",
             "extra_mount_flags": self._get_mount_flags(),
+            "run": RUN_SCRIPT,
         }
-        interactive_cmd = DISCOURSE_SERVER_CMD % {
-            "db": self.db,
-            "port": str(self.port),
-            "name": self.name,
-            "results_path": self.results_path,
-            "shell": shell,
-            "interactive": "-it",
-            "extra_mount_flags": self._get_mount_flags(),
-        }
+        print(opts)
+        cmd = DISCOURSE_SERVER_CMD % opts
+        opts["interactive"] = "-it"
+        interactive_cmd = DISCOURSE_SERVER_CMD % opts
+
         run_script = os.path.join(self.results_path, "run_server.sh")
         with open(run_script, "w") as f:
             f.write(interactive_cmd)

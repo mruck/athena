@@ -2,8 +2,8 @@
 
 import json
 
-import db
-import fuzzer.util as util
+import fuzzer.database.db as db
+import fuzzer.lib.util as util
 
 
 class Param(object):
