@@ -12,7 +12,7 @@ DISCOURSE_SERVER_CMD = (
     "%(results_path)s:%(results_path)s %(shell)s "
     "%(extra_mount_flags)s "
     '--volumes-from my-postgres -e "RESULTS_PATH=%(results_path)s" '
-    '-e "PORT=%(port)s" -v %(run)s:/discourse-fork/%(run)s target-server'
+    '-e "PORT=%(port)s" -v %(run)s:/target/run.sh target-server'
 )
 
 
