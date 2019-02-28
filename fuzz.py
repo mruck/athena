@@ -140,6 +140,7 @@ def run(
     print("Final Coverage: {}".format(stats.final_coverage()))
     print("Success Ratio: {}".format(stats.get_success_ratio()))
     print("Total requests: {}".format(len(stats.get_results())))
+    coverage.process_coverage(target.cov.cumulative_coverage)
 
 
 def fuzz(
