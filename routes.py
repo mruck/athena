@@ -7,10 +7,10 @@ import fuzzer.preprocess.preprocess as preprocess
 import fuzzer.lib.netutils as netutils
 
 
-# Check if a route dict is present in a list of route objs
-def find_route(route, routes):
+# Check if a route obj is present in a list of route objs
+def find_route(needle, routes):
     for r in routes:
-        if route["verb"] == r.verb and route["path"] == r.path:
+        if needle.verb == r.verb and needle.path == r.path:
             return r
     return None
 
@@ -71,27 +71,27 @@ class Route(object):
         return self.escape_filename()
 
     # Preprocessed har requests
-    def from_har_file(file):
-        routes = json.loads(open(file, "r").read())
+    def from_har_file(har_file):
+        routes = json.loads(open(har_file, "r").read())
         return [Route.from_har(r) for r in routes]
 
     # Given rails dump of endpoints, convert to route objs and merge with
     # route objs from har dump
-    def from_routes_file(file, har_routes=None):
+    def from_routes_file(routes_file):
         # Grab default headers from preprocessing har
         default_headers = preprocess.get_default_headers()
-        routes = json.loads(open(file, "r").read())
+        routes = json.loads(open(routes_file, "r").read())
         all_routes = []
         for route in routes:
-            matched_route = find_route(route, har_routes) if har_routes else None
-            if matched_route:
-                all_routes.append(matched_route)
-            else:
-                r = Route.from_dict(route)
-                r.headers = default_headers[r.verb.lower()]
-                all_routes.append(r)
+            r = Route.from_dict(route)
+            r.headers = default_headers[r.verb.lower()]
+            all_routes.append(r)
 
         return all_routes
+
+    # Merge har routes objs with all routes objs
+    def merge_with_har(all_routes, har_routes):
+        pass
 
     def escape_filename(self):
         filename = self.verb + self.path
