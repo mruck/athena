@@ -36,13 +36,6 @@ MAX_FAILURES = 10
 MAX_PARAMS = 20
 
 HAR_DUMP = "preprocess/visited_routes.json"
-DEFAULT_ROUTE_EXCLUDES = [
-    "/admin/backups/readonly",
-    "/admin/site_settings/:id",
-    "logout",
-]
-ROUTES_DUMP = os.path.join(STATE, "routes.json")
-
 # Logger for general debugging
 logger = logging.getLogger("debug")
 
@@ -72,8 +65,8 @@ def get_snapshot_name(target, state, route):
 def run(
     target, state, target_route=None, stop_after_har=False, stop_after_all_routes=False
 ):
-    # read in routes dumped by rails
-    all_routes = routes_lib.Route.from_routes_file(ROUTES_DUMP)
+    all_routes = routes_lib.read_routes()
+
     # open a connection with the server (need this to keep track of cookies)
     conn = netutils.Connection(state.cookies)
     mutator = naive_mutator.NaiveMutator(all_routes)
@@ -87,10 +80,6 @@ def run(
         if route is None:
             break
         elif target_route is not None and not route.matches(target_route):
-            continue
-        elif route.path in DEFAULT_ROUTE_EXCLUDES:
-            # For instance, the /admin/readonly like endpoints should be blacklisted.
-            print("Blacklisted route {}; skipping".format(route.path))
             continue
 
         state_dir = get_snapshot_name(target, state, route)

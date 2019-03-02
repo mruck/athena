@@ -1,10 +1,19 @@
 #! /usr/local/bin/python3
 
 import json
+import os
 
 import fuzzer.params as params
 import fuzzer.preprocess.preprocess as preprocess
 import fuzzer.lib.netutils as netutils
+
+STATE = "/state"
+DEFAULT_ROUTE_EXCLUDES = [
+    "/admin/backups/readonly",
+    "/admin/site_settings/:id",
+    "logout",
+]
+ROUTES_DUMP = os.path.join(STATE, "routes.json")
 
 
 # Check if a route obj is present in a list of route objs
@@ -75,7 +84,7 @@ class Route(object):
         routes = json.loads(open(har_file, "r").read())
         return [Route.from_har(r) for r in routes]
 
-    # Given rails dump of endpoints, convert to route objs and merge with
+    # Given rails dump of endpoints, conv    ert to route objs and merge with
     # route objs from har dump
     def from_routes_file(routes_file):
         # Grab default headers from preprocessing har
@@ -121,3 +130,14 @@ class Route(object):
     def matches(self, route_str):
         verb, path = route_str.split(":", 1)
         return self.path.lower() == path.lower() and self.verb.lower() == verb.lower()
+
+
+def filter_routes(routes, blacklist):
+    return [r for r in routes if r.path not in blacklist]
+
+
+def read_routes():
+    # read in routes dumped by rails
+    all_routes = Route.from_routes_file(ROUTES_DUMP)
+    filtered = filter_routes(all_routes, DEFAULT_ROUTE_EXCLUDES)
+    return filtered
