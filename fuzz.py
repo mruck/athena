@@ -36,7 +36,11 @@ MAX_FAILURES = 10
 MAX_PARAMS = 20
 
 HAR_DUMP = "preprocess/visited_routes.json"
-DEFAULT_ROUTE_EXCLUDES = ["/admin/backups/readonly", "/admin/site_settings/:id"]
+DEFAULT_ROUTE_EXCLUDES = [
+    "/admin/backups/readonly",
+    "/admin/site_settings/:id",
+    "logout",
+]
 ROUTES_DUMP = os.path.join(STATE, "routes.json")
 
 # Logger for general debugging
@@ -68,18 +72,11 @@ def get_snapshot_name(target, state, route):
 def run(
     target, state, target_route=None, stop_after_har=False, stop_after_all_routes=False
 ):
-    # read in routes dumped by preprocessor
-    har_routes = routes_lib.Route.from_har_file(HAR_DUMP)
     # read in routes dumped by rails
-    all_routes = routes_lib.Route.from_routes_file(ROUTES_DUMP, har_routes)
+    all_routes = routes_lib.Route.from_routes_file(ROUTES_DUMP)
     # open a connection with the server (need this to keep track of cookies)
     conn = netutils.Connection(state.cookies)
-    mutator = naive_mutator.NaiveInfiniteMutator(
-        har_routes,
-        all_routes,
-        stop_after_har=stop_after_har,
-        stop_after_all_routes=stop_after_all_routes,
-    )
+    mutator = naive_mutator.NaiveMutator(all_routes)
 
     stats = fuzz_stats.FuzzStats()
 
