@@ -4,6 +4,7 @@
 `mkdir athena && cd athena`
 `git clone git@github.com:mruck/fuzzer.git`
 `git clone git@github.com:mruck/discourse-fork.git`
+`git clone git@github.com:mruck/coverage-visualizer.git``
 `git clone git@github.com:mruck/rails-fork.git``
 `cd rails-fork && git checkout 5-2-1-bip`
 `cd fuzzer && make all`.

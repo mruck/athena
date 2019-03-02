@@ -4,8 +4,6 @@ import os
 
 import fuzzer.lib.util as util
 
-COVERAGE_FILE = "test_coverage.json"
-
 
 class Coverage(object):
     def __init__(self, src_cov_file):
@@ -136,15 +134,10 @@ def merge_source_coverages(coverage1, coverage2):
     return new_coverage
 
 
-def calculate_source_coverage_stats(routes):
-    total_coverage = {}
-
-    for route in routes:
-        for request in route.requests:
-            total_coverage = merge_source_coverages(
-                total_coverage, request.source_coverage
-            )
-
+# total_coverage is a dictionary where the key is the filename and the
+# value is the array of file lines hit
+# Returns a new dictionary with the run count and runnable count
+def calculate_source_coverage_stats(total_coverage):
     all_line_counts = [count for counts in total_coverage.values() for count in counts]
     runnable_counts = [count for count in all_line_counts if count is not None]
     run_count = len([count for count in runnable_counts if count > 0])
@@ -157,61 +150,44 @@ def calculate_source_coverage_stats(routes):
     }
 
 
-def print_coverage_report(routes, results_path, dump=False, target_app=None):
-    coverage_stats = calculate_source_coverage_stats(routes)
-    # We are just running tests.  Dump the coverage stats and return
-    if dump:
-        with open(os.path.join(results_path, "test_coverage.json"), "w") as f:
-            json.dump(coverage_stats["total_coverage"], f)
-    run_count = coverage_stats["run_count"]
-    runnable_count = coverage_stats["runnable_count"]
-    filepaths = coverage_stats["filepaths"]
-    total_coverage = coverage_stats["total_coverage"]
+def filter_ruby_files(filepaths):
+    pass
+    # app_directory_path = os.path.join(target_app, "app")
 
-    app_directory_path = os.path.join(target_app, "app")
+    # ruby_filepaths = glob.glob("{}/**/*.rb".format(app_directory_path), recursive=True)
 
-    ruby_filepaths = glob.glob("{}/**/*.rb".format(app_directory_path), recursive=True)
+    # filepaths_not_run = [
+    #    filepath for filepath in ruby_filepaths if filepath not in filepaths
+    # ]
 
-    filepaths_not_run = [
-        filepath for filepath in ruby_filepaths if filepath not in filepaths
-    ]
 
-    print()
-    print("########### Coverage report: ###########")
-    print(
-        "\t {} / {} lines run ({}%)".format(
-            run_count,
-            runnable_count,
-            0
-            if runnable_count == 0
-            else round(float(run_count) / runnable_count * 100, 2),
-        )
-    )
-
-    #    print("\t Filepaths run:")
-    #    for filepath in sorted(filepaths):
-    #        print("\t\t {}".format(filepath))
-    #
-    #    print("\t Filepaths not run:")
-    #    for filepath in sorted(filepaths_not_run):
-    #        print("\t\t {}".format(filepath))
-    #
-    print("########################################\n")
-
+def dump_coverage_to_js(filepaths, line_coverage):
     # Write out a data file for use by the line highlighter app.
     file_contents = {}
-    for filepath in ruby_filepaths:
+    for filepath in filepaths:
         with open(filepath, "r") as f:
             file_contents[filepath] = f.read()
 
-    with open(os.path.join(results_path, "coverage-data.js"), "w") as data_file:
+    with open(os.path.join("/tmp/coverage-data.js"), "w") as data_file:
         data_file.write(
             "export const fileContents = {};".format(json.dumps(file_contents))
         )
         data_file.write("\n")
         data_file.write(
-            "export const lineCountData = {};".format(json.dumps(total_coverage))
+            "export const lineCountData = {};".format(json.dumps(line_coverage))
         )
+
+
+# Given a coverage dictionary mapping file paths to an array of lines hit,
+# filter out only the ruby files and dump to JS so coverage-visualizer can run
+def process_coverage(cumulative_coverage, target_app=None):
+    coverage_stats = calculate_source_coverage_stats(cumulative_coverage)
+
+    filepaths = coverage_stats["filepaths"]
+    total_coverage = coverage_stats["total_coverage"]
+
+    # ruby_filepaths = filer_ruby_files(filepaths)
+    dump_coverage_to_js(filepaths, total_coverage)
 
 
 def union_cov(cov_files):

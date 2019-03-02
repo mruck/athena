@@ -33,7 +33,7 @@ discourse-server:
 	docker build -t target-server:$(GIT_SHA) -f ../discourse-fork/Dockerfile ..
 	docker tag target-server:$(GIT_SHA) target-server:latest
 
-medium-clone:
+medium:
 	docker build -t medium:$(GIT_SHA) -f ../dante-stories-fork/Dockerfile ..
 	docker tag medium:$(GIT_SHA) medium:latest
 
