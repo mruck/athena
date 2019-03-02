@@ -65,7 +65,9 @@ def get_snapshot_name(target, state, route):
 def run(
     target, state, target_route=None, stop_after_har=False, stop_after_all_routes=False
 ):
-    all_routes = routes_lib.read_routes()
+    all_routes = routes_lib.read_routes(
+        os.path.join(target.results_path, "routes.json")
+    )
 
     # open a connection with the server (need this to keep track of cookies)
     conn = netutils.Connection(state.cookies)

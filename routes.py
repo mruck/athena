@@ -9,9 +9,14 @@ import fuzzer.lib.netutils as netutils
 
 STATE = "/state"
 DEFAULT_ROUTE_EXCLUDES = [
+    # Makes app RO
     "/admin/backups/readonly",
+    # There's a bug in this route so don't hit
     "/admin/site_settings/:id",
+    # Don't want to log out
     "logout",
+    # This drops all db connections
+    "clear_all_connections",
 ]
 ROUTES_DUMP = os.path.join(STATE, "routes.json")
 
@@ -84,18 +89,27 @@ class Route(object):
         routes = json.loads(open(har_file, "r").read())
         return [Route.from_har(r) for r in routes]
 
+    def default_headers():
+        return {"get": "", "put": "", "post": "", "patch": "", "delete": ""}
+
     # Given rails dump of endpoints, conv    ert to route objs and merge with
     # route objs from har dump
     def from_routes_file(routes_file):
-        # Grab default headers from preprocessing har
         default_headers = preprocess.get_default_headers()
-        routes = json.loads(open(routes_file, "r").read())
         all_routes = []
-        for route in routes:
-            r = Route.from_dict(route)
+        fp = open(routes_file, "r")
+        for json_line in fp:
+            json_line = json_line.strip()
+            route_dict = json.loads(json_line)
+            r = Route.from_dict(route_dict)
+            # Not sure why but some routes dont have verbs
+            if r.verb == "":
+                continue
+            # Some routes have verb GET|POST
+            if r.verb == "GET|POST":
+                continue
             r.headers = default_headers[r.verb.lower()]
             all_routes.append(r)
-
         return all_routes
 
     # Merge har routes objs with all routes objs
@@ -136,8 +150,20 @@ def filter_routes(routes, blacklist):
     return [r for r in routes if r.path not in blacklist]
 
 
-def read_routes():
+# Given a list of route objs, order such that routes that create content run first
+def order_routes(routes):
+    ordering = ["post", "put", "patch", "get", "delete"]
+    ordered = []
+    for order in ordering:
+        for r in routes:
+            if r.verb.lower() == order:
+                ordered.append(r)
+    return ordered
+
+
+def read_routes(routes_file):
     # read in routes dumped by rails
-    all_routes = Route.from_routes_file(ROUTES_DUMP)
+    all_routes = Route.from_routes_file(routes_file)
     filtered = filter_routes(all_routes, DEFAULT_ROUTE_EXCLUDES)
-    return filtered
+    ordered = order_routes(filtered)
+    return ordered
