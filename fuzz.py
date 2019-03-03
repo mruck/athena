@@ -36,9 +36,6 @@ MAX_FAILURES = 10
 MAX_PARAMS = 20
 
 HAR_DUMP = "preprocess/visited_routes.json"
-DEFAULT_ROUTE_EXCLUDES = ["/admin/backups/readonly", "/admin/site_settings/:id"]
-ROUTES_DUMP = os.path.join(STATE, "routes.json")
-
 # Logger for general debugging
 logger = logging.getLogger("debug")
 
@@ -65,21 +62,29 @@ def get_snapshot_name(target, state, route):
     return os.path.join(target.results_path, "snapshots", uid)
 
 
+def get_mutator(target):
+    har = True
+    all_routes = routes_lib.read_routes(
+        os.path.join(target.results_path, "routes.json")
+    )
+    # We don't have a har to drive mutation
+    if not har:
+        return naive_mutator.NaiveMutator(all_routes)
+    # read in routes dumped by preprocessor
+    har_routes = routes_lib.Route.from_har_file(HAR_DUMP)
+    routes_lib.merge_with_har(all_routes, har_routes)
+    return naive_mutator.HarMutator(
+        har_routes, all_routes, stop_after_har=True, stop_after_all_routes=True
+    )
+
+
 def run(
     target, state, target_route=None, stop_after_har=False, stop_after_all_routes=False
 ):
-    # read in routes dumped by preprocessor
-    har_routes = routes_lib.Route.from_har_file(HAR_DUMP)
-    # read in routes dumped by rails
-    all_routes = routes_lib.Route.from_routes_file(ROUTES_DUMP, har_routes)
+    mutator = get_mutator(target)
+
     # open a connection with the server (need this to keep track of cookies)
     conn = netutils.Connection(state.cookies)
-    mutator = naive_mutator.NaiveInfiniteMutator(
-        har_routes,
-        all_routes,
-        stop_after_har=stop_after_har,
-        stop_after_all_routes=stop_after_all_routes,
-    )
 
     stats = fuzz_stats.FuzzStats()
 
@@ -90,10 +95,6 @@ def run(
         if route is None:
             break
         elif target_route is not None and not route.matches(target_route):
-            continue
-        elif route.path in DEFAULT_ROUTE_EXCLUDES:
-            # For instance, the /admin/readonly like endpoints should be blacklisted.
-            print("Blacklisted route {}; skipping".format(route.path))
             continue
 
         state_dir = get_snapshot_name(target, state, route)

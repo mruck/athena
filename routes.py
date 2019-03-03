@@ -1,16 +1,30 @@
 #! /usr/local/bin/python3
 
 import json
+import os
 
 import fuzzer.params as params
 import fuzzer.preprocess.preprocess as preprocess
 import fuzzer.lib.netutils as netutils
 
+STATE = "/state"
+DEFAULT_ROUTE_EXCLUDES = [
+    # Makes app RO
+    "/admin/backups/readonly",
+    # There's a bug in this route so don't hit
+    "/admin/site_settings/:id",
+    # Don't want to log out
+    "logout",
+    # This drops all db connections
+    "clear_all_connections",
+]
+ROUTES_DUMP = os.path.join(STATE, "routes.json")
 
-# Check if a route dict is present in a list of route objs
-def find_route(route, routes):
+
+# Check if a route obj is present in a list of route objs
+def find_route(needle, routes):
     for r in routes:
-        if route["verb"] == r.verb and route["path"] == r.path:
+        if needle.verb == r.verb and needle.path == r.path:
             return r
     return None
 
@@ -71,26 +85,32 @@ class Route(object):
         return self.escape_filename()
 
     # Preprocessed har requests
-    def from_har_file(file):
-        routes = json.loads(open(file, "r").read())
-        return [Route.from_har(r) for r in routes]
+    def from_har_file(har_file):
+        routes = json.loads(open(har_file, "r").read())
+        har_routes = [Route.from_har(r) for r in routes]
+        return filter_routes(har_routes, DEFAULT_ROUTE_EXCLUDES)
 
-    # Given rails dump of endpoints, convert to route objs and merge with
+    def default_headers():
+        return {"get": "", "put": "", "post": "", "patch": "", "delete": ""}
+
+    # Given rails dump of endpoints, conv    ert to route objs and merge with
     # route objs from har dump
-    def from_routes_file(file, har_routes=None):
-        # Grab default headers from preprocessing har
+    def from_routes_file(routes_file):
         default_headers = preprocess.get_default_headers()
-        routes = json.loads(open(file, "r").read())
         all_routes = []
-        for route in routes:
-            matched_route = find_route(route, har_routes) if har_routes else None
-            if matched_route:
-                all_routes.append(matched_route)
-            else:
-                r = Route.from_dict(route)
-                r.headers = default_headers[r.verb.lower()]
-                all_routes.append(r)
-
+        fp = open(routes_file, "r")
+        for json_line in fp:
+            json_line = json_line.strip()
+            route_dict = json.loads(json_line)
+            r = Route.from_dict(route_dict)
+            # Not sure why but some routes dont have verbs
+            if r.verb == "":
+                continue
+            # Some routes have verb GET|POST
+            if r.verb == "GET|POST":
+                continue
+            r.headers = default_headers[r.verb.lower()]
+            all_routes.append(r)
         return all_routes
 
     def escape_filename(self):
@@ -113,11 +133,48 @@ class Route(object):
     # Get values of params sent in most recent request
     # NOTE: assumes params have not yet been mutated!!!
     def params_sent(self):
-        dynamic_segments = [p.next_val for p in self.dynamic_segments if p is not None]
-        body_params = [p.next_val for p in self.body_params if p is not None]
-        query_params = [p.next_val for p in self.query_params if p is not None]
+        dynamic_segments = [
+            p.next_val for p in self.dynamic_segments if p.next_val is not None
+        ]
+        body_params = [p.next_val for p in self.body_params if p.next_val is not None]
+        query_params = [p.next_val for p in self.query_params if p.next_val is not None]
         return dynamic_segments + body_params + query_params
 
     def matches(self, route_str):
         verb, path = route_str.split(":", 1)
         return self.path.lower() == path.lower() and self.verb.lower() == verb.lower()
+
+
+def filter_routes(routes, blacklist):
+    return [r for r in routes if r.path not in blacklist]
+
+
+# Given a list of route objs, order such that routes that create content run first
+def order_routes(routes):
+    ordering = ["post", "put", "patch", "get", "delete"]
+    ordered = []
+    for order in ordering:
+        for r in routes:
+            if r.verb.lower() == order:
+                ordered.append(r)
+    return ordered
+
+
+def read_routes(routes_file):
+    # read in routes dumped by rails
+    all_routes = Route.from_routes_file(routes_file)
+    filtered = filter_routes(all_routes, DEFAULT_ROUTE_EXCLUDES)
+    ordered = order_routes(filtered)
+    return ordered
+
+
+# Merge har routes objs with all routes objs
+def merge_with_har(all_routes, har_routes):
+    for har_route in har_routes:
+        for route in all_routes:
+            if (
+                har_route.verb.lower() == route.verb.lower()
+                and har_route.path == route.path
+            ):
+                all_routes.remove(route)
+                all_routes.append(har_route)
