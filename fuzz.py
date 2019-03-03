@@ -62,16 +62,29 @@ def get_snapshot_name(target, state, route):
     return os.path.join(target.results_path, "snapshots", uid)
 
 
-def run(
-    target, state, target_route=None, stop_after_har=False, stop_after_all_routes=False
-):
+def get_mutator(target):
+    har = True
     all_routes = routes_lib.read_routes(
         os.path.join(target.results_path, "routes.json")
     )
+    # We don't have a har to drive mutation
+    if not har:
+        return naive_mutator.NaiveMutator(all_routes)
+    # read in routes dumped by preprocessor
+    har_routes = routes_lib.Route.from_har_file(HAR_DUMP)
+    routes_lib.merge_with_har(all_routes, har_routes)
+    return naive_mutator.HarMutator(
+        har_routes, all_routes, stop_after_har=True, stop_after_all_routes=True
+    )
+
+
+def run(
+    target, state, target_route=None, stop_after_har=False, stop_after_all_routes=False
+):
+    mutator = get_mutator(target)
 
     # open a connection with the server (need this to keep track of cookies)
     conn = netutils.Connection(state.cookies)
-    mutator = naive_mutator.NaiveMutator(all_routes)
 
     stats = fuzz_stats.FuzzStats()
 

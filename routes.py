@@ -87,7 +87,8 @@ class Route(object):
     # Preprocessed har requests
     def from_har_file(har_file):
         routes = json.loads(open(har_file, "r").read())
-        return [Route.from_har(r) for r in routes]
+        har_routes = [Route.from_har(r) for r in routes]
+        return filter_routes(har_routes, DEFAULT_ROUTE_EXCLUDES)
 
     def default_headers():
         return {"get": "", "put": "", "post": "", "patch": "", "delete": ""}
@@ -111,10 +112,6 @@ class Route(object):
             r.headers = default_headers[r.verb.lower()]
             all_routes.append(r)
         return all_routes
-
-    # Merge har routes objs with all routes objs
-    def merge_with_har(all_routes, har_routes):
-        pass
 
     def escape_filename(self):
         filename = self.verb + self.path
@@ -169,3 +166,15 @@ def read_routes(routes_file):
     filtered = filter_routes(all_routes, DEFAULT_ROUTE_EXCLUDES)
     ordered = order_routes(filtered)
     return ordered
+
+
+# Merge har routes objs with all routes objs
+def merge_with_har(all_routes, har_routes):
+    for har_route in har_routes:
+        for route in all_routes:
+            if (
+                har_route.verb.lower() == route.verb.lower()
+                and har_route.path == route.path
+            ):
+                all_routes.remove(route)
+                all_routes.append(har_route)
