@@ -136,9 +136,11 @@ class Route(object):
     # Get values of params sent in most recent request
     # NOTE: assumes params have not yet been mutated!!!
     def params_sent(self):
-        dynamic_segments = [p.next_val for p in self.dynamic_segments if p is not None]
-        body_params = [p.next_val for p in self.body_params if p is not None]
-        query_params = [p.next_val for p in self.query_params if p is not None]
+        dynamic_segments = [
+            p.next_val for p in self.dynamic_segments if p.next_val is not None
+        ]
+        body_params = [p.next_val for p in self.body_params if p.next_val is not None]
+        query_params = [p.next_val for p in self.query_params if p.next_val is not None]
         return dynamic_segments + body_params + query_params
 
     def matches(self, route_str):

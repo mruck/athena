@@ -268,22 +268,16 @@ class Query(object):
 
     def is_vulnerable(self, param_values):
         if self.ast is None:
-            return False
+            return None
 
         literal_expression_nodes = get_literal_expression_nodes(
             self.ast["where_clause"]
         )
 
-        vulns = []
         for node in literal_expression_nodes:
             for value in param_values:
                 if str(value).upper() in node["literal"].upper():
-                    print("Found param %s in query:" % value)
-                    print(stringify_ast(self.ast))
-                    exit(1)
-                    vulns.append(value)
-
-        return vulns
+                    return stringify_ast(self.ast), value
 
     # Args:
     #   query_dict: query dictionary

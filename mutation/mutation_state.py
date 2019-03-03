@@ -1,5 +1,8 @@
 # After sending a request, update the route object with new information aout
 # src coverage, queries and params
+import json
+import os
+
 import fuzzer.query as query_lib
 import fuzzer.params as params_lib
 
@@ -31,10 +34,18 @@ def update_params(params_file, route):
     return True
 
 
-def check_for_sql_inj(route):
+def check_for_sql_inj(target, route):
     params_sent = route.params_sent()
     queries = route.queries[0]
-    [q.is_vulnerable(params_sent) for q in queries]
+    for q in queries:
+        vuln = q.is_vulnerable(params_sent)
+        if vuln is None:
+            continue
+        # Our query showed up in a literal sql inj
+        ast, param = vuln
+        sql_dict = {"path": route.path, "verb": route.verb, "param": param, "ast": ast}
+        with open(os.path.join(target.results_path, "sql_inj"), "a") as f:
+            json.dump(sql_dict, f)
 
 
 # Collect information relevant to the mutation decision.
@@ -44,4 +55,4 @@ def update_route_state(target, route):
     update_params(target.params_file, route)
     # read queries file
     update_queries(target.queries_file, route)
-    check_for_sql_inj(route)
+    check_for_sql_inj(target, route)
