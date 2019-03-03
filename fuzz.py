@@ -63,7 +63,7 @@ def get_snapshot_name(target, state, route):
 
 
 def get_mutator(target):
-    har = True
+    har = False
     all_routes = routes_lib.read_routes(
         os.path.join(target.results_path, "routes.json")
     )
@@ -74,7 +74,7 @@ def get_mutator(target):
     har_routes = routes_lib.Route.from_har_file(HAR_DUMP)
     routes_lib.merge_with_har(all_routes, har_routes)
     return naive_mutator.HarMutator(
-        har_routes, all_routes, stop_after_har=True, stop_after_all_routes=True
+        har_routes, all_routes, stop_after_har=False, stop_after_all_routes=True
     )
 
 
@@ -94,7 +94,9 @@ def run(
         route = mutator.next_route()
         if route is None:
             break
-        elif target_route is not None and not route.matches(target_route):
+        # elif target_route is not None and not route.matches(target_route):
+        #    continue
+        elif "/clicks/track" not in route.path:
             continue
 
         state_dir = get_snapshot_name(target, state, route)

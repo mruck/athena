@@ -31,7 +31,7 @@ class Server(object):
             return ""
         flag = ""
         for local, dest in self.extra_mounts:
-            flag += "-v {}:{}:delegated".format(local, dest)
+            flag += " -v {}:{}:delegated ".format(local, dest)
         return flag
 
     def build_run_cmd(self, shell=False):

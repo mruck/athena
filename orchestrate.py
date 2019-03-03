@@ -31,7 +31,10 @@ def repro(args):
     duo = fuzz_duo.FuzzDuo.from_config(config)
 
     if args.mount_discourse:
-        duo.server.extra_mounts = [("/tmp/discourse-fork", "/target")]
+        duo.server.extra_mounts = [
+            ("/tmp/discourse-fork", "/target"),
+            ("/tmp/rails-fork", "/rails-fork"),
+        ]
 
     # Spawn only client
     if args.client:
