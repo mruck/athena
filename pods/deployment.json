@@ -1,0 +1,97 @@
+{
+  "apiVersion": "extensions/v1beta1",
+  "kind": "Deployment",
+  "metadata": {
+    "name": "discourse"
+  },
+  "spec": {
+    "replicas": 1,
+    "template": {
+      "metadata": {
+        "labels": {
+          "duo": "true"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "env": [
+              {
+                "name": "POSTGRES_USER",
+                "value": "root"
+              }
+            ],
+            "image": "postgres:10.5",
+            "name": "my-postgres",
+            "volumeMounts": [
+              {
+                "mountPath": "/var/run/postgresql",
+                "name": "postgres-socket"
+              }
+            ]
+          },
+          {
+            "command": [
+              "./run-server.sh"
+            ],
+            "env": [
+              {
+                "name": "FUZZ_DB",
+                "value": "db_03_05_08_56_26"
+              },
+              {
+                "name": "PORT",
+                "value": "58593"
+              },
+              {
+                "name": "RESULTS_PATH",
+                "value": "/tmp/results_03_05_08_56_29"
+              }
+            ],
+            "image": "gcr.io/athena-fuzzer/discourse:4",
+            "name": "target",
+            "volumeMounts": [
+              {
+                "mountPath": "/var/run/postgresql",
+                "name": "postgres-socket"
+              }
+            ]
+          },
+          {
+            "command": [
+              "./run_client.sh"
+            ],
+            "env": [
+              {
+                "name": "FUZZ_DB",
+                "value": "db_03_05_08_56_26"
+              },
+              {
+                "name": "PORT",
+                "value": "58593"
+              },
+              {
+                "name": "RESULTS_PATH",
+                "value": "/tmp/results_03_05_08_56_29"
+              }
+            ],
+            "image": "gcr.io/athena-fuzzer/athena:1",
+            "name": "athena",
+            "volumeMounts": [
+              {
+                "mountPath": "/var/run/postgresql",
+                "name": "postgres-socket"
+              }
+            ]
+          }
+        ],
+        "volumes": [
+          {
+            "emptyDir": {},
+            "name": "postgres-socket"
+          }
+        ]
+      }
+    }
+  }
+}
