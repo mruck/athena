@@ -37,7 +37,6 @@ def update_params(params_file, route):
 def check_for_sql_inj(target, route):
     params_sent = route.params_sent()
     queries = route.queries[0]
-    print("checking for sql inj")
     for q in queries:
         vuln = q.is_vulnerable(params_sent)
         if vuln is None:
