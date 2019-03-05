@@ -45,7 +45,7 @@ def check_for_sql_inj(target, route):
         # Our query showed up in a literal sql inj
         ast, param = vuln
         sql_dict = {"path": route.path, "verb": route.verb, "param": param, "ast": ast}
-        with open(os.path.join(target.results_path, "sql_inj"), "a") as f:
+        with open(os.path.join(target.results_path, "sql_inj.json"), "a") as f:
             json.dump(sql_dict, f)
 
 

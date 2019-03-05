@@ -94,9 +94,7 @@ def run(
         route = mutator.next_route()
         if route is None:
             break
-        # elif target_route is not None and not route.matches(target_route):
-        #    continue
-        elif "/clicks/track" not in route.path:
+        elif target_route is not None and not route.matches(target_route):
             continue
 
         state_dir = get_snapshot_name(target, state, route)
