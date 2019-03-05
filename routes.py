@@ -13,10 +13,9 @@ DEFAULT_ROUTE_EXCLUDES = [
     "/admin/backups/readonly",
     # There's a bug in this route so don't hit
     "/admin/site_settings/:id",
-    # Don't want to log out
-    "logout",
     # This drops all db connections
-    "clear_all_connections",
+    "/rails/info/clear_all_connections",
+    # TODO: ignore log out?
 ]
 ROUTES_DUMP = os.path.join(STATE, "routes.json")
 

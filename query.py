@@ -277,6 +277,9 @@ class Query(object):
         for node in literal_expression_nodes:
             for value in param_values:
                 if str(value).upper() in node["literal"].upper():
+                    print("found sql inj")
+                    print(value)
+                    print(stringify_ast(self.ast))
                     return stringify_ast(self.ast), value
 
     # Args:

@@ -63,7 +63,7 @@ def get_snapshot_name(target, state, route):
 
 
 def get_mutator(target):
-    har = True
+    har = False
     all_routes = routes_lib.read_routes(
         os.path.join(target.results_path, "routes.json")
     )
@@ -74,7 +74,7 @@ def get_mutator(target):
     har_routes = routes_lib.Route.from_har_file(HAR_DUMP)
     routes_lib.merge_with_har(all_routes, har_routes)
     return naive_mutator.HarMutator(
-        har_routes, all_routes, stop_after_har=True, stop_after_all_routes=True
+        har_routes, all_routes, stop_after_har=False, stop_after_all_routes=True
     )
 
 
