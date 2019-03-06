@@ -72,14 +72,6 @@
               {
                 "name": "RESULTS_PATH",
                 "value": "/tmp/results_03_05_08_56_29"
-              },
-              {
-                "name": "FUZZER_NUMBER",
-                "value": "0"
-              },
-              {
-                "name": "INSTANCES",
-                "value": "1"
               }
             ],
             "image": "gcr.io/athena-fuzzer/athena:2",
