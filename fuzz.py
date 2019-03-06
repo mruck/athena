@@ -63,7 +63,7 @@ def get_snapshot_name(target, state, route):
 
 
 def get_mutator(target):
-    har = False
+    har = True
     all_routes = routes_lib.read_routes(
         os.path.join(target.results_path, "routes.json")
     )
@@ -79,7 +79,7 @@ def get_mutator(target):
 
 
 def run(
-    target, state, target_route=None, stop_after_har=False, stop_after_all_routes=False
+    target, state, target_route=None, stop_after_har=True, stop_after_all_routes=False
 ):
     mutator = get_mutator(target)
 
