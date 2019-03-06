@@ -39,14 +39,18 @@ HAR_DUMP = "preprocess/visited_routes.json"
 # Logger for general debugging
 logger = logging.getLogger("debug")
 
+RESULTS_PATH = "/tmp/results"
+PORT = 8080
+FUZZ_DB = "FUZZ_DB"
 
-def init_logger(results_path, quiet=None):
+
+def init_logger(quiet=None):
     global logger
     # Write everything to stdout
     ch = logging.StreamHandler()
     logger.addHandler(ch)
     # Log to a file as well
-    fh = logging.FileHandler(os.path.join(results_path, "client.stdout"))
+    fh = logging.FileHandler(os.path.join(RESULTS_PATH, "client.stdout"))
     fh.setLevel(logging.DEBUG)
     logger.addHandler(fh)
     if quiet is None:
@@ -144,9 +148,6 @@ def run(
 
 
 def fuzz(
-    fuzz_dir,
-    db,
-    port,
     snapshot=None,
     route=None,
     load_db=False,
@@ -156,20 +157,20 @@ def fuzz(
     stop_after_all_routes=False,
 ):
     random.seed(a=0)
-    init_logger(fuzz_dir)
+    init_logger()
     init_pluralization(STATE)
 
     pg = postgres2.Postgres()
-    state = fuzz_state.FuzzState(pg, db)
+    state = fuzz_state.FuzzState(pg, FUZZ_DB)
     if snapshot:
-        clear_rails_connections(hostname=netutils.target_hostname(), port=port)
+        clear_rails_connections(hostname=netutils.target_hostname(), port=PORT)
         logger.info("Loading all state from %s" % snapshot)
         state.load(snapshot)
 
     # TODO: Get rid of this or move it to postgres2
-    postgres.connect_to_db(db)
+    postgres.connect_to_db(FUZZ_DB)
 
-    target = fuzz_target.Target(fuzz_dir, port, db, snapshot=snapshot)
+    target = fuzz_target.Target(RESULTS_PATH, PORT, FUZZ_DB, snapshot=snapshot)
 
     run(
         target,
@@ -182,9 +183,6 @@ def fuzz(
 
 def run_parser():
     parser = argparse.ArgumentParser(description="Fuzzing client")
-    parser.add_argument("fuzz_dir", help="Destination for results")
-    parser.add_argument("db", help="db to connect to")
-    parser.add_argument("port", help="port to query")
     parser.add_argument("--route")
     parser.add_argument("--snapshot")
     parser.add_argument("--load_db", action="store_true")
@@ -198,9 +196,6 @@ def run_parser():
 def main():
     args = run_parser()
     fuzz(
-        args.fuzz_dir,
-        args.db,
-        args.port,
         snapshot=args.snapshot,
         route=args.route,
         load_db=args.load_db,

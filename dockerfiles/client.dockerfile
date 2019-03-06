@@ -16,6 +16,4 @@ WORKDIR /client
 ENV VENV_LOCATION=/venv
 RUN make venv
 
-RUN mkdir /tmp/results
-
 ENTRYPOINT ./run_client.sh
