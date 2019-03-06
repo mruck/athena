@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: discourse 
+spec:
+  containers:
+  - name: my-postgres 
+    image: postgres:10.5
+    env: 
+        - name: "POSTGRES_USER"
+          value: "root"
+    volumeMounts: 
+        - name: "postgres-socket"
+          mountPath: /var/run/postgresql
+  - name: target 
+    image: gcr.io/athena-fuzzer/discourse:4
+    env: 
+        - name: "FUZZ_DB"
+          value: "db_03_05_08_56_26"
+          name : "PORT"
+          value: "58593"
+          name: "RESULTS_PATH"
+          value: "/tmp/results_03_05_08_56_29"
+    command:
+      - "./run-server.sh"
+    volumeMounts: 
+        - name: "postgres-socket"
+          mountPath: /var/run/postgresql
+  - name: crashcart
+    image: debian:stretch
+    command:
+      - "bin/bash"
+      - "-c"
+      - "while true; do sleep 10000; done"
+  volumes:
+      - name: "postgres-socket"
+        emptyDir: {}
