@@ -147,14 +147,10 @@ def fuzz(
     fuzz_dir,
     db,
     port,
-    target_app,
-    fuzzer_number=0,
-    instances=1,
     snapshot=None,
     route=None,
     load_db=False,
     route_prefix=None,
-    output_benchmark_data=None,
     any_route=None,
     stop_after_har=False,
     stop_after_all_routes=False,
@@ -189,9 +185,6 @@ def run_parser():
     parser.add_argument("fuzz_dir", help="Destination for results")
     parser.add_argument("db", help="db to connect to")
     parser.add_argument("port", help="port to query")
-    parser.add_argument("target_app", help="target application")
-    parser.add_argument("--fuzzer_number", type=int, default=0)
-    parser.add_argument("--instances", type=int, default=1)
     parser.add_argument("--route")
     parser.add_argument("--snapshot")
     parser.add_argument("--load_db", action="store_true")
@@ -208,9 +201,6 @@ def main():
         args.fuzz_dir,
         args.db,
         args.port,
-        args.target_app,
-        fuzzer_number=args.fuzzer_number,
-        instances=args.instances,
         snapshot=args.snapshot,
         route=args.route,
         load_db=args.load_db,
