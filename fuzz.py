@@ -24,10 +24,6 @@ import fuzzer.fuzz_state as fuzz_state
 import fuzzer.fuzz_stats as fuzz_stats
 import fuzzer.lib.netutils as netutils
 
-# DB dump, cookie, routes.json, pluralizations and any other app specific
-# state should be stored here
-STATE = "/state"
-
 # Max attempts allowed for querying an endpoint
 # after all parameters have been mutated
 MAX_FAILURES = 10
@@ -158,7 +154,7 @@ def fuzz(
 ):
     random.seed(a=0)
     init_logger()
-    init_pluralization(STATE)
+    init_pluralization(RESULTS_PATH)
 
     pg = postgres2.Postgres()
     state = fuzz_state.FuzzState(pg, FUZZ_DB)

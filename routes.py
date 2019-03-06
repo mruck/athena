@@ -7,7 +7,6 @@ import fuzzer.params as params
 import fuzzer.preprocess.preprocess as preprocess
 import fuzzer.lib.netutils as netutils
 
-STATE = "/state"
 DEFAULT_ROUTE_EXCLUDES = [
     # Makes app RO
     "/admin/backups/readonly",
@@ -17,7 +16,6 @@ DEFAULT_ROUTE_EXCLUDES = [
     "/rails/info/clear_all_connections",
     # TODO: ignore log out?
 ]
-ROUTES_DUMP = os.path.join(STATE, "routes.json")
 
 
 # Check if a route obj is present in a list of route objs
