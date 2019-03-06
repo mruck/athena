@@ -58,9 +58,8 @@
             ]
           },
           {
-            "command": [
-              "./run_client.sh"
-            ],
+            "command": ["/bin/bash"],
+            "args": ["-c", "while true; do sleep 10000; done"],
             "env": [
               {
                 "name": "FUZZ_DB",
@@ -73,9 +72,17 @@
               {
                 "name": "RESULTS_PATH",
                 "value": "/tmp/results_03_05_08_56_29"
+              },
+              {
+                "name": "FUZZER_NUMBER",
+                "value": "0"
+              },
+              {
+                "name": "INSTANCES",
+                "value": "1"
               }
             ],
-            "image": "gcr.io/athena-fuzzer/athena:1",
+            "image": "gcr.io/athena-fuzzer/athena:2",
             "name": "athena",
             "volumeMounts": [
               {
