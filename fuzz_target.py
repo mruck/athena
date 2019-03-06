@@ -6,8 +6,6 @@ import traceback
 import fuzzer.lib.coverage as coverage
 import fuzzer.lib.util as util
 
-STATE = "/state"
-
 
 class Target(object):
     """
@@ -19,7 +17,6 @@ class Target(object):
 
     def __init__(self, results_path, port, db, snapshot=None):
         self.results_path = results_path
-        self.state = STATE
         self.port = port
         self.db = db
         # Remove files if they exist, touch, and open as RO
