@@ -165,12 +165,12 @@ def fuzz(
         logger.info("Loading all state from %s" % snapshot)
         state.load(snapshot)
 
-    # TODO: Get rid of this or move it to postgres2
-    postgres.connect_to_db(FUZZ_DB)
-
     # open a connection with the server (need this to keep track of cookies)
     conn = netutils.Connection(state.cookies)
     conn.is_alive()
+
+    # TODO: Get rid of this or move it to postgres2
+    postgres.connect_to_db(FUZZ_DB)
 
     # Wait until server is up then read pluralizations dumped
     init_pluralization()
