@@ -11,9 +11,13 @@ RUN pip3 install psycopg2 requests
 RUN pip3 install --upgrade virtualenv
 
 RUN mkdir /client
-ADD . /client
 WORKDIR /client
+
+ADD ./pip-reqs.txt pip-reqs.txt
+ADD ./Makefile Makefile
 ENV VENV_LOCATION=/venv
 RUN make venv
+
+ADD . /client
 
 ENTRYPOINT ./run_client.sh
