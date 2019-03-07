@@ -15,11 +15,12 @@ from fuzzer.lib.util import random_int, get_results_path, timestamp
 logger = logging.getLogger("debug")
 
 pluralizations = None
+RESULTS_PATH = "/tmp/results"
 
 
-def init_pluralization(state_dir):
+def init_pluralization():
     global pluralizations
-    with open(os.path.join(state_dir, "pluralizations.json")) as pluralizations_file:
+    with open(os.path.join(RESULTS_PATH, "pluralizations.json")) as pluralizations_file:
         pluralizations = json.loads(pluralizations_file.read())
 
 
