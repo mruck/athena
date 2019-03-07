@@ -2,7 +2,7 @@
 # Usage:
 #      bash scripts/sanity.sh
 #      bash scripts/sanity.sh all
-set -ex
+set -e
 
 branch=$(git branch | grep \* | cut -d ' ' -f 2)
 ref=$(git rev-parse $branch | tr -d '\n')
