@@ -32,7 +32,7 @@
           },
           {
             "command": [
-              "./run-server.sh"
+                "/bin/bash", "-c", "while true; do sleep 1000; done"
             ],
             "env": [
               {
@@ -63,9 +63,10 @@
           },
           {
             "name": "athena",
-            "image": "gcr.io/athena-fuzzer/athena:2",
-            "command": ["/bin/bash"],
-            "args": ["-c", "while true; do sleep 10000; done"],
+            "image": "gcr.io/athena-fuzzer/athena:4",
+            "command": [
+                "/bin/bash", "-c", "while true; do sleep 1000; done"
+            ],
             "volumeMounts": [
               {
                 "mountPath": "/var/run/postgresql",

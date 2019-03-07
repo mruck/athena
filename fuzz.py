@@ -79,12 +79,14 @@ def get_mutator(target):
 
 
 def run(
-    target, state, target_route=None, stop_after_har=True, stop_after_all_routes=False
+    conn,
+    target,
+    state,
+    target_route=None,
+    stop_after_har=True,
+    stop_after_all_routes=False,
 ):
     mutator = get_mutator(target)
-
-    # open a connection with the server (need this to keep track of cookies)
-    conn = netutils.Connection(state.cookies)
 
     stats = fuzz_stats.FuzzStats()
 
@@ -154,10 +156,10 @@ def fuzz(
 ):
     random.seed(a=0)
     init_logger()
-    init_pluralization(RESULTS_PATH)
 
     pg = postgres2.Postgres()
     state = fuzz_state.FuzzState(pg, FUZZ_DB)
+
     if snapshot:
         clear_rails_connections(hostname=netutils.target_hostname(), port=PORT)
         logger.info("Loading all state from %s" % snapshot)
@@ -166,9 +168,17 @@ def fuzz(
     # TODO: Get rid of this or move it to postgres2
     postgres.connect_to_db(FUZZ_DB)
 
+    # open a connection with the server (need this to keep track of cookies)
+    conn = netutils.Connection(state.cookies)
+    conn.is_alive()
+
+    # Wait until server is up then read pluralizations dumped
+    init_pluralization()
+
     target = fuzz_target.Target(RESULTS_PATH, PORT, FUZZ_DB, snapshot=snapshot)
 
     run(
+        conn,
         target,
         state,
         target_route=route,

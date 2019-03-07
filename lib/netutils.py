@@ -2,6 +2,7 @@ import datetime
 import json
 import os
 import socket
+import time
 import urllib.request
 import urllib.parse
 
@@ -39,6 +40,20 @@ class Connection:
         if len(query_params) > 0:
             print(query_params)
 
+    def is_alive(self):
+        ret_code = None
+        while ret_code is None:
+            time.sleep(5)
+            print("Polling...")
+            try:
+                ret_code = self.send_request(
+                    "http://localhost:8080/rails/info/routes", "GET"
+                )
+            except urllib.error.URLError:
+                pass
+        if ret_code != 200:
+            print("Error: ret code is %d" % ret_code)
+
     def _format_body_params(self, body, headers):
         # The HAR sent JSON so lets stick to that
         if "Content-Type" in headers and headers["Content-Type"] == CONTENT_TYPE_JSON:
@@ -53,7 +68,7 @@ class Connection:
         headers.pop("Cookies", None)
         return headers
 
-    def build_request(
+    def _build_request(
         self, url, verb, body_params=None, headers=None, query_params=None
     ):
         if verb == "GET":
@@ -78,7 +93,11 @@ class Connection:
     def send_request(
         self, url, verb, body_params=None, headers=None, query_params=None
     ):
-        request = self.build_request(
+        body_params = body_params or {}
+        query_params = query_params or {}
+        headers = headers or {}
+
+        request = self._build_request(
             url,
             verb,
             body_params=body_params,
