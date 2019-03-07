@@ -1,0 +1,88 @@
+{
+  "apiVersion": "v1",
+  "kind": "Pod",
+  "metadata": {
+    "name": "discourse",
+    "labels": {
+      "duo": "true"
+    }
+  },
+  "spec": {
+    "containers": [
+      {
+        "env": [
+          {
+            "name": "POSTGRES_USER",
+            "value": "root"
+          }
+        ],
+        "image": "postgres:10.5",
+        "name": "my-postgres",
+        "volumeMounts": [
+          {
+            "mountPath": "/var/run/postgresql",
+            "name": "postgres-socket"
+          }
+        ]
+      },
+      {
+        "command": [
+            "./run-server.sh"
+        ],
+        "env": [
+          {
+            "name": "FUZZ_DB",
+            "value": "FUZZ_DB"
+          },
+          {
+            "name": "PORT",
+            "value": "8080"
+          },
+          {
+            "name": "RESULTS_PATH",
+            "value": "/tmp/results"
+          }
+        ],
+        "image": "gcr.io/athena-fuzzer/discourse:4",
+        "name": "target",
+        "volumeMounts": [
+          {
+            "mountPath": "/var/run/postgresql",
+            "name": "postgres-socket"
+          },
+          {
+            "mountPath": "/tmp/results",
+            "name": "results-dir"
+          }
+        ]
+      },
+      {
+        "name": "athena",
+        "image": "gcr.io/athena-fuzzer/athena:4",
+        "command": [
+            "./run_client.sh"
+        ],
+        "volumeMounts": [
+          {
+            "mountPath": "/var/run/postgresql",
+            "name": "postgres-socket"
+          },
+          {
+            "mountPath": "/tmp/results",
+            "name": "results-dir"
+          }
+        ]
+      }
+    ],
+    "volumes": [
+      {
+        "emptyDir": {},
+        "name": "postgres-socket"
+      },
+      {
+        "emptyDir": {},
+        "name": "results-dir"
+      }
+    ]
+  }
+}

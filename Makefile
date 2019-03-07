@@ -26,8 +26,8 @@ run-db:
 	docker run -it --volumes-from my-postgres --entrypoint=bash fuzzer-db
 
 fuzzer-client:
-	docker build -f dockerfiles/client.dockerfile -t fuzzer-client:$(GIT_SHA) .
-	docker tag fuzzer-client:$(GIT_SHA) fuzzer-client:latest
+	docker build -f dockerfiles/client.dockerfile -t gcr.io/athena-fuzzer/athena:$(GIT_SHA) .
+	docker tag gcr.io/athena-fuzzer/athena:$(GIT_SHA) gcr.io/athena-fuzzer/athena:latest
 
 discourse-server:
 	docker build -t target-server:$(GIT_SHA) -f ../discourse-fork/Dockerfile ..

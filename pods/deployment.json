@@ -32,7 +32,7 @@
           },
           {
             "command": [
-                "/bin/bash", "-c", "while true; do sleep 1000; done"
+                "./run-server.sh"
             ],
             "env": [
               {
@@ -65,7 +65,7 @@
             "name": "athena",
             "image": "gcr.io/athena-fuzzer/athena:4",
             "command": [
-                "/bin/bash", "-c", "while true; do sleep 1000; done"
+                "./run_client.sh"
             ],
             "volumeMounts": [
               {
