@@ -39,15 +39,7 @@ while [ ! "$(__is_pod_ready $POD_NAME)" = "OK" ]; do echo "Polling pod..."; slee
 echo "Tail logs of client at /tmp/sanity/$POD_NAME/client"
 (kubectl logs -f $POD_NAME athena  2>&1) > /tmp/sanity/$POD_NAME/client
 
-#kubectl delete pod $POD_NAME
-
-#if [ -z "$1" ]; then
-#    (./orchestrate.py repro --client --stop_after_har $port 2>&1) > /tmp/sanity/$port/client
-#elif [ "$1" = "all" ]; then
-#    (./orchestrate.py repro --client --stop_after_all_routes $port 2>&1) > /tmp/sanity/$port/client
-#fi
-#
-#
+kubectl delete pod $POD_NAME
 
 # Parse the client logs for run info. Info should look like this:
 # Code Counts: {"200": 174, "404": 79, "500": 9}
