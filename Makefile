@@ -27,11 +27,9 @@ run-db:
 
 fuzzer-client:
 	docker build -f dockerfiles/client.dockerfile -t gcr.io/athena-fuzzer/athena:$(GIT_SHA) .
-	docker tag gcr.io/athena-fuzzer/athena:$(GIT_SHA) gcr.io/athena-fuzzer/athena:latest
 
 discourse-server:
-	docker build -t target-server:$(GIT_SHA) -f ../discourse-fork/Dockerfile ..
-	docker tag target-server:$(GIT_SHA) target-server:latest
+	docker build -t gcr.io/athena-fuzzer/discourse:$(GIT_SHA) -f ../discourse-fork/Dockerfile ..
 
 medium:
 	docker build -t medium:$(GIT_SHA) -f ../dante-stories-fork/Dockerfile ..

@@ -26,25 +26,17 @@
         ]
       },
       {
+        "name": "target",
+        "image": "gcr.io/athena-fuzzer/discourse:6",
         "command": [
-            "./run-server.sh"
+            "./run_server.sh"
         ],
         "env": [
-          {
-            "name": "FUZZ_DB",
-            "value": "FUZZ_DB"
-          },
-          {
-            "name": "PORT",
-            "value": "8080"
-          },
           {
             "name": "RESULTS_PATH",
             "value": "/tmp/results"
           }
         ],
-        "image": "gcr.io/athena-fuzzer/discourse:4",
-        "name": "target",
         "volumeMounts": [
           {
             "mountPath": "/var/run/postgresql",
