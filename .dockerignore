@@ -1,0 +1,4 @@
+pods/
+Dockerfile
+scripts/
+.dockerignore
