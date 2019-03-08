@@ -15,11 +15,12 @@ from fuzzer.lib.util import random_int, get_results_path, timestamp
 logger = logging.getLogger("debug")
 
 pluralizations = None
+RESULTS_PATH = "/tmp/results"
 
 
-def init_pluralization(state_dir):
+def init_pluralization():
     global pluralizations
-    with open(os.path.join(state_dir, "pluralizations.json")) as pluralizations_file:
+    with open(os.path.join(RESULTS_PATH, "pluralizations.json")) as pluralizations_file:
         pluralizations = json.loads(pluralizations_file.read())
 
 
@@ -167,7 +168,6 @@ def inject_xss_payload(text_cols):
         postgres.run_query(query, can_fail=True)
 
 
-STATE = ""
 CREATE_DB = 'docker run --volumes-from my-postgres  %s -e "DB_NAME=%s" --rm fuzzer-db'
 
 # Rails cannot connect to an empty db so provide a dump path

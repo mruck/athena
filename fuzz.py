@@ -24,10 +24,6 @@ import fuzzer.fuzz_state as fuzz_state
 import fuzzer.fuzz_stats as fuzz_stats
 import fuzzer.lib.netutils as netutils
 
-# DB dump, cookie, routes.json, pluralizations and any other app specific
-# state should be stored here
-STATE = "/state"
-
 # Max attempts allowed for querying an endpoint
 # after all parameters have been mutated
 MAX_FAILURES = 10
@@ -39,14 +35,18 @@ HAR_DUMP = "preprocess/visited_routes.json"
 # Logger for general debugging
 logger = logging.getLogger("debug")
 
+RESULTS_PATH = "/tmp/results"
+PORT = 8080
+FUZZ_DB = "FUZZ_DB"
 
-def init_logger(results_path, quiet=None):
+
+def init_logger(quiet=None):
     global logger
     # Write everything to stdout
     ch = logging.StreamHandler()
     logger.addHandler(ch)
     # Log to a file as well
-    fh = logging.FileHandler(os.path.join(results_path, "client.stdout"))
+    fh = logging.FileHandler(os.path.join(RESULTS_PATH, "client.stdout"))
     fh.setLevel(logging.DEBUG)
     logger.addHandler(fh)
     if quiet is None:
@@ -63,7 +63,7 @@ def get_snapshot_name(target, state, route):
 
 
 def get_mutator(target):
-    har = False
+    har = True
     all_routes = routes_lib.read_routes(
         os.path.join(target.results_path, "routes.json")
     )
@@ -79,12 +79,14 @@ def get_mutator(target):
 
 
 def run(
-    target, state, target_route=None, stop_after_har=False, stop_after_all_routes=False
+    conn,
+    target,
+    state,
+    target_route=None,
+    stop_after_har=True,
+    stop_after_all_routes=False,
 ):
     mutator = get_mutator(target)
-
-    # open a connection with the server (need this to keep track of cookies)
-    conn = netutils.Connection(state.cookies)
 
     stats = fuzz_stats.FuzzStats()
 
@@ -144,38 +146,39 @@ def run(
 
 
 def fuzz(
-    fuzz_dir,
-    db,
-    port,
-    target_app,
-    fuzzer_number=0,
-    instances=1,
     snapshot=None,
     route=None,
     load_db=False,
     route_prefix=None,
-    output_benchmark_data=None,
     any_route=None,
     stop_after_har=False,
     stop_after_all_routes=False,
 ):
     random.seed(a=0)
-    init_logger(fuzz_dir)
-    init_pluralization(STATE)
+    init_logger()
 
     pg = postgres2.Postgres()
-    state = fuzz_state.FuzzState(pg, db)
+    state = fuzz_state.FuzzState(pg, FUZZ_DB)
+
     if snapshot:
-        clear_rails_connections(hostname=netutils.target_hostname(), port=port)
+        clear_rails_connections(hostname=netutils.target_hostname(), port=PORT)
         logger.info("Loading all state from %s" % snapshot)
         state.load(snapshot)
 
-    # TODO: Get rid of this or move it to postgres2
-    postgres.connect_to_db(db)
+    # open a connection with the server (need this to keep track of cookies)
+    conn = netutils.Connection(state.cookies)
+    conn.is_alive()
 
-    target = fuzz_target.Target(fuzz_dir, port, db, snapshot=snapshot)
+    # TODO: Get rid of this or move it to postgres2
+    postgres.connect_to_db(FUZZ_DB)
+
+    # Wait until server is up then read pluralizations dumped
+    init_pluralization()
+
+    target = fuzz_target.Target(RESULTS_PATH, PORT, FUZZ_DB, snapshot=snapshot)
 
     run(
+        conn,
         target,
         state,
         target_route=route,
@@ -186,12 +189,6 @@ def fuzz(
 
 def run_parser():
     parser = argparse.ArgumentParser(description="Fuzzing client")
-    parser.add_argument("fuzz_dir", help="Destination for results")
-    parser.add_argument("db", help="db to connect to")
-    parser.add_argument("port", help="port to query")
-    parser.add_argument("target_app", help="target application")
-    parser.add_argument("--fuzzer_number", type=int, default=0)
-    parser.add_argument("--instances", type=int, default=1)
     parser.add_argument("--route")
     parser.add_argument("--snapshot")
     parser.add_argument("--load_db", action="store_true")
@@ -205,12 +202,6 @@ def run_parser():
 def main():
     args = run_parser()
     fuzz(
-        args.fuzz_dir,
-        args.db,
-        args.port,
-        args.target_app,
-        fuzzer_number=args.fuzzer_number,
-        instances=args.instances,
         snapshot=args.snapshot,
         route=args.route,
         load_db=args.load_db,

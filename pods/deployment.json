@@ -32,20 +32,20 @@
           },
           {
             "command": [
-              "./run-server.sh"
+                "./run-server.sh"
             ],
             "env": [
               {
                 "name": "FUZZ_DB",
-                "value": "db_03_05_08_56_26"
+                "value": "FUZZ_DB"
               },
               {
                 "name": "PORT",
-                "value": "58593"
+                "value": "8080"
               },
               {
                 "name": "RESULTS_PATH",
-                "value": "/tmp/results_03_05_08_56_29"
+                "value": "/tmp/results"
               }
             ],
             "image": "gcr.io/athena-fuzzer/discourse:4",
@@ -54,40 +54,27 @@
               {
                 "mountPath": "/var/run/postgresql",
                 "name": "postgres-socket"
+              },
+              {
+                "mountPath": "/tmp/results",
+                "name": "results-dir"
               }
             ]
           },
           {
-            "command": ["/bin/bash"],
-            "args": ["-c", "while true; do sleep 10000; done"],
-            "env": [
-              {
-                "name": "FUZZ_DB",
-                "value": "db_03_05_08_56_26"
-              },
-              {
-                "name": "PORT",
-                "value": "58593"
-              },
-              {
-                "name": "RESULTS_PATH",
-                "value": "/tmp/results_03_05_08_56_29"
-              },
-              {
-                "name": "FUZZER_NUMBER",
-                "value": "0"
-              },
-              {
-                "name": "INSTANCES",
-                "value": "1"
-              }
-            ],
-            "image": "gcr.io/athena-fuzzer/athena:2",
             "name": "athena",
+            "image": "gcr.io/athena-fuzzer/athena:4",
+            "command": [
+                "./run_client.sh"
+            ],
             "volumeMounts": [
               {
                 "mountPath": "/var/run/postgresql",
                 "name": "postgres-socket"
+              },
+              {
+                "mountPath": "/tmp/results",
+                "name": "results-dir"
               }
             ]
           }
@@ -96,6 +83,10 @@
           {
             "emptyDir": {},
             "name": "postgres-socket"
+          },
+          {
+            "emptyDir": {},
+            "name": "results-dir"
           }
         ]
       }
