@@ -2,17 +2,27 @@
 # Usage:
 #      bash scripts/sanity.sh
 #      bash scripts/sanity.sh all
-set -e
+set -ex
+
+function __is_pod_ready() {
+  ready=$(kubectl get po "$1" -o 'jsonpath={.status.conditions[?(@.type=="Ready")].status}')
+  [ "$ready" = "True" ] && echo "OK"
+}
 
 branch=$(git branch | grep \* | cut -d ' ' -f 2)
 ref=$(git rev-parse $branch | tr -d '\n')
 echo "Git branch/ref: $branch/$ref"
 GIT_SHA=$(git log | head -n 1 | cut -f 2 -d ' ' | head -c 10)
-[ $(git diff --shortstat 2> /dev/null | tail -n1) != "" ] && GIT_SHA=$GIT_SHA-$RANDOM
+ORIGINAL_GIT_SHA=$GIT_SHA
+
+if [ "$(git diff --shortstat 2> /dev/null | tail -n1)" != "" ]; then
+    GIT_SHA=$GIT_SHA-$RANDOM
+fi
 POD_NAME=$GIT_SHA-$RANDOM
 
 # Build img and tag with git sha
 make fuzzer-client
+docker tag gcr.io/athena-fuzzer/athena:$ORIGINAL_GIT_SHA gcr.io/athena-fuzzer/athena:$GIT_SHA
 docker push gcr.io/athena-fuzzer/athena:$GIT_SHA
 
 mkdir -p /tmp/sanity/$POD_NAME
@@ -23,8 +33,10 @@ jq '.spec.containers[2].image = "gcr.io/athena-fuzzer/athena:'$GIT_SHA'"' pods/s
     jq '.metadata.name = "'$POD_NAME'"' > /tmp/sanity/$POD_NAME/pod.json 
 kubectl apply -f /tmp/sanity/$POD_NAME/pod.json 
 
+# Wait for pod to be created
+while [ ! "$(__is_pod_ready $POD_NAME)" = "OK" ]; do echo "Polling pod..."; sleep 1; done
+
 echo "Tail logs of client at /tmp/sanity/$POD_NAME/client"
-sleep 30
 (kubectl logs -f $POD_NAME athena  2>&1) > /tmp/sanity/$POD_NAME/client
 
 #kubectl delete pod $POD_NAME
