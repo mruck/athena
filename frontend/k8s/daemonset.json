@@ -2,7 +2,7 @@
     "apiVersion": "apps/v1",
     "kind": "DaemonSet",
     "metadata": {
-        "name": "frontend-pod"
+        "name": "frontend-daemonset"
     },
     "spec": {
         "selector": {
