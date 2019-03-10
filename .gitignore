@@ -4,4 +4,3 @@ cookie
 *.pyc
 .vscode/
 venv
-go.*
