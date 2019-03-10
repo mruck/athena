@@ -6,6 +6,12 @@ import traceback
 import fuzzer.lib.coverage as coverage
 import fuzzer.lib.util as util
 
+BENIGN_EXCEPTIONS = [
+    "ActionController::RoutingError",
+    "ActionController::ParameterMissing",
+    "ActiveRecord::RecordNotFound",
+]
+
 
 class Target(object):
     """
@@ -37,7 +43,9 @@ class Target(object):
         os.environ["RESULTS_PATH"] = results_path
 
     def latest_exns(self):
-        return [json.loads(line.strip()) for line in self.rails_exceptions]
+        # Read exns from open fp
+        exns = [json.loads(line.strip()) for line in self.rails_exceptions]
+        return [e for e in exns if e["class"] not in BENIGN_EXCEPTIONS]
 
     def on_fuzz_exception(self, route, state_dir):
         etype, val, tb = sys.exc_info()

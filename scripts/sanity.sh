@@ -2,7 +2,7 @@
 # Usage:
 #      bash scripts/sanity.sh
 #      bash scripts/sanity.sh all
-set -ex
+set -e
 
 function __is_pod_ready() {
   ready=$(kubectl get po "$1" -o 'jsonpath={.status.conditions[?(@.type=="Ready")].status}')
