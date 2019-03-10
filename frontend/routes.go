@@ -36,21 +36,9 @@ var routes = Routes{
 		Index,
 	},
 	Route{
-		"TodoIndex",
-		"GET",
-		"/todos",
-		TodoIndex,
-	},
-	Route{
-		"TodoShow",
-		"GET",
-		"/todos/{todoId}",
-		TodoShow,
-	},
-	Route{
-		"PostTest",
+		"PushPod",
 		"POST",
-		"/PostTest",
-		PostTest,
+		"/PushPod",
+		PushPod,
 	},
 }
