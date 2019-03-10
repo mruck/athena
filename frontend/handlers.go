@@ -8,34 +8,12 @@ import (
 	"net/http"
 	"os/exec"
 
-	"github.com/gorilla/mux"
+	"github.com/google/uuid"
 	"k8s.io/api/core/v1"
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Welcome!")
-}
-
-func TodoIndex(w http.ResponseWriter, r *http.Request) {
-	todos := Todos{
-		Todo{Name: "Write presentation"},
-		Todo{Name: "Host meetup"},
-	}
-
-	if err := json.NewEncoder(w).Encode(todos); err != nil {
-		panic(err)
-	}
-}
-
-func TodoShow(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	todoId := vars["todoId"]
-	fmt.Fprintln(w, "Todo show:", todoId)
-}
-
-type Message struct {
-	Id   int64  `json:"id"`
-	Name string `json:"name"`
 }
 
 var AthenaContainer = v1.Container{
@@ -54,7 +32,7 @@ var AthenaContainer = v1.Container{
 	},
 }
 
-func PostTest(w http.ResponseWriter, r *http.Request) {
+func PushPod(w http.ResponseWriter, r *http.Request) {
 	// Read from body
 	b, err := ioutil.ReadAll(r.Body)
 	defer r.Body.Close()
@@ -71,6 +49,9 @@ func PostTest(w http.ResponseWriter, r *http.Request) {
 	}
 	// Modify in place
 	pod.Spec.Containers = append(pod.Spec.Containers, AthenaContainer)
+
+	// Randomly generate name
+	pod.ObjectMeta.Name = uuid.New().String()
 
 	// Dump to disc
 	podBytes, err := json.Marshal(pod)
