@@ -1,2 +1,2 @@
 vendor/*
-kubeconfig.json
+k8s/kubeconfig.yaml

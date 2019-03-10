@@ -12,6 +12,6 @@ RUN mkdir /frontend
 WORKDIR /frontend
 ADD . .
 RUN mkdir -p /root/.kube
-RUN mv kubeconfig.json /root/.kube/config
+RUN mv k8s/kubeconfig.yaml /root/.kube/config
 CMD kubectl get pods
 
