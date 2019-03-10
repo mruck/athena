@@ -1,0 +1,34 @@
+{
+    "apiVersion": "apps/v1",
+    "kind": "DaemonSet",
+    "metadata": {
+        "name": "frontend-pod"
+    },
+    "spec": {
+        "selector": {
+            "matchLabels": {
+                "frontend": "true"
+            }
+        },
+        "template": {
+            "metadata": {
+                "labels": {
+                    "frontend": "true"
+                }
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "name": "frontend",
+                        "image": "gcr.io/athena-fuzzer/frontend:48a081767f",
+                        "command": [
+                            "bash",
+                            "-c",
+                            "go run *.go"
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}
