@@ -13,5 +13,5 @@ WORKDIR /frontend
 ADD . .
 RUN mkdir -p /root/.kube
 RUN mv k8s/kubeconfig.yaml /root/.kube/config
-CMD kubectl get pods
+CMD go run *.go
 
