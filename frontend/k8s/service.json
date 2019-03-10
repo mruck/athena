@@ -1,34 +1,17 @@
 {
-    "apiVersion": "v1",
-    "kind": "Service",
-    "metadata": {
-        "name": "frontend-pod"
-    },
-    "spec": {
-        "nodePort" : {
-            "port": 8080,
-            "nodePort": 8080
-        },
-        "selector": {
-            "matchLabels": {
-                "frontend": "true"
-            }
-        },
-        "template": {
-            "metadata": {
-                "labels": {
-                    "frontend": "true"
-                }
-            },
-            "spec": {
-                "containers": [
-                    {
-                        "name": "frontend",
-                        "image": "gcr.io/athena-fuzzer/frontend:d3a9601db2",
-                        "command": ["bash", "-c", "go run *.go"]
-                    }
-                ]
-            }
-        }
+  "apiVersion": "v1",
+  "kind": "Service",
+  "metadata": {
+    "name": "frontend-service"
+  },
+  "spec": {
+    "type": "NodePort",
+    "ports": [{
+      "port": 8080,
+      "nodePort": 30080
+    }],
+    "selector": {
+      "frontend": "true"
     }
+  }
 }
