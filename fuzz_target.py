@@ -47,9 +47,10 @@ class Target(object):
         exns = [json.loads(line.strip()) for line in self.rails_exceptions]
         return [e for e in exns if e["class"] not in BENIGN_EXCEPTIONS]
 
-    def on_fuzz_exception(self, route, state_dir):
+    def on_fuzz_exception(self, route, state_dir=None):
         etype, val, tb = sys.exc_info()
         self.fuzzer_exceptions.write("***%s %s***\n" % (route.verb, route.path))
-        self.fuzzer_exceptions.write("State saved at %s\n" % (state_dir))
+        if state_dir:
+            self.fuzzer_exceptions.write("State saved at %s\n" % (state_dir))
         traceback.print_exception(etype, val, tb, file=self.fuzzer_exceptions)
         self.fuzzer_exceptions.write("\n")
