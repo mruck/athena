@@ -85,13 +85,14 @@ def run(
     target_route=None,
     stop_after_har=True,
     stop_after_all_routes=False,
+    # Should we take snapshots at all?
+    should_snapshot=False,
 ):
     mutator = get_mutator(target)
 
     stats = fuzz_stats.FuzzStats()
 
     last_route = None
-    state_dir = None
     while True:
         route = mutator.next_route()
         if route is None:
@@ -102,8 +103,12 @@ def run(
         state_dir = get_snapshot_name(target, state, route)
         if last_route != route:
             print("\n\n\n***%s %s***" % (route.verb, route.path))
-            state.save(state_dir)
-            print("State saved at %s with %d cookies" % (state_dir, len(state.cookies)))
+            if should_snapshot:
+                state.save(state_dir)
+                print(
+                    "State saved at %s with %d cookies"
+                    % (state_dir, len(state.cookies))
+                )
         last_route = route
 
         keep_snapshot = False
@@ -117,15 +122,13 @@ def run(
             )
             exceptions = target.latest_exns()
             keep_snapshot = keep_snapshot or len(exceptions) > 0
-            stats.record_stats(
-                route.verb, route.path, status_code, exceptions, state_dir
-            )
+            stats.record_stats(route.verb, route.path, status_code, exceptions)
             mutator.on_response(target, status_code)
         # Our fuzzer raised an exception
         except:
             # Skip this route and pick another one
             mutator.force_next_route()
-            target.on_fuzz_exception(route, state_dir)
+            target.on_fuzz_exception(route)
             keep_snapshot = True
 
         percentage = coverage.calculate_coverage_percentage(
@@ -135,7 +138,8 @@ def run(
         print("\n\tcumulative cov: %f" % percentage)
         stats.save(target.results_path)
 
-        if not keep_snapshot:
+        # We are taking snapshots but nothing interesting happened so GC
+        if should_snapshot and not keep_snapshot:
             state.delete(state_dir)
 
     counts = json.dumps(stats.get_code_counts(), sort_keys=True)

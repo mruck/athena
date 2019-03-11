@@ -19,8 +19,8 @@ class FuzzStats(object):
         self._5xx = [0, set()]
         self._timeout = [0, set()]
 
-    def _record_result(self, verb, path, code, exns, snapshot_name):
-        self.results.append((verb, path, code, exns, snapshot_name))
+    def _record_result(self, verb, path, code, exns):
+        self.results.append((verb, path, code, exns))
 
     def _record_code(self, verb, path, code):
         entry = self._2xx
@@ -38,8 +38,8 @@ class FuzzStats(object):
         routes.add(verb + ":" + path)
         entry[0], entry[1] = count, routes
 
-    def record_stats(self, verb, path, code, exns, snapshot_name):
-        self._record_result(verb, path, code, exns, snapshot_name)
+    def record_stats(self, verb, path, code, exns):
+        self._record_result(verb, path, code, exns)
         self._record_code(verb, path, code)
 
     def record_coverage(self, verb, path, cov):
