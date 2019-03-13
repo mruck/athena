@@ -3,9 +3,9 @@ import json
 import fuzzer.lib.util as util
 
 BENIGN_EXCEPTIONS = [
-    "ActionController::RoutingError",
-    "ActionController::ParameterMissing",
-    "ActiveRecord::RecordNotFound",
+    #    "ActionController::RoutingError",
+    #    "ActionController::ParameterMissing",
+    "ActiveRecord::RecordNotFound"
 ]
 
 
@@ -51,7 +51,14 @@ class ExceptionTracker(object):
     # Read exceptions from the exception log and update the list of unique
     # exceptions
     def update(self, route):
-        exns = [json.loads(line.strip()) for line in self.exceptions_file_pointer]
+        exns = []
+        print("**************************")
+        for line in self.exceptions_file_pointer:
+            print(line)
+            x = json.loads(line.strip())
+            print(x)
+            exns.append(x)
+        print("???????????????????????????????")
         # Filter out benign exceptions
         malign_exns = [e for e in exns if e["class"] not in BENIGN_EXCEPTIONS]
 
@@ -60,10 +67,10 @@ class ExceptionTracker(object):
         with open("/tmp/exn", "a") as f:
             f.write("unfiltered exns:\n")
             for e in exns:
-                f.write("%s %s\n" % (e["class"]))
+                f.write("%s\n" % (e["class"]))
             f.write("malign exns:\n")
             for e in malign_exns:
-                f.write("%s %s\n" % (e["class"]))
+                f.write("%s\n" % (e["class"]))
             f.write("malign exns objs:\n")
             for e in exn_objs:
                 f.write("%s %s\n" % (e.path, e.cls))
