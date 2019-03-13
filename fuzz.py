@@ -124,6 +124,9 @@ def run(
             keep_snapshot = keep_snapshot or len(exceptions) > 0
             stats.record_stats(route.verb, route.path, status_code, exceptions)
             mutator.on_response(target, status_code)
+        # We sent ctl-c, exit now
+        except KeyboardInterrupt:
+            exit(1)
         # Our fuzzer raised an exception
         except:
             # Skip this route and pick another one
