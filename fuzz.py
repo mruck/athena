@@ -123,7 +123,7 @@ def run(
                 query_params=route.get_query_params(),
                 headers=route.headers,
             )
-            exceptions = target.rails_exceptions.update()
+            exceptions = target.rails_exceptions.update(route)
             keep_snapshot = keep_snapshot or len(exceptions) > 0
             stats.record_stats(route.verb, route.path, status_code, exceptions)
             mutator.on_response(target, status_code)
