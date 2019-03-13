@@ -5,6 +5,7 @@ import traceback
 
 import fuzzer.lib.coverage as coverage
 import fuzzer.lib.util as util
+import fuzzer.lib.exception as exception
 
 BENIGN_EXCEPTIONS = [
     "ActionController::RoutingError",
@@ -32,8 +33,8 @@ class Target(object):
         )
         self.cov = coverage.Coverage(os.path.join(results_path, "src_line_coverage"))
         # Exceptions dumped by rails
-        self.rails_exceptions = util.open_wrapper(
-            os.path.join(results_path, "rails_exception_log.json"), "r"
+        self.rails_exceptions = exception.ExceptionTracker(
+            os.path.join(results_path, "rails_exception_log.json")
         )
         # Exceptions dumped by fuzzer
         self.fuzzer_exceptions = util.open_wrapper(
@@ -41,11 +42,6 @@ class Target(object):
         )
         self.snapshot = snapshot
         os.environ["RESULTS_PATH"] = results_path
-
-    def latest_exns(self):
-        # Read exns from open fp
-        exns = [json.loads(line.strip()) for line in self.rails_exceptions]
-        return [e for e in exns if e["class"] not in BENIGN_EXCEPTIONS]
 
     def on_fuzz_exception(self, route, state_dir=None):
         etype, val, tb = sys.exc_info()
