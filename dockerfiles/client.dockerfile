@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y bpython3 \
     python3 \
     python3-pip \
     sudo \
+    watch \
     vim 
 RUN pip3 install psycopg2 requests 
 RUN pip3 install --upgrade virtualenv

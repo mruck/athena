@@ -3,9 +3,9 @@ import json
 import fuzzer.lib.util as util
 
 BENIGN_EXCEPTIONS = [
-    #    "ActionController::RoutingError",
-    #    "ActionController::ParameterMissing",
-    "ActiveRecord::RecordNotFound"
+    "ActionController::RoutingError",
+    "ActionController::ParameterMissing",
+    "ActiveRecord::RecordNotFound",
 ]
 
 
@@ -20,7 +20,7 @@ class Exception(object):
     @classmethod
     def from_dict(cls, exn_dict, route):
         # TODO: pull out more stuff from rpoute, like params
-        cls(route.verb, route.path, exn_dict["class"], exn_dict["msg"])
+        return cls(route.verb, route.path, exn_dict["class"], exn_dict["msg"])
 
 
 # Keep track of unique exceptions as well as pointer to exceptions log dumped
@@ -28,6 +28,7 @@ class Exception(object):
 class ExceptionTracker(object):
     def __init__(self, exceptions_file):
         self.exceptions_file_pointer = util.open_wrapper(exceptions_file, "r")
+        self.unique_exceptions = []
 
     def merge(self, new_exns):
         delta_exns = []
@@ -42,9 +43,9 @@ class ExceptionTracker(object):
                     found = True
                     break
             if not found:
-                self.unique_exns.append(new_exn)
+                self.unique_exceptions.append(new_exn)
                 delta_exns.append(new_exn)
-                with open("/tmp/exn", "a") as f:
+                with open("/tmp/exn2", "a") as f:
                     f.write("%s %s\n" % (new_exn.path, new_exn.cls))
         return delta_exns
 
@@ -52,28 +53,13 @@ class ExceptionTracker(object):
     # exceptions
     def update(self, route):
         exns = []
-        print("**************************")
+        # Read raw dump of exceptions
         for line in self.exceptions_file_pointer:
-            print(line)
-            x = json.loads(line.strip())
-            print(x)
-            exns.append(x)
-        print("???????????????????????????????")
+            exns.append(json.loads(line.strip()))
         # Filter out benign exceptions
         malign_exns = [e for e in exns if e["class"] not in BENIGN_EXCEPTIONS]
-
         # Instantiate Exception objs
         exn_objs = [Exception.from_dict(e, route) for e in malign_exns]
-        with open("/tmp/exn", "a") as f:
-            f.write("unfiltered exns:\n")
-            for e in exns:
-                f.write("%s\n" % (e["class"]))
-            f.write("malign exns:\n")
-            for e in malign_exns:
-                f.write("%s\n" % (e["class"]))
-            f.write("malign exns objs:\n")
-            for e in exn_objs:
-                f.write("%s %s\n" % (e.path, e.cls))
         # Merge with the unique exceptions
         delta_exns = self.merge(exn_objs)
-        return []
+        return delta_exns
