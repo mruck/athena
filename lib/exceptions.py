@@ -9,7 +9,8 @@ BENIGN_EXCEPTIONS = [
 ]
 
 
-class Exception(object):
+# Class for an exception raised by the target
+class TargetException(object):
     # TODO: Add backtrace!!!!
     def __init__(self, verb, path, cls, message):
         self.verb = verb
@@ -23,6 +24,11 @@ class Exception(object):
         return cls(route.verb, route.path, exn_dict["class"], exn_dict["msg"])
 
 
+def is_equal(exn1: TargetException, exn2: TargetException):
+    # Compare 2 exceptions for equality
+    return exn1.verb == exn2.verb and exn1.path == exn2.path and exn1.cls == exn2.cls
+
+
 # Keep track of unique exceptions as well as pointer to exceptions log dumped
 # by rails
 class ExceptionTracker(object):
@@ -30,16 +36,13 @@ class ExceptionTracker(object):
         self.exceptions_file_pointer = util.open_wrapper(exceptions_file, "r")
         self.unique_exceptions = []
 
+    # Merge new exceptions with global list of unique exceptions
     def merge(self, new_exns):
         delta_exns = []
         for new_exn in new_exns:
             found = False
             for unique_exn in self.unique_exceptions:
-                if (
-                    new_exn.verb == unique_exn.verb
-                    and new_exn.path == unique_exn.path
-                    and new_exn.cls == unique_exn.cls
-                ):
+                if is_equal(new_exn, unique_exn):
                     found = True
                     break
             if not found:
@@ -59,7 +62,7 @@ class ExceptionTracker(object):
         # Filter out benign exceptions
         malign_exns = [e for e in exns if e["class"] not in BENIGN_EXCEPTIONS]
         # Instantiate Exception objs
-        exn_objs = [Exception.from_dict(e, route) for e in malign_exns]
+        exn_objs = [TargetException.from_dict(e, route) for e in malign_exns]
         # Merge with the unique exceptions
         delta_exns = self.merge(exn_objs)
         return delta_exns
