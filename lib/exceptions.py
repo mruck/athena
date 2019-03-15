@@ -18,7 +18,7 @@ class Exception(object):
         self.message = message
 
     @classmethod
-    def from_file(cls, exn_dict, route):
+    def from_dict(cls, exn_dict, route):
         # TODO: pull out more stuff from rpoute, like params
         cls(route.verb, route.path, exn_dict["class"], exn_dict["msg"])
 
