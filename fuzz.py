@@ -87,6 +87,8 @@ def run(
     stop_after_all_routes=False,
     # Should we take snapshots at all?
     should_snapshot=False,
+    # Should we swallow exceptions in the fuzzer?
+    debug_mode=True,
 ):
     mutator = get_mutator(target)
 
@@ -128,7 +130,9 @@ def run(
         except KeyboardInterrupt:
             exit(1)
         # Our fuzzer raised an exception
-        except:
+        except Exception as e:
+            if debug_mode:
+                raise e
             # Skip this route and pick another one
             mutator.force_next_route()
             target.on_fuzz_exception(route)
