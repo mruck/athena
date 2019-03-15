@@ -142,10 +142,6 @@ def run(
         print("\n\tcumulative cov: %f" % percentage)
         stats.save(target.results_path)
 
-        # We are taking snapshots but nothing interesting happened so GC
-        if should_snapshot:
-            state.delete(state_dir)
-
     counts = json.dumps(stats.get_code_counts(), sort_keys=True)
     print("Code Counts: {}".format(counts))
     print("Final Coverage: {}".format(stats.final_coverage()))
