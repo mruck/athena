@@ -5,13 +5,7 @@ import traceback
 
 import fuzzer.lib.coverage as coverage
 import fuzzer.lib.util as util
-import fuzzer.lib.exception as exception
-
-BENIGN_EXCEPTIONS = [
-    "ActionController::RoutingError",
-    "ActionController::ParameterMissing",
-    "ActiveRecord::RecordNotFound",
-]
+import fuzzer.lib.exceptions as exceptions
 
 
 class Target(object):
@@ -33,7 +27,7 @@ class Target(object):
         )
         self.cov = coverage.Coverage(os.path.join(results_path, "src_line_coverage"))
         # Exceptions dumped by rails
-        self.rails_exceptions = exception.ExceptionTracker(
+        self.rails_exceptions = exceptions.ExceptionTracker(
             os.path.join(results_path, "rails_exception_log.json")
         )
         # Exceptions dumped by fuzzer
