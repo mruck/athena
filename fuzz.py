@@ -86,7 +86,7 @@ def run(
     stop_after_har=True,
     stop_after_all_routes=False,
     # Should we take snapshots at all?
-    should_snapshot=False,
+    should_snapshot=True,
     # Should we swallow exceptions in the fuzzer?
     debug_mode=True,
 ):
@@ -113,7 +113,6 @@ def run(
                 )
         last_route = route
 
-        keep_snapshot = False
         try:
             status_code = conn.send_request(
                 route.url(target.port),
@@ -123,7 +122,6 @@ def run(
                 headers=route.headers,
             )
             exceptions = target.latest_exns()
-            keep_snapshot = keep_snapshot or len(exceptions) > 0
             stats.record_stats(route.verb, route.path, status_code, exceptions)
             mutator.on_response(target, status_code)
         # We sent ctl-c, exit now
@@ -136,7 +134,6 @@ def run(
             # Skip this route and pick another one
             mutator.force_next_route()
             target.on_fuzz_exception(route)
-            keep_snapshot = True
 
         percentage = coverage.calculate_coverage_percentage(
             target.cov.cumulative_coverage
@@ -146,7 +143,7 @@ def run(
         stats.save(target.results_path)
 
         # We are taking snapshots but nothing interesting happened so GC
-        if should_snapshot and not keep_snapshot:
+        if should_snapshot:
             state.delete(state_dir)
 
     counts = json.dumps(stats.get_code_counts(), sort_keys=True)
