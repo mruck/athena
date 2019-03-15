@@ -162,6 +162,7 @@ def fuzz(
     any_route=None,
     stop_after_har=False,
     stop_after_all_routes=False,
+    restore_db=False,
 ):
     random.seed(a=0)
     init_logger()
@@ -169,7 +170,7 @@ def fuzz(
     pg = postgres2.Postgres()
     state = fuzz_state.FuzzState(pg, FUZZ_DB)
 
-    if snapshot:
+    if snapshot and restore_db:
         clear_rails_connections(hostname=netutils.target_hostname(), port=PORT)
         logger.info("Loading all state from %s" % snapshot)
         state.load(snapshot)
