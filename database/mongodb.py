@@ -2,7 +2,7 @@ import pymongo
 
 
 def new_db(db_name):
-    client = pymongo.MongoClient()
+    client = pymongo.MongoClient("mongodb://mongodb-service:27017/")
     return client[db_name]
 
 
