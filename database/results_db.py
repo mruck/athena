@@ -27,3 +27,7 @@ class ResultsDb(object):
 
     def find_exception(self, exception_class):
         return self.exceptions_table.find_one(exception_class)
+
+    def print_all_exceptions(self):
+        for exn in self.exceptions_table.find():
+            print(exn)
