@@ -1,0 +1,85 @@
+{
+  "apiVersion": "extensions/v1beta1",
+  "kind": "Deployment",
+  "metadata": {
+    "name": "debug"
+  },
+  "spec": {
+    "replicas": 1,
+    "template": {
+      "metadata": {
+        "labels": {
+          "duo": "true"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "env": [
+              {
+                "name": "POSTGRES_USER",
+                "value": "root"
+              }
+            ],
+            "image": "postgres:10.5",
+            "name": "my-postgres",
+            "volumeMounts": [
+              {
+                "mountPath": "/var/run/postgresql",
+                "name": "postgres-socket"
+              }
+            ]
+          },
+          {
+            "image": "gcr.io/athena-fuzzer/discourse:6",
+            "name": "target",
+            "command": ["/bin/bash"],
+            "args": ["-c", "while true; do sleep 1000;done"],
+            "env": [
+              {
+                "name": "RESULTS_PATH",
+                "value": "/tmp/results"
+              }
+            ],
+            "volumeMounts": [
+              {
+                "mountPath": "/var/run/postgresql",
+                "name": "postgres-socket"
+              },
+              {
+                "mountPath": "/tmp/results",
+                "name": "results-dir"
+              }
+            ]
+          },
+          {
+            "name": "athena",
+            "image": "gcr.io/athena-fuzzer/athena:4",
+            "command": ["/bin/bash"],
+            "args": ["-c", "while true; do sleep 1000;done"],
+            "volumeMounts": [
+              {
+                "mountPath": "/var/run/postgresql",
+                "name": "postgres-socket"
+              },
+              {
+                "mountPath": "/tmp/results",
+                "name": "results-dir"
+              }
+            ]
+          }
+        ],
+        "volumes": [
+          {
+            "emptyDir": {},
+            "name": "postgres-socket"
+          },
+          {
+            "emptyDir": {},
+            "name": "results-dir"
+          }
+        ]
+      }
+    }
+  }
+}
