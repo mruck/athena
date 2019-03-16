@@ -1,7 +1,6 @@
 import json
 
 import fuzzer.lib.util as util
-import fuzzer.lib.mongo_db as mongo_db
 
 BENIGN_EXCEPTIONS = [
     "ActionController::RoutingError",
@@ -43,11 +42,6 @@ def is_equal(exn1: TargetException, exn2: TargetException):
     )
 
 
-def store_to_db(exceptions):
-    for exn in exceptions:
-        mongo_db.write(exn.to_dict())
-
-
 # Keep track of unique exceptions as well as pointer to exceptions log dumped
 # by rails
 class ExceptionTracker(object):
@@ -84,6 +78,5 @@ class ExceptionTracker(object):
         exn_objs = [TargetException.from_dict(e, route) for e in malign_exns]
         # Merge with the unique exceptions
         delta_exns = self.merge(exn_objs)
-        # Store exceptions to global db
-        store_to_db(delta_exns)
-        return delta_exns
+        # Return deltas in dictionary form
+        return [e.to_dict() for e in delta_exns]
