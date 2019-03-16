@@ -22,6 +22,7 @@ def test_results_db():
     assert result["message"] == my_exception_dict["message"]
     assert result["class"] == my_exception_dict["class"]
     assert result["path"] == my_exception_dict["path"]
+    my_results_db.print_all_exceptions()
 
 
 if __name__ == "__main__":
