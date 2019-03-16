@@ -78,5 +78,4 @@ class ExceptionTracker(object):
         exn_objs = [TargetException.from_dict(e, route) for e in malign_exns]
         # Merge with the unique exceptions
         delta_exns = self.merge(exn_objs)
-        # Return deltas in dictionary form
-        return [e.to_dict() for e in delta_exns]
+        return delta_exns

@@ -1,4 +1,4 @@
-import mongodb as db_lib
+import fuzzer.database.mongodb as db_lib
 
 EXCEPTIONS_TABLE = "exceptions_table"
 
