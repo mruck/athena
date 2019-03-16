@@ -2,10 +2,14 @@ import json
 import os
 import sys
 import traceback
+import uuid
 
 import fuzzer.lib.coverage as coverage
 import fuzzer.lib.util as util
 import fuzzer.lib.exceptions as exceptions
+import fuzzer.database.results_db as results_db
+
+TARGET_NAME = "discourse"
 
 
 class Target(object):
@@ -26,10 +30,11 @@ class Target(object):
             os.path.join(results_path, "queries"), "r"
         )
         self.cov = coverage.Coverage(os.path.join(results_path, "src_line_coverage"))
-        # Exceptions dumped by rails
+        # Process execeptions dumped by rails in memory
         self.rails_exceptions = exceptions.ExceptionTracker(
             os.path.join(results_path, "rails_exception_log.json")
         )
+        self.results_db = results_db.ResultsDb(TARGET_NAME + "_" + uuid.uuid4().hex)
         # Exceptions dumped by fuzzer
         self.fuzzer_exceptions = util.open_wrapper(
             os.path.join(results_path, "fuzzer_exceptions"), "a"
