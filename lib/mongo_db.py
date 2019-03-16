@@ -1,2 +1,0 @@
-def write(dict):
-    pass
