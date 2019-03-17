@@ -21,7 +21,7 @@
       },
       {
         "name": "target",
-        "image": "gcr.io/athena-fuzzer/discourse:6",
+        "image": "gcr.io/athena-fuzzer/discourse:8f1bc6525d",
         "command": [
           "./run_server.sh"
         ],
