@@ -3,7 +3,7 @@ VENV_LOCATION ?= $(shell pwd)/venv
 
 MITM_TARGET ?= 3000
 
-.PHONY: postgres-start postgres-stop redis-start redis-stop python-test venv
+.PHONY: postgres-start postgres-stop redis-start redis-stop python-test venv frontend
 
 postgres-stop:
 	-docker rm -f my-postgres
@@ -27,9 +27,6 @@ run-db:
 fuzzer-client:
 	docker build -f dockerfiles/client.dockerfile -t gcr.io/athena-fuzzer/athena:$(GIT_SHA) .
 	docker push gcr.io/athena-fuzzer/athena:$(GIT_SHA)
-
-frontend:
-	docker build -f frontend/Dockerfile -t gcr.io/athena-fuzzer/frontend:$(GIT_SHA) .
 
 discourse-server:
 	docker build -t gcr.io/athena-fuzzer/discourse:$(GIT_SHA) -f ../discourse-fork/Dockerfile ..
