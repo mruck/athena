@@ -8,5 +8,5 @@ frontend_img:
 	docker push gcr.io/athena-fuzzer/frontend:$(GIT_SHA)
 
 frontend_deploy: frontend_img
-	jq '.spec.template.spec.containers[0].image = "gcr.io/athena-fuzzer/frontend:'$(GIT_SHA)'"' k8s/frontend.daemonset.template > /tmp/frontend.daemonset
-	kubectl apply -f /tmp/frontend.daemonset
+	jq '.spec.template.spec.containers[0].image = "gcr.io/athena-fuzzer/frontend:'$(GIT_SHA)'"' k8s/frontend.daemonset.template.json > /tmp/frontend.daemonset.json
+	kubectl apply -f /tmp/frontend.daemonset.json
