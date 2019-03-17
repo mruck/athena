@@ -25,7 +25,7 @@
             "name": "my-postgres"
           },
           {
-            "image": "gcr.io/athena-fuzzer/discourse:6",
+            "image": "gcr.io/athena-fuzzer/discourse:8f1bc6525d",
             "name": "target",
             "command": ["/bin/bash"],
             "args": ["-c", "while true; do sleep 1000;done"],
