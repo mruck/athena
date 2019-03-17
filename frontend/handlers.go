@@ -23,10 +23,6 @@ func getAthenaContainer(targetId string) v1.Container {
 		Command: []string{"./run_client.sh"},
 		VolumeMounts: []v1.VolumeMount{
 			v1.VolumeMount{
-				Name:      "postgres-socket",
-				MountPath: "/var/run/postgresql",
-			},
-			v1.VolumeMount{
 				Name:      "results-dir",
 				MountPath: "/tmp/results",
 			},
@@ -53,6 +49,15 @@ func buildPod(containers []v1.Container) v1.Pod {
 	// Inject Athena container
 	athenaContainer := getAthenaContainer(targetId)
 	pod.Spec.Containers = append(pod.Spec.Containers, athenaContainer)
+	// Add shared mount
+	pod.Spec.Volumes = []v1.Volume{
+		v1.Volume{
+			Name: "results-volume",
+			VolumeSource: v1.VolumeSource{
+				EmptyDir: &v1.EmptyDirVolumeSource{},
+			},
+		},
+	}
 	return pod
 }
 
