@@ -112,11 +112,6 @@ def lookup(table, col, query_str="", constraints=None, can_fail=False):
     return impose_constraints(record[col], constraints)
 
 
-def snapshot_db(results_path, db_name, filename):
-    with open(os.path.join(results_path, "db_snapshots", filename), "w") as dumpfile:
-        subprocess.run(["pg_dump", db_name], stdout=dumpfile)
-
-
 # Filter out tables with metadata and only return relevant tables
 def find_tables():
     query = "SELECT * FROM information_schema.tables WHERE table_schema NOT IN ('pg_catalog', 'information_schema')"

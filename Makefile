@@ -9,7 +9,7 @@ postgres-stop:
 	-docker rm -f my-postgres
 
 postgres-start: postgres-stop
-	docker run -p 5432:5432 --name my-postgres -v /var/run/postgresql -e POSTGRES_USER="root" -d postgres
+	docker run -p 5432:5432 -e POSTGRES_USER="root" -d postgres
 
 venv: pip-reqs.txt
 	-rm -rf $(VENV_LOCATION)
@@ -20,23 +20,23 @@ venv: pip-reqs.txt
 
 fuzzer-db:
 	docker build -f dockerfiles/db.dockerfile -t fuzzer-db:$(GIT_SHA) .
-	docker tag fuzzer-db:$(GIT_SHA) fuzzer-db:latest
 
 run-db:
 	docker run -it --volumes-from my-postgres --entrypoint=bash fuzzer-db
 
 fuzzer-client:
 	docker build -f dockerfiles/client.dockerfile -t gcr.io/athena-fuzzer/athena:$(GIT_SHA) .
+	docker push gcr.io/athena-fuzzer/athena:$(GIT_SHA)
 
 frontend:
 	docker build -f frontend/Dockerfile -t gcr.io/athena-fuzzer/frontend:$(GIT_SHA) .
 
 discourse-server:
 	docker build -t gcr.io/athena-fuzzer/discourse:$(GIT_SHA) -f ../discourse-fork/Dockerfile ..
+	docker push gcr.io/athena-fuzzer/discourse:$(GIT_SHA)
 
 medium:
 	docker build -t medium:$(GIT_SHA) -f ../dante-stories-fork/Dockerfile ..
-	docker tag medium:$(GIT_SHA) medium:latest
 
 # To get the client to talk to the proxy, make sure to set the following environment
 # variables in the client container:

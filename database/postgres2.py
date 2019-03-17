@@ -7,13 +7,16 @@ logger = logging.getLogger("debug")
 
 
 class Postgres(object):
-    def __init__(self, hostname=None, user="root"):
+    def __init__(self, hostname="localhost", user="root"):
         self.hostname = hostname
+        self.port = 5432
         self.user = user
 
     def _extend_args(self, args):
         if self.hostname:
             args.extend(["-h", self.hostname])
+        if self.port:
+            args.extend(["-p", str(self.port)])
         if self.user:
             args.extend(["-U", self.user])
         return args
