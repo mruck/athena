@@ -28,6 +28,9 @@ run-db:
 fuzzer-client:
 	docker build -f dockerfiles/client.dockerfile -t gcr.io/athena-fuzzer/athena:$(GIT_SHA) .
 
+frontend:
+	docker build -f frontend/Dockerfile -t gcr.io/athena-fuzzer/frontend:$(GIT_SHA) .
+
 discourse-server:
 	docker build -t gcr.io/athena-fuzzer/discourse:$(GIT_SHA) -f ../discourse-fork/Dockerfile ..
 
