@@ -54,7 +54,7 @@
           },
           {
             "name": "athena",
-            "image": "gcr.io/athena-fuzzer/athena:4",
+            "image": "gcr.io/athena-fuzzer/athena:72b22b2947",
             "command": ["/bin/bash"],
             "args": ["-c", "while true; do sleep 1000;done"],
             "volumeMounts": [
