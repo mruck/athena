@@ -16,20 +16,44 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Welcome!")
 }
 
-var AthenaContainer = v1.Container{
-	Name:    "athena",
-	Image:   "gcr.io/athena-fuzzer/athena:0c17b6038c",
-	Command: []string{"./run_client.sh"},
-	VolumeMounts: []v1.VolumeMount{
-		v1.VolumeMount{
-			Name:      "postgres-socket",
-			MountPath: "/var/run/postgresql",
+func getAthenaContainer(targetId string) v1.Container {
+	var AthenaContainer = v1.Container{
+		Name:    "athena",
+		Image:   "gcr.io/athena-fuzzer/athena:0c17b6038c",
+		Command: []string{"./run_client.sh"},
+		VolumeMounts: []v1.VolumeMount{
+			v1.VolumeMount{
+				Name:      "postgres-socket",
+				MountPath: "/var/run/postgresql",
+			},
+			v1.VolumeMount{
+				Name:      "results-dir",
+				MountPath: "/tmp/results",
+			},
 		},
-		v1.VolumeMount{
-			Name:      "results-dir",
-			MountPath: "/tmp/results",
-		},
-	},
+	}
+	AthenaContainer.Env = []v1.EnvVar{
+		v1.EnvVar{Name: "TARGET_ID", Value: targetId},
+	}
+	return AthenaContainer
+
+}
+
+func buildPod(containers []v1.Container) v1.Pod {
+	var pod v1.Pod
+	// Basic initialization
+	pod.APIVersion = "v1"
+	pod.Kind = "Pod"
+	// Use this as the target id
+	targetId := uuid.New().String()
+	pod.ObjectMeta.Name = targetId
+	pod.ObjectMeta.Labels = map[string]string{"fuzz_pod": "true", "target_id": targetId}
+	// Add target containers
+	pod.Spec.Containers = containers
+	// Inject Athena container
+	athenaContainer := getAthenaContainer(targetId)
+	pod.Spec.Containers = append(pod.Spec.Containers, athenaContainer)
+	return pod
 }
 
 func PushPod(w http.ResponseWriter, r *http.Request) {
@@ -41,17 +65,16 @@ func PushPod(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Unmarshal
-	var pod v1.Pod
-	err = json.Unmarshal(b, &pod)
+	var containers []v1.Container
+	err = json.Unmarshal(b, &containers)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
+	var pod v1.Pod
 	// Modify in place
+	pod.Spec.Containers = containers
 	pod.Spec.Containers = append(pod.Spec.Containers, AthenaContainer)
-
-	// Randomly generate name
-	pod.ObjectMeta.Name = uuid.New().String()
 
 	// Dump to disc
 	podBytes, err := json.Marshal(pod)
