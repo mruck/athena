@@ -19,7 +19,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 func getAthenaContainer(targetId string) v1.Container {
 	var AthenaContainer = v1.Container{
 		Name:    "athena",
-		Image:   "gcr.io/athena-fuzzer/athena:0c17b6038c",
+		Image:   "gcr.io/athena-fuzzer/athena:07b1cc1e09",
 		Command: []string{"./run_client.sh"},
 		VolumeMounts: []v1.VolumeMount{
 			v1.VolumeMount{
