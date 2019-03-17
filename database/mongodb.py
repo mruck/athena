@@ -1,21 +1,39 @@
 import pymongo
+import sys
 
 
-def new_db(db_name):
-    client = pymongo.MongoClient("mongodb://mongodb-service:27017/")
-    return client[db_name]
+def get_host():
+    # We are in a pod
+    if "linux" in sys.platform:
+        return "mongodb-service"
+    # We are running locally on osx
+    elif "darwin" in sys.platform:
+        return "localhost"
+    else:
+        print("Untested architecture %s" % sys.platform)
+        assert False
 
 
-def new_table(db, table_name):
-    return db[table_name]
+class Connection(object):
+    def __init__(self, db_name):
+        target = "mongodb://" + get_host() + ":27017/"
+        client = pymongo.MongoClient(target)
+        self.db = client[db_name]
+        self.is_alive()
 
+    def is_alive(self):
+        print("pinging...")
+        result = self.db.command("ping")
+        assert result == {u"ok": 1.0}
 
-# TODO: Pinging is broken
-def is_alive(db):
-    print("pinging...")
-    result = db.command("ping")
-    return result == {u"ok": 1.0}
+    def write(self, table, payload):
+        self.db[table].insert_one(payload)
 
+    def read(self, table, key):
+        return self.db[table].find_one(key)
 
-def find_one(table, needle):
-    return table.find_one(needle)
+    def read_all(self, table):
+        entries = []
+        for entry in self.db[table].find():
+            entries.append(entry)
+        return entries

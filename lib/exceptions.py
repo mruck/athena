@@ -62,7 +62,7 @@ class ExceptionTracker(object):
                 self.unique_exceptions.append(new_exn)
                 delta_exns.append(new_exn)
                 with open("/tmp/exn2", "a") as f:
-                    f.write("%s %s\n" % (new_exn.path, new_exn.cls))
+                    f.write("%s %s %s\n" % (new_exn.verb, new_exn.path, new_exn.cls))
         return delta_exns
 
     # Read exceptions from the exception log and update the list of unique

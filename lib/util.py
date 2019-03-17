@@ -10,6 +10,7 @@ import pprint
 import random
 import string
 import time
+import uuid
 import urllib
 
 # Keep track of how many times we've called rand
@@ -18,6 +19,15 @@ import urllib
 rand_counter = 0
 
 logger = logging.getLogger("debug")
+
+
+def get_target_id():
+    target_id = os.getenv("TARGET_ID")
+    # Use a dummy id
+    if target_id is None:
+        return uuid.uuid4().hex
+    else:
+        return target_id
 
 
 # Record state of the pseudo rng before hitting a route. This allows us

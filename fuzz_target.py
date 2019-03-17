@@ -9,7 +9,7 @@ import fuzzer.lib.util as util
 import fuzzer.lib.exceptions as exceptions
 import fuzzer.database.results_db as results_db
 
-TARGET_NAME = "discourse"
+RESULTS_DB = "athena"
 
 
 class Target(object):
@@ -34,7 +34,7 @@ class Target(object):
         self.rails_exceptions = exceptions.ExceptionTracker(
             os.path.join(results_path, "rails_exception_log.json")
         )
-        self.results_db = results_db.ResultsDb(TARGET_NAME + "_" + uuid.uuid4().hex)
+        self.results_db = results_db.ResultsDb(RESULTS_DB)
         # Exceptions dumped by fuzzer
         self.fuzzer_exceptions = util.open_wrapper(
             os.path.join(results_path, "fuzzer_exceptions"), "a"

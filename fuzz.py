@@ -89,8 +89,6 @@ def run(
     should_snapshot=True,
     # Should we swallow exceptions in the fuzzer?
     debug_mode=True,
-    # Should we keep snapshots lying around or do gc?
-    keep_snapshot=False,
 ):
     mutator = get_mutator(target)
 
@@ -127,8 +125,6 @@ def run(
             exceptions = target.rails_exceptions.update(route)
             # Write to a db
             target.results_db.write_exceptions(exceptions)
-            # Snapshot stuff
-            keep_snapshot = keep_snapshot or len(exceptions) > 0
             stats.record_stats(route.verb, route.path, status_code, exceptions)
             mutator.on_response(target, status_code)
         # We sent ctl-c, exit now
@@ -148,8 +144,6 @@ def run(
         stats.record_coverage(route.verb, route.path, percentage)
         print("\n\tcumulative cov: %f" % percentage)
         stats.save(target.results_path)
-        if should_snapshot and not keep_snapshot:
-            state.delete(state_dir)
 
     counts = json.dumps(stats.get_code_counts(), sort_keys=True)
     print("Code Counts: {}".format(counts))
