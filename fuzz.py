@@ -37,7 +37,7 @@ logger = logging.getLogger("debug")
 
 RESULTS_PATH = "/tmp/results"
 PORT = 8080
-FUZZ_DB = "FUZZ_DB"
+FUZZ_DB = "fuzz_db"
 
 
 def init_logger(quiet=None):

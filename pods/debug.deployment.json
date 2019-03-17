@@ -22,16 +22,10 @@
               }
             ],
             "image": "postgres:10.5",
-            "name": "my-postgres",
-            "volumeMounts": [
-              {
-                "mountPath": "/var/run/postgresql",
-                "name": "postgres-socket"
-              }
-            ]
+            "name": "my-postgres"
           },
           {
-            "image": "gcr.io/athena-fuzzer/discourse:6",
+            "image": "gcr.io/athena-fuzzer/discourse:8f1bc6525d",
             "name": "target",
             "command": ["/bin/bash"],
             "args": ["-c", "while true; do sleep 1000;done"],
@@ -42,10 +36,6 @@
               }
             ],
             "volumeMounts": [
-              {
-                "mountPath": "/var/run/postgresql",
-                "name": "postgres-socket"
-              },
               {
                 "mountPath": "/tmp/results",
                 "name": "results-dir"
@@ -58,10 +48,6 @@
             "command": ["/bin/bash"],
             "args": ["-c", "while true; do sleep 1000;done"],
             "volumeMounts": [
-              {
-                "mountPath": "/var/run/postgresql",
-                "name": "postgres-socket"
-              },
               {
                 "mountPath": "/tmp/results",
                 "name": "results-dir"

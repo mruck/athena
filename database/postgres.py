@@ -72,9 +72,9 @@ def connect_to_db(db_name):
     global cursor
     global conn
 
-    # conn_str = "dbname='%s' user='root' host='localhost' password='mysecretpassword'" % db_name
     conn_str = (
-        "dbname='%s' user='root' host='localhost' password='mysecretpassword'" % db_name
+        "port='5432' dbname='%s' user='root' host='localhost' password='mysecretpassword'"
+        % db_name
     )
     conn = psycopg2.connect(conn_str)
     cursor = conn.cursor()
@@ -122,13 +122,3 @@ def run_query(query, return_all_records=False, can_fail=False, first_time=True):
         except TypeError:
             # The row returned is empty
             return None
-
-
-def snapshot_db(result_path, db_name, filename):
-    with open(os.path.join(result_path, "db_snapshots", filename), "w") as dumpfile:
-        p = subprocess.run(
-            ["pg_dump", db_name], stdout=dumpfile, stderr=subprocess.PIPE
-        )
-        if p.returncode != 0:
-            print(p.stderr)
-            assert False
