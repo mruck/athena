@@ -1,4 +1,5 @@
 import fuzzer.database.mongodb as db
+import fuzzer.lib.util as util
 
 EXCEPTIONS_TABLE = "exceptions"
 
@@ -12,7 +13,9 @@ class ResultsDb(object):
 
     def write_exceptions(self, exceptions):
         for e in exceptions:
-            self.write_one(EXCEPTIONS_TABLE, e.to_dict())
+            exn_dict = e.to_dict()
+            exn_dict["target_id"] = util.get_target_id()
+            self.write_one(EXCEPTIONS_TABLE, exn_dict)
 
     def write_sql_inj(self):
         pass
