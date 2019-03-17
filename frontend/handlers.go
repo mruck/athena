@@ -52,7 +52,7 @@ func buildPod(containers []v1.Container) v1.Pod {
 	// Add shared mount
 	pod.Spec.Volumes = []v1.Volume{
 		v1.Volume{
-			Name: "results-volume",
+			Name: "results-dir",
 			VolumeSource: v1.VolumeSource{
 				EmptyDir: &v1.EmptyDirVolumeSource{},
 			},
@@ -76,10 +76,7 @@ func PushPod(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	var pod v1.Pod
-	// Modify in place
-	pod.Spec.Containers = containers
-	pod.Spec.Containers = append(pod.Spec.Containers, AthenaContainer)
+	pod := buildPod(containers)
 
 	// Dump to disc
 	podBytes, err := json.Marshal(pod)
