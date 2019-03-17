@@ -55,10 +55,6 @@
     "volumes": [
       {
         "emptyDir": {},
-        "name": "postgres-socket"
-      },
-      {
-        "emptyDir": {},
         "name": "results-dir"
       }
     ]
