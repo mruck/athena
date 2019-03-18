@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"k8s.io/api/core/v1"
 	"net/http"
+	"os"
+	"path/filepath"
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
@@ -81,25 +83,31 @@ func readBody(w http.ResponseWriter, r *http.Request) ([]v1.Container, error) {
 	return containers, nil
 }
 
+const PodSpecDir = "/tmp/pod_specs"
+
+func getPodSpecDest(pod v1.Pod) string {
+	_ = os.Mkdir(PodSpecDir, 0700)
+	return filepath.Join(PodSpecDir, pod.ObjectMeta.Name)
+}
+
 // Marshal pod and write to disc.
-func writePodSpecToDisc(pod v1.Pod) (string, error) {
+func writePodSpecToDisc(pod v1.Pod, dst string) error {
+
 	// Marshal pod
 	podBytes, err := json.Marshal(pod)
 	if err != nil {
 		err = fmt.Errorf("Error marshaling pod spec: %v", err)
-		return "", err
+		return err
 	}
-
-	podSpecPath := "/tmp/marli_pod.json"
 
 	// Write pod spec to disc
-	err = ioutil.WriteFile(podSpecPath, podBytes, 0644)
+	err = ioutil.WriteFile(dst, podBytes, 0644)
 	if err != nil {
 		err = fmt.Errorf("Error writing pod spec to disc: %v", err)
-		return "", err
+		return err
 	}
 
-	return podSpecPath, nil
+	return nil
 
 }
 
@@ -111,7 +119,8 @@ func PushPod(w http.ResponseWriter, r *http.Request) {
 
 	pod := buildPod(containers)
 
-	podSpecPath, err := writePodSpecToDisc(pod)
+	podSpecPath := getPodSpecDest(pod)
+	err = writePodSpecToDisc(pod, podSpecPath)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
