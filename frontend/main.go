@@ -6,6 +6,7 @@ package main
 //Shell out and spin this up
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -13,5 +14,6 @@ import (
 func main() {
 	router := NewRouter()
 
+	fmt.Printf("Listening on 1111\n")
 	log.Fatal(http.ListenAndServe(":1111", router))
 }

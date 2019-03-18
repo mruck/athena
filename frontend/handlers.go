@@ -61,21 +61,33 @@ func buildPod(containers []v1.Container) v1.Pod {
 	return pod
 }
 
-func PushPod(w http.ResponseWriter, r *http.Request) {
-	// Read from body
+// Read in user data.  We expect: a target name, []v1.Container, a database name, type
+// and port.
+func readBody(w http.ResponseWriter, r *http.Request) ([]v1.Container, error) {
 	b, err := ioutil.ReadAll(r.Body)
 	defer r.Body.Close()
 	if err != nil {
+		http.Error(w, "Error reading body:", 500)
 		http.Error(w, err.Error(), 500)
-		return
+		return nil, err
 	}
 	// Unmarshal
 	var containers []v1.Container
 	err = json.Unmarshal(b, &containers)
 	if err != nil {
+		http.Error(w, "Error unmarshaling []v1.Container:", 500)
 		http.Error(w, err.Error(), 500)
+		return nil, err
+	}
+	return containers, nil
+}
+
+func PushPod(w http.ResponseWriter, r *http.Request) {
+	containers, err := readBody(w, r)
+	if err != nil {
 		return
 	}
+
 	pod := buildPod(containers)
 
 	// Dump to disc
