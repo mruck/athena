@@ -3,12 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"os/exec"
-
 	"github.com/google/uuid"
+	"io/ioutil"
 	"k8s.io/api/core/v1"
+	"net/http"
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
@@ -83,21 +81,28 @@ func readBody(w http.ResponseWriter, r *http.Request) ([]v1.Container, error) {
 	return containers, nil
 }
 
-func launchPod(podSpecPath string) error {
-	// Launch pod
-	cmd := exec.Command("kubectl", "apply", "-f", podSpecPath)
-	stdoutStderr, err := cmd.CombinedOutput()
+// Marshal pod and write to disc.
+func writePodSpecToDisc(pod v1.Pod) (string, error) {
+	// Marshal pod
+	podBytes, err := json.Marshal(pod)
 	if err != nil {
-		return err
+		err = fmt.Errorf("Error marshaling pod spec: %v", err)
+		return "", err
 	}
-	if cmd.ProcessState.ExitCode() != 0 {
-		err = fmt.Errorf("Error spawning pod: %v", stdoutStderr)
-		return err
+
+	podSpecPath := "/tmp/marli_pod.json"
+
+	// Write pod spec to disc
+	err = ioutil.WriteFile(podSpecPath, podBytes, 0644)
+	if err != nil {
+		err = fmt.Errorf("Error writing pod spec to disc: %v", err)
+		return "", err
 	}
-	fmt.Printf("%s\n", stdoutStderr)
-	return nil
+
+	return podSpecPath, nil
 
 }
+
 func PushPod(w http.ResponseWriter, r *http.Request) {
 	containers, err := readBody(w, r)
 	if err != nil {
@@ -106,24 +111,16 @@ func PushPod(w http.ResponseWriter, r *http.Request) {
 
 	pod := buildPod(containers)
 
-	// Marshal pod
-	podBytes, err := json.Marshal(pod)
+	podSpecPath, err := writePodSpecToDisc(pod)
 	if err != nil {
-		err = fmt.Errorf("Error marshaling pod spec: %v", err)
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	// Write pod spec to disc
-	err = ioutil.WriteFile("/tmp/marli_pod.json", podBytes, 0644)
+	err = launchPod(podSpecPath)
 	if err != nil {
-		err = fmt.Errorf("Error writing pod spec to disc: %v", err)
 		http.Error(w, err.Error(), 500)
-		return
 	}
 
-	err = launchPod("/tmp/marli_pod.json")
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-	}
+	// Health check
 }
