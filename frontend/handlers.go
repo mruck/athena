@@ -15,6 +15,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Welcome!")
 }
 
+// Generate an Athena Container.
 func getAthenaContainer(targetId string) v1.Container {
 	var AthenaContainer = v1.Container{
 		Name:    "athena",
@@ -34,6 +35,7 @@ func getAthenaContainer(targetId string) v1.Container {
 
 }
 
+// Build a vanilla pod spec.
 func buildPod(containers []v1.Container) v1.Pod {
 	var pod v1.Pod
 	// Basic initialization
@@ -81,6 +83,21 @@ func readBody(w http.ResponseWriter, r *http.Request) ([]v1.Container, error) {
 	return containers, nil
 }
 
+func launchPod(podSpecPath string) error {
+	// Launch pod
+	cmd := exec.Command("kubectl", "apply", "-f", podSpecPath)
+	stdoutStderr, err := cmd.CombinedOutput()
+	if err != nil {
+		return err
+	}
+	if cmd.ProcessState.ExitCode() != 0 {
+		err = fmt.Errorf("Error spawning pod: %v", stdoutStderr)
+		return err
+	}
+	fmt.Printf("%s\n", stdoutStderr)
+	return nil
+
+}
 func PushPod(w http.ResponseWriter, r *http.Request) {
 	containers, err := readBody(w, r)
 	if err != nil {
@@ -105,18 +122,8 @@ func PushPod(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Launch pod
-	cmd := exec.Command("kubectl", "apply", "-f", "/tmp/marli_pod.json")
-	stdoutStderr, err := cmd.CombinedOutput()
+	err = launchPod("/tmp/marli_pod.json")
 	if err != nil {
 		http.Error(w, err.Error(), 500)
-		return
 	}
-	if cmd.ProcessState.ExitCode() != 0 {
-		err = fmt.Errorf("Error spawning pod: %v", stdoutStderr)
-		http.Error(w, err.Error(), 500)
-		return
-	}
-	fmt.Printf("%s\n", stdoutStderr)
-	// TODO: some sort of health check
 }
