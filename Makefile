@@ -3,7 +3,7 @@ VENV_LOCATION ?= $(shell pwd)/venv
 
 MITM_TARGET ?= 3000
 
-.PHONY: postgres-start postgres-stop redis-start redis-stop python-test venv
+.PHONY: postgres-start postgres-stop redis-start redis-stop python-test venv frontend
 
 postgres-stop:
 	-docker rm -f my-postgres
