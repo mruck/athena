@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os/exec"
 
@@ -67,7 +66,7 @@ func readBody(w http.ResponseWriter, r *http.Request) ([]v1.Container, error) {
 	b, err := ioutil.ReadAll(r.Body)
 	defer r.Body.Close()
 	if err != nil {
-		http.Error(w, "Error reading body:", 500)
+		err = fmt.Errorf("Error reading from body: %v", err)
 		http.Error(w, err.Error(), 500)
 		return nil, err
 	}
@@ -75,7 +74,7 @@ func readBody(w http.ResponseWriter, r *http.Request) ([]v1.Container, error) {
 	var containers []v1.Container
 	err = json.Unmarshal(b, &containers)
 	if err != nil {
-		http.Error(w, "Error unmarshaling []v1.Container:", 500)
+		err = fmt.Errorf("Error unmarshaling []v1.Container: %v", err)
 		http.Error(w, err.Error(), 500)
 		return nil, err
 	}
@@ -90,20 +89,34 @@ func PushPod(w http.ResponseWriter, r *http.Request) {
 
 	pod := buildPod(containers)
 
-	// Dump to disc
+	// Marshal pod
 	podBytes, err := json.Marshal(pod)
 	if err != nil {
-		log.Fatal(err)
+		err = fmt.Errorf("Error marshaling pod spec: %v", err)
+		http.Error(w, err.Error(), 500)
+		return
 	}
+
+	// Write pod spec to disc
 	err = ioutil.WriteFile("/tmp/marli_pod.json", podBytes, 0644)
 	if err != nil {
-		log.Fatal(err)
+		err = fmt.Errorf("Error writing pod spec to disc: %v", err)
+		http.Error(w, err.Error(), 500)
+		return
 	}
 
 	// Launch pod
 	cmd := exec.Command("kubectl", "apply", "-f", "/tmp/marli_pod.json")
 	stdoutStderr, err := cmd.CombinedOutput()
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	if cmd.ProcessState.ExitCode() != 0 {
+		err = fmt.Errorf("Error spawning pod: %v", stdoutStderr)
+		http.Error(w, err.Error(), 500)
+		return
+	}
 	fmt.Printf("%s\n", stdoutStderr)
-
 	// TODO: some sort of health check
 }
