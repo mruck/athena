@@ -3,12 +3,13 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
 	"io/ioutil"
-	"k8s.io/api/core/v1"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/google/uuid"
+	"k8s.io/api/core/v1"
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
@@ -126,10 +127,9 @@ func PushPod(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = launchPod(podSpecPath)
+	err = LaunchPod(podSpecPath)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 	}
-
 	// Health check
 }
