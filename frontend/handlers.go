@@ -132,4 +132,8 @@ func PushPod(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 	}
 	// Health check
+	err = PodReady(pod.ObjectMeta.Name)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+	}
 }

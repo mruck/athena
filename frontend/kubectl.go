@@ -20,12 +20,15 @@ func LaunchPod(podSpecPath string) error {
 		err = fmt.Errorf("Error spawning pod: %v", stdoutStderr)
 		return err
 	}
-	fmt.Printf("%s\n", stdoutStderr)
+	fmt.Println(string(stdoutStderr))
 	return nil
 
 }
 
-func GetStatus(podName string) error {
+// Check if each container in the pod is ready, i.e.
+// each ContainerStatus.Ready = True in the pod.Status.ContainerStatuses array
+func PodReady(podName string) error {
+	fmt.Println("PodReady()")
 	cmd := exec.Command("kubectl", "get", "pod", podName, "-o", "json")
 	stdoutStderr, err := cmd.CombinedOutput()
 	if err != nil {
@@ -42,8 +45,11 @@ func GetStatus(podName string) error {
 	var containerStatuses []v1.ContainerStatus
 	containerStatuses = pod.Status.ContainerStatuses
 	for _, containerStatus := range containerStatuses {
-		fmt.Println(containerStatus.Name)
-		fmt.Println(containerStatus.Ready)
+		if containerStatus.Ready != true {
+			err = fmt.Errorf("%v container status is not ready", containerStatus.Name)
+			return err
+		}
+		fmt.Printf("Checking %v container...Ready : %v\n", containerStatus.Name, containerStatus.Ready)
 	}
 	return nil
 
