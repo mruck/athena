@@ -90,6 +90,7 @@ func readBody(w http.ResponseWriter, r *http.Request) ([]v1.Container, error) {
 
 const PodSpecDir = "/tmp/pod_specs"
 
+// Get a file to write the pod spec to
 func getPodSpecDest(pod v1.Pod) string {
 	_ = os.Mkdir(PodSpecDir, 0700)
 	return filepath.Join(PodSpecDir, pod.ObjectMeta.Name)
@@ -116,41 +117,67 @@ func writePodSpecToDisc(pod v1.Pod, dst string) error {
 
 }
 
+// Given a v1.Pod, write the spec to disc, launch the pod, then poll
+// until all containers are ready or it times out
+func RunPod(w http.ResponseWriter, pod v1.Pod) error {
+	// Write pod spec to disc
+	podSpecPath := getPodSpecDest(pod)
+	err := writePodSpecToDisc(pod, podSpecPath)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return err
+	}
+
+	// Launch pod
+	err = LaunchPod(podSpecPath)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return err
+	}
+
+	// Poll pod until it's ready or we hit a timeout
+
+	ready, err := PollPodReady(pod.ObjectMeta.Name)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return err
+	} else if ready != true {
+		err = fmt.Errorf("Pod not ready. Are there enough resources? Maybe you should delete all pods")
+		http.Error(w, err.Error(), 500)
+		return err
+	}
+
+	return nil
+
+}
+
 func FuzzTarget(w http.ResponseWriter, r *http.Request) {
 	// Get list of containers pushed by user
 	containers, err := readBody(w, r)
 	if err != nil {
+		http.Error(w, err.Error(), 500)
 		return
 	}
 
 	// Generate a vanilla pod with the user provided containers
 	pod := buildPod(containers)
 
+	// Sanity check that the uninstrumented target runs
+	err = RunPod(w, pod)
+	fmt.Println("done running pod")
+	if err != nil {
+		return
+	}
 	// Inject Athena container
 	athenaContainer := getAthenaContainer(pod.ObjectMeta.Name)
 	pod.Spec.Containers = append(pod.Spec.Containers, athenaContainer)
 
-	podSpecPath := getPodSpecDest(pod)
-
-	err = writePodSpecToDisc(pod, podSpecPath)
+	// Launch the pod with the athena container
+	err = RunPod(w, pod)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	err = LaunchPod(podSpecPath)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-	ready, err := PollPodReady(pod.ObjectMeta.Name)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	} else if ready != true {
-		err = fmt.Errorf("Pod not ready. Are there enough resources? Maybe you should delete all pods")
-		http.Error(w, err.Error(), 500)
-		return
-	}
+	// We are fuzzing!
 	w.WriteHeader(http.StatusOK)
 }

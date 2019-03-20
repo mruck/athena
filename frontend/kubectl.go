@@ -12,12 +12,16 @@ import (
 //Spin up pod with kubectl exec
 func LaunchPod(podSpecPath string) error {
 	// Launch pod
+	fmt.Println(podSpecPath)
 	cmd := exec.Command("kubectl", "apply", "-f", podSpecPath)
 	stdoutStderr, err := cmd.CombinedOutput()
+	fmt.Println(string(stdoutStderr))
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 	if cmd.ProcessState.ExitCode() != 0 {
+		fmt.Println(err)
 		err = fmt.Errorf("Error spawning pod: %v", stdoutStderr)
 		return err
 	}
