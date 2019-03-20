@@ -36,9 +36,9 @@ var routes = Routes{
 		Index,
 	},
 	Route{
-		"PushPod",
+		"FuzzTarget",
 		"POST",
-		"/PushPod",
-		PushPod,
+		"/FuzzTarget",
+		FuzzTarget,
 	},
 }

@@ -112,7 +112,7 @@ func writePodSpecToDisc(pod v1.Pod, dst string) error {
 
 }
 
-func PushPod(w http.ResponseWriter, r *http.Request) {
+func FuzzTarget(w http.ResponseWriter, r *http.Request) {
 	containers, err := readBody(w, r)
 	if err != nil {
 		return
