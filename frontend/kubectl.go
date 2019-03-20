@@ -45,9 +45,12 @@ func GetContainerStatuses(podName string) ([]v1.ContainerStatus, error) {
 }
 
 func PodReady(containerStatuses []v1.ContainerStatus) bool {
+	if len(containerStatuses) == 0 {
+		return false
+	}
 	for _, containerStatus := range containerStatuses {
+		fmt.Printf("Checking %v container...Ready : %v\n", containerStatus.Name, containerStatus.Ready)
 		if containerStatus.Ready != true {
-			fmt.Printf("Checking %v container...Ready : %v\n", containerStatus.Name, containerStatus.Ready)
 			return false
 		}
 	}
@@ -58,10 +61,10 @@ func PodReady(containerStatuses []v1.ContainerStatus) bool {
 // each ContainerStatus.Ready = True in the pod.Status.ContainerStatuses array
 func PollPodReady(podName string) (bool, error) {
 	for start := time.Now(); time.Since(start) < 120*time.Second; {
-		print("Sleeping...")
 		time.Sleep(5 * time.Second)
 		containerStatuses, err := GetContainerStatuses(podName)
 		if err != nil {
+			fmt.Println("Failed to get container status", err)
 			return false, err
 		}
 		ready := PodReady(containerStatuses)
@@ -69,5 +72,6 @@ func PollPodReady(podName string) (bool, error) {
 			return true, nil
 		}
 	}
+	fmt.Println("Pod not ready. Are there enough resources? Maybe you should delete all pods", podName)
 	return false, nil
 }

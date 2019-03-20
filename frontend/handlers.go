@@ -130,14 +130,17 @@ func PushPod(w http.ResponseWriter, r *http.Request) {
 	err = LaunchPod(podSpecPath)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
+		return
 	}
 	// Health check
 	ready, err := PollPodReady(pod.ObjectMeta.Name)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
-	}
-	if ready != true {
+		return
+	} else if ready != true {
 		err = fmt.Errorf("Error starting pod")
 		http.Error(w, err.Error(), 500)
+		return
 	}
+	w.WriteHeader(http.StatusOK)
 }
