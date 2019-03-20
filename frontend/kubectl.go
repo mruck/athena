@@ -9,7 +9,7 @@ import (
 	"k8s.io/api/core/v1"
 )
 
-//Sin up pod with kubectl exec
+//Spin up pod with kubectl exec
 func LaunchPod(podSpecPath string) error {
 	// Launch pod
 	cmd := exec.Command("kubectl", "apply", "-f", podSpecPath)
@@ -26,6 +26,7 @@ func LaunchPod(podSpecPath string) error {
 
 }
 
+// Parse JSON dump for container status
 func GetContainerStatuses(podName string) ([]v1.ContainerStatus, error) {
 	cmd := exec.Command("kubectl", "get", "pod", podName, "-o", "json")
 	stdoutStderr, err := cmd.CombinedOutput()
@@ -44,6 +45,8 @@ func GetContainerStatuses(podName string) ([]v1.ContainerStatus, error) {
 
 }
 
+// Check if each container in the pod is ready, i.e.
+// each ContainerStatus.Ready = True in the pod.Status.ContainerStatuses array
 func PodReady(containerStatuses []v1.ContainerStatus) bool {
 	if len(containerStatuses) == 0 {
 		return false
@@ -57,8 +60,7 @@ func PodReady(containerStatuses []v1.ContainerStatus) bool {
 	return true
 }
 
-// Check if each container in the pod is ready, i.e.
-// each ContainerStatus.Ready = True in the pod.Status.ContainerStatuses array
+// Poll pods to check if they are ready, with a 120s timeout
 func PollPodReady(podName string) (bool, error) {
 	for start := time.Now(); time.Since(start) < 120*time.Second; {
 		time.Sleep(5 * time.Second)
