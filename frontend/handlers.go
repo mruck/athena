@@ -113,6 +113,7 @@ func writePodSpecToDisc(pod v1.Pod, dst string) error {
 }
 
 func FuzzTarget(w http.ResponseWriter, r *http.Request) {
+	// Get target pushed by user
 	containers, err := readBody(w, r)
 	if err != nil {
 		return
@@ -121,6 +122,7 @@ func FuzzTarget(w http.ResponseWriter, r *http.Request) {
 	pod := buildPod(containers)
 
 	podSpecPath := getPodSpecDest(pod)
+
 	err = writePodSpecToDisc(pod, podSpecPath)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -132,13 +134,12 @@ func FuzzTarget(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	// Health check
 	ready, err := PollPodReady(pod.ObjectMeta.Name)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	} else if ready != true {
-		err = fmt.Errorf("Error starting pod")
+		err = fmt.Errorf("Pod not ready. Are there enough resources? Maybe you should delete all pods")
 		http.Error(w, err.Error(), 500)
 		return
 	}
