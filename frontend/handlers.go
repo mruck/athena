@@ -36,21 +36,25 @@ func getAthenaContainer(targetId string) v1.Container {
 
 }
 
-// Build a vanilla pod spec.
+// Use this as the target id
+func NewTargetId() string {
+	return uuid.New().String()
+
+}
+
+// Build a vanilla pod spec.  This pod is uninstrumented/barebones
+// (i.e. no Athena container injected)
 func buildPod(containers []v1.Container) v1.Pod {
 	var pod v1.Pod
 	// Basic initialization
 	pod.APIVersion = "v1"
 	pod.Kind = "Pod"
-	// Use this as the target id
-	targetId := uuid.New().String()
+	// Unique identifier for pod and target
+	targetId := NewTargetId()
 	pod.ObjectMeta.Name = targetId
 	pod.ObjectMeta.Labels = map[string]string{"fuzz_pod": "true", "target_id": targetId}
 	// Add target containers
 	pod.Spec.Containers = containers
-	// Inject Athena container
-	athenaContainer := getAthenaContainer(targetId)
-	pod.Spec.Containers = append(pod.Spec.Containers, athenaContainer)
 	// Add shared mount
 	pod.Spec.Volumes = []v1.Volume{
 		v1.Volume{
@@ -113,13 +117,18 @@ func writePodSpecToDisc(pod v1.Pod, dst string) error {
 }
 
 func FuzzTarget(w http.ResponseWriter, r *http.Request) {
-	// Get target pushed by user
+	// Get list of containers pushed by user
 	containers, err := readBody(w, r)
 	if err != nil {
 		return
 	}
 
+	// Generate a vanilla pod with the user provided containers
 	pod := buildPod(containers)
+
+	// Inject Athena container
+	athenaContainer := getAthenaContainer(pod.ObjectMeta.Name)
+	pod.Spec.Containers = append(pod.Spec.Containers, athenaContainer)
 
 	podSpecPath := getPodSpecDest(pod)
 
