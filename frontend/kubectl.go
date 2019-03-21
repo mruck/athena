@@ -13,25 +13,23 @@ import (
 func DeletePod(podName string) error {
 	// Launch pod
 	cmd := exec.Command("kubectl", "delete", "pod", podName)
-	return ExecWrapper(cmd)
-
+	_, err := ExecWrapper(cmd)
+	return err
 }
 
 //Spin up pod with kubectl exec
 func LaunchPod(podSpecPath string) error {
 	// Launch pod
 	cmd := exec.Command("kubectl", "apply", "-f", podSpecPath)
-	return ExecWrapper(cmd)
+	_, err := ExecWrapper(cmd)
+	return err
 }
 
 // Parse JSON dump for container status
 func GetContainerStatuses(podName string) ([]v1.ContainerStatus, error) {
 	cmd := exec.Command("kubectl", "get", "pod", podName, "-o", "json")
-	stdoutStderr, err := cmd.CombinedOutput()
+	stdoutStderr, err := ExecWrapper(cmd)
 	if err != nil {
-		return nil, err
-	}
-	if cmd.ProcessState.ExitCode() != 0 {
 		return nil, err
 	}
 	var pod v1.Pod
