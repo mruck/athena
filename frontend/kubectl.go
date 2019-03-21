@@ -9,31 +9,27 @@ import (
 	"k8s.io/api/core/v1"
 )
 
+// Delete pod via kubectl
+func DeletePod(podName string) error {
+	// Launch pod
+	cmd := exec.Command("kubectl", "delete", "pod", podName)
+	_, err := ExecWrapper(cmd)
+	return err
+}
+
 //Spin up pod with kubectl exec
 func LaunchPod(podSpecPath string) error {
 	// Launch pod
 	cmd := exec.Command("kubectl", "apply", "-f", podSpecPath)
-	stdoutStderr, err := cmd.CombinedOutput()
-	if err != nil {
-		return err
-	}
-	if cmd.ProcessState.ExitCode() != 0 {
-		err = fmt.Errorf("Error spawning pod: %v", stdoutStderr)
-		return err
-	}
-	fmt.Println(string(stdoutStderr))
-	return nil
-
+	_, err := ExecWrapper(cmd)
+	return err
 }
 
 // Parse JSON dump for container status
 func GetContainerStatuses(podName string) ([]v1.ContainerStatus, error) {
 	cmd := exec.Command("kubectl", "get", "pod", podName, "-o", "json")
-	stdoutStderr, err := cmd.CombinedOutput()
+	stdoutStderr, err := ExecWrapper(cmd)
 	if err != nil {
-		return nil, err
-	}
-	if cmd.ProcessState.ExitCode() != 0 {
 		return nil, err
 	}
 	var pod v1.Pod
