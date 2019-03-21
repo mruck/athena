@@ -3,10 +3,11 @@ import uuid
 import fuzzer.database.results_db as results_db
 import fuzzer.lib.exceptions as exceptions
 
+RESULTS_DB = "athena"
+
 
 def test_results_db():
-    db_name = uuid.uuid4().hex
-    my_results_db = results_db.ResultsDb(db_name)
+    my_results_db = results_db.ResultsDb(RESULTS_DB)
 
     # Test insertion
     my_exception = exceptions.TargetException(

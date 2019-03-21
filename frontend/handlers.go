@@ -6,11 +6,35 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"k8s.io/api/core/v1"
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Welcome!")
+}
+
+const DbName = "athena"
+const Localhost = "localhost"
+const Port = "27101"
+
+// Return exceptions associated with fuzz target id
+func Exceptions(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	targetId := vars["targetId"]
+	fmt.Fprintf(w, "Target id: %v", targetId)
+	// Poll mongodb
+	client, err := NewClient(Host, Port, DbName)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	results, err := client.LookUp(targetId)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	fmt.Println(results)
 }
 
 // Read in user data.  We expect: a target name, []v1.Container, a database name, type
