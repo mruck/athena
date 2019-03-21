@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"encoding/json"
@@ -8,11 +8,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 )
 
 // Generate an Athena Container.
-func getAthenaContainer(targetId string) v1.Container {
+func getAthenaContainer(targetID string) v1.Container {
 	var AthenaContainer = v1.Container{
 		Name:    "athena",
 		Image:   "gcr.io/athena-fuzzer/athena:07b1cc1e09",
@@ -25,7 +25,7 @@ func getAthenaContainer(targetId string) v1.Container {
 		},
 	}
 	AthenaContainer.Env = []v1.EnvVar{
-		v1.EnvVar{Name: "TARGET_ID", Value: targetId},
+		v1.EnvVar{Name: "TARGET_ID", Value: targetID},
 	}
 	return AthenaContainer
 

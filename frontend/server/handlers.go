@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"encoding/json"
@@ -7,7 +7,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"k8s.io/api/core/v1"
+	"github.com/mruck/athena/frontend/database"
+	v1 "k8s.io/api/core/v1"
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
@@ -21,15 +22,15 @@ const Port = "27101"
 // Return exceptions associated with fuzz target id
 func Exceptions(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	targetId := vars["targetId"]
-	fmt.Fprintf(w, "Target id: %v", targetId)
+	targetID := vars["targetId"]
+	fmt.Fprintf(w, "Target id: %v", targetID)
 	// Poll mongodb
-	client, err := NewClient(Host, Port, DbName)
+	client, err := database.NewClient(Localhost, Port, DbName)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	results, err := client.LookUp(targetId)
+	results, err := client.LookUp(targetID)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

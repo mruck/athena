@@ -14,6 +14,7 @@ require (
 	golang.org/x/tools v0.0.0-20190321211322-a94d7df2cbc8 // indirect
 	google.golang.org/api v0.2.0
 	gopkg.in/inf.v0 v0.9.1 // indirect
+	honnef.co/go/tools v0.0.0-20190319011948-d116c56a00f3 // indirect
 	k8s.io/api v0.0.0-20190308234726-55d5be855ee3
 	k8s.io/apimachinery v0.0.0-20190309062729-b6b933fb33e6 // indirect
 	k8s.io/klog v0.2.0 // indirect
