@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/google/uuid"
 	"k8s.io/api/core/v1"
 )
 
@@ -33,12 +32,6 @@ func getAthenaContainer(targetId string) v1.Container {
 		v1.EnvVar{Name: "TARGET_ID", Value: targetId},
 	}
 	return AthenaContainer
-
-}
-
-// Use this as the target id
-func NewTargetId() string {
-	return uuid.New().String()
 
 }
 
@@ -186,7 +179,7 @@ func FuzzTarget(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Ad the Athena Container to the uninstrumented pod
+	// Add the Athena Container to the uninstrumented pod
 	pod = InjectAthenaContainer(pod)
 
 	// Launch the pod with the athena container
