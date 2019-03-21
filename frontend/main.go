@@ -9,10 +9,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/mruck/athena/frontend/server"
 )
 
 func main() {
-	router := NewRouter()
+	router := server.NewRouter()
 
 	fmt.Printf("Listening on 1111\n")
 	log.Fatal(http.ListenAndServe(":1111", router))
