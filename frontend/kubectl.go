@@ -13,17 +13,7 @@ import (
 func DeletePod(podName string) error {
 	// Launch pod
 	cmd := exec.Command("kubectl", "delete", "pod", podName)
-	stdoutStderr, err := cmd.CombinedOutput()
-	if err != nil {
-		err = fmt.Errorf("Stdout:  %v\n error returns: %v", string(stdoutStderr), err)
-		return err
-	}
-	if cmd.ProcessState.ExitCode() != 0 {
-		err = fmt.Errorf("Error: %v", string(stdoutStderr))
-		return err
-	}
-	fmt.Println(string(stdoutStderr))
-	return nil
+	return ExecWrapper(cmd)
 
 }
 
@@ -31,18 +21,7 @@ func DeletePod(podName string) error {
 func LaunchPod(podSpecPath string) error {
 	// Launch pod
 	cmd := exec.Command("kubectl", "apply", "-f", podSpecPath)
-	stdoutStderr, err := cmd.CombinedOutput()
-	if err != nil {
-		err = fmt.Errorf("Error spawning pod: %v", string(stdoutStderr))
-		return err
-	}
-	if cmd.ProcessState.ExitCode() != 0 {
-		err = fmt.Errorf("Error spawning pod: %v", string(stdoutStderr))
-		return err
-	}
-	fmt.Println(string(stdoutStderr))
-	return nil
-
+	return ExecWrapper(cmd)
 }
 
 // Parse JSON dump for container status
