@@ -119,7 +119,7 @@ func writePodSpecToDisc(pod v1.Pod, dst string) error {
 
 // Given a v1.Pod, write the spec to disc, launch the pod, then poll
 // until all containers are ready or it times out
-func RunPod(w http.ResponseWriter, pod v1.Pod) error {
+func RunPod(w http.ResponseWriter, pod v1.Pod, deletePod bool) error {
 	// Write pod spec to disc
 	podSpecPath := getPodSpecDest(pod)
 	err := writePodSpecToDisc(pod, podSpecPath)
@@ -136,8 +136,18 @@ func RunPod(w http.ResponseWriter, pod v1.Pod) error {
 	}
 
 	// Poll pod until it's ready or we hit a timeout
-
 	ready, err := PollPodReady(pod.ObjectMeta.Name)
+
+	// Reap the pod if specified
+	if deletePod == true {
+		err = DeletePod(pod.ObjectMeta.Name)
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return err
+		}
+	}
+
+	// Handle polling errors
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return err
@@ -151,6 +161,14 @@ func RunPod(w http.ResponseWriter, pod v1.Pod) error {
 
 }
 
+// Add the Athena container to the uninstrumented pod
+func InjectAthenaContainer(pod v1.Pod) v1.Pod {
+	athenaPodName := NewTargetId()
+	pod.ObjectMeta.Name = athenaPodName
+	athenaContainer := getAthenaContainer(athenaPodName)
+	pod.Spec.Containers = append(pod.Spec.Containers, athenaContainer)
+	return pod
+}
 func FuzzTarget(w http.ResponseWriter, r *http.Request) {
 	// Get list of containers pushed by user
 	containers, err := readBody(w, r)
@@ -163,17 +181,16 @@ func FuzzTarget(w http.ResponseWriter, r *http.Request) {
 	pod := buildPod(containers)
 
 	// Sanity check that the uninstrumented target runs
-	err = RunPod(w, pod)
-	fmt.Println("done running pod")
+	err = RunPod(w, pod, true)
 	if err != nil {
 		return
 	}
-	// Inject Athena container
-	athenaContainer := getAthenaContainer(pod.ObjectMeta.Name)
-	pod.Spec.Containers = append(pod.Spec.Containers, athenaContainer)
+
+	// Ad the Athena Container to the uninstrumented pod
+	pod = InjectAthenaContainer(pod)
 
 	// Launch the pod with the athena container
-	err = RunPod(w, pod)
+	err = RunPod(w, pod, false)
 	if err != nil {
 		return
 	}

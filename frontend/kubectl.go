@@ -9,20 +9,35 @@ import (
 	"k8s.io/api/core/v1"
 )
 
-//Spin up pod with kubectl exec
-func LaunchPod(podSpecPath string) error {
+// Delete pod via kubectl
+func DeletePod(podName string) error {
 	// Launch pod
-	fmt.Println(podSpecPath)
-	cmd := exec.Command("kubectl", "apply", "-f", podSpecPath)
+	cmd := exec.Command("kubectl", "delete", "pod", podName)
 	stdoutStderr, err := cmd.CombinedOutput()
-	fmt.Println(string(stdoutStderr))
 	if err != nil {
-		fmt.Println(err)
+		err = fmt.Errorf("Stdout:  %v\n error returns: %v", string(stdoutStderr), err)
 		return err
 	}
 	if cmd.ProcessState.ExitCode() != 0 {
-		fmt.Println(err)
-		err = fmt.Errorf("Error spawning pod: %v", stdoutStderr)
+		err = fmt.Errorf("Error: %v", string(stdoutStderr))
+		return err
+	}
+	fmt.Println(string(stdoutStderr))
+	return nil
+
+}
+
+//Spin up pod with kubectl exec
+func LaunchPod(podSpecPath string) error {
+	// Launch pod
+	cmd := exec.Command("kubectl", "apply", "-f", podSpecPath)
+	stdoutStderr, err := cmd.CombinedOutput()
+	if err != nil {
+		err = fmt.Errorf("Error spawning pod: %v", string(stdoutStderr))
+		return err
+	}
+	if cmd.ProcessState.ExitCode() != 0 {
+		err = fmt.Errorf("Error spawning pod: %v", string(stdoutStderr))
 		return err
 	}
 	fmt.Println(string(stdoutStderr))
