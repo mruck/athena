@@ -36,6 +36,12 @@ var routes = Routes{
 		Index,
 	},
 	Route{
+		"Exceptions",
+		"GET",
+		"/Exceptions/{targetId}",
+		Exceptions,
+	},
+	Route{
 		"FuzzTarget",
 		"POST",
 		"/FuzzTarget",
