@@ -38,23 +38,30 @@ func NewClient(host string, port string, database string) (*Client, error) {
 	return &Client{client.Database(database)}, nil
 }
 
-type exception struct {
-	verb      string
-	path      string
-	class     string
-	message   string
-	target_id string
+type Bsonable interface {
+	ToBSON() bson.M
 }
 
-func (c *Client) LookUp(table string) (string, error) {
+// WriteOne writes one entry to given table.
+func (c *Client) WriteOne(table string, document Bsonable) error {
+	collection := c.database.Collection(table)
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	value := document.ToBSON()
+	_, err := collection.InsertOne(ctx, value)
+	if err != nil {
+		fmt.Println("Error inserting")
+		return err
+	}
+	return nil
+}
+
+// ReadOne reads one entry from given table.
+func (c *Client) ReadOne(table string, filter bson.M, output interface{}) error {
 	collection := c.database.Collection(table)
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
-	filter := bson.M{"target_id": "5839485c36b54f87a9ece210ec4943e8"}
-	var result exception
-	err := collection.FindOne(ctx, filter).Decode(&result)
-	if err != nil {
-		return "", err
+	result := collection.FindOne(ctx, filter)
+	if err := result.Err(); err != nil {
+		return err
 	}
-	fmt.Println(result)
-	return "", nil
+	return result.Decode(output)
 }
