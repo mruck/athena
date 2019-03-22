@@ -12,6 +12,7 @@ type Client struct {
 func NewClient(host string, port string, database string) (*Client, error) {
 	// Get a client
 	target := host + ":" + port
+	//TODO: Add context timeout
 	session, err := mgo.Dial(target)
 	if err != nil {
 		return nil, err
@@ -26,11 +27,13 @@ type Bsonable interface {
 }
 
 // WriteOne writes one entry to given table.
-func (c *Client) WriteOne(table string, document Bsonable) error {
-	return nil
+func (c *Client) WriteOne(collectionName string, document interface{}) error {
+	collection := c.database.C(collectionName)
+	return collection.Insert(document)
 }
 
 // ReadOne reads one entry from given table.
-func (c *Client) ReadOne(table string, filter bson.M, output interface{}) error {
-	return nil
+func (c *Client) ReadOne(collectionName string, filter interface{}, output interface{}) error {
+	collection := c.database.C(collectionName)
+	return collection.Find(filter).One(output)
 }
