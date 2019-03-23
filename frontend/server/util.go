@@ -8,7 +8,7 @@ import (
 )
 
 // Use this as the target id
-func NewTargetId() string {
+func NewTargetID() string {
 	return uuid.New().String()
 
 }
