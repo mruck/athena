@@ -54,14 +54,17 @@ func (server *Server) ExceptionsHandler(w http.ResponseWriter, r *http.Request) 
 	targetID := vars["targetID"]
 	fmt.Printf("Target id: %v", targetID)
 
-	var result Exception
-	result, err := server.Exceptions.ReadOne(targetID)
+	results, err := server.Exceptions.GetAll(targetID)
 	if err != nil {
 		err = fmt.Errorf("error connecting to db: %v", err)
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	fmt.Println(result)
+	fmt.Println("Here")
+	for result := range results {
+		fmt.Println("Result")
+		fmt.Println(result)
+	}
 }
 
 // Read in user data.  We expect: a target name, []v1.Container, a database name, type
