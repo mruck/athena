@@ -66,23 +66,6 @@ func (server *Server) ExceptionsHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	fmt.Println(result)
-
-	// Connect to mongo
-	// client, err := database.NewClient(Localhost, Port, DbName)
-	// if err != nil {
-	// 	err = fmt.Errorf("error connecting to db: %v", err)
-	// 	http.Error(w, err.Error(), 500)
-	// 	return
-	// }
-	// var results Exception
-	// query := bson.M{"TargetID": targetID}
-	// err = client.ReadOne(ExceptionsCollection, query, &results)
-	// if err != nil {
-	// 	http.Error(w, err.Error(), 500)
-	// 	return
-	// }
-	// fmt.Println(results.Verb)
-	// fmt.Println(results.Path)
 }
 
 // Read in user data.  We expect: a target name, []v1.Container, a database name, type
