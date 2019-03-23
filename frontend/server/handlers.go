@@ -6,8 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/mruck/athena/frontend/database"
-
 	"github.com/gorilla/mux"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -15,11 +13,11 @@ import (
 )
 
 type Server struct {
-	Exceptions *database.ExceptionsManager
+	Exceptions *ExceptionsManager
 }
 
 func NewServer(db *mgo.Database) (*Server, error) {
-	exceptions := database.NewExceptionsManager(db)
+	exceptions := NewExceptionsManager(db)
 	return &Server{Exceptions: exceptions}, nil
 }
 
@@ -57,7 +55,7 @@ func (server *Server) ExceptionsHandler(w http.ResponseWriter, r *http.Request) 
 	targetID := vars["targetID"]
 	fmt.Printf("Target id: %v", targetID)
 
-	var result database.Exception
+	var result Exception
 	query := bson.M{"TargetID": targetID}
 	err := server.Exceptions.ReadOne(query, &result)
 	if err != nil {
@@ -74,7 +72,7 @@ func readBody(w http.ResponseWriter, r *http.Request) ([]v1.Container, error) {
 	b, err := ioutil.ReadAll(r.Body)
 	defer r.Body.Close()
 	if err != nil {
-		err = fmt.Errorf("Error reading from body: %v", err)
+		err = fmt.Errorf("error reading from body: %v", err)
 		http.Error(w, err.Error(), 500)
 		return nil, err
 	}
@@ -82,7 +80,7 @@ func readBody(w http.ResponseWriter, r *http.Request) ([]v1.Container, error) {
 	var containers []v1.Container
 	err = json.Unmarshal(b, &containers)
 	if err != nil {
-		err = fmt.Errorf("Error unmarshaling []v1.Container: %v", err)
+		err = fmt.Errorf("error unmarshaling []v1.Container: %v", err)
 		http.Error(w, err.Error(), 500)
 		return nil, err
 	}
