@@ -8,6 +8,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/mruck/athena/frontend/database"
+	"gopkg.in/mgo.v2/bson"
 	v1 "k8s.io/api/core/v1"
 )
 
@@ -23,7 +24,7 @@ const DbName = "athena"
 const Localhost = "localhost"
 
 // Port is port number of db
-const Port = "27101"
+const Port = "27017"
 
 // ExceptionsCollection for exceptions
 const ExceptionsCollection = "exceptions"
@@ -40,16 +41,18 @@ type Exception struct {
 //Exceptions endpoint retunrs exceptions associated with fuzz target id
 func Exceptions(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	targetID := vars["targetId"]
-	fmt.Fprintf(w, "Target id: %v", targetID)
+	targetID := vars["targetID"]
+	fmt.Printf("Target id: %v", targetID)
 	// Connect to mongo
 	client, err := database.NewClient(Localhost, Port, DbName)
 	if err != nil {
+		err = fmt.Errorf("error connecting to db: %v", err)
 		http.Error(w, err.Error(), 500)
 		return
 	}
 	var results Exception
-	err = client.ReadOne(ExceptionsCollection, targetID, &results)
+	query := bson.M{"TargetID": targetID}
+	err = client.ReadOne(ExceptionsCollection, query, &results)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

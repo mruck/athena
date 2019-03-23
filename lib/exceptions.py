@@ -25,10 +25,10 @@ class TargetException(object):
 
     def to_dict(self):
         return {
-            "verb": self.verb,
-            "path": self.path,
-            "class": self.cls,
-            "message": self.message,
+            "Verb": self.verb,
+            "Path": self.path,
+            "Class": self.cls,
+            "Message": self.message,
         }
 
 

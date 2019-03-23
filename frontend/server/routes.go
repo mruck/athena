@@ -38,7 +38,7 @@ var routes = Routes{
 	Route{
 		"Exceptions",
 		"GET",
-		"/Exceptions/{targetId}",
+		"/Exceptions/{targetID}",
 		Exceptions,
 	},
 	Route{
