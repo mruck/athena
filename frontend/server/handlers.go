@@ -60,9 +60,7 @@ func (server *Server) ExceptionsHandler(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	fmt.Println("Here")
-	for result := range results {
-		fmt.Println("Result")
+	for _, result := range results {
 		fmt.Println(result)
 	}
 }
