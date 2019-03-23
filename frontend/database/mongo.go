@@ -9,6 +9,18 @@ type Client struct {
 	database *mgo.Database
 }
 
+func MustGetDatabase(host string, port string, database string) *mgo.Database {
+	target := host + ":" + port
+	//TODO: Add context timeout
+	session, err := mgo.Dial(target)
+	if err != nil {
+		panic(err)
+	}
+	// Optional. Switch the session to a monotonic behavior.
+	session.SetMode(mgo.Monotonic, true)
+	return session.DB(database)
+}
+
 // NewClient creates a connection to the target db
 func NewClient(host string, port string, database string) (*Client, error) {
 	// Get a client

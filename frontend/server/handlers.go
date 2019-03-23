@@ -6,59 +6,83 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"github.com/mruck/athena/frontend/database"
+
+	"github.com/gorilla/mux"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	v1 "k8s.io/api/core/v1"
 )
 
+type Server struct {
+	Exceptions *database.ExceptionsManager
+}
+
+func NewServer(db *mgo.Database) (*Server, error) {
+	exceptions := database.NewExceptionsManager(db)
+	return &Server{Exceptions: exceptions}, nil
+}
+
+func (server *Server) getRoutes() Routes {
+	return Routes{
+		Route{
+			"Index",
+			"GET",
+			"/",
+			server.Index,
+		},
+		Route{
+			"Exceptions",
+			"GET",
+			"/Exceptions/{targetID}",
+			server.ExceptionsHandler,
+		},
+		Route{
+			"FuzzTarget",
+			"POST",
+			"/FuzzTarget",
+			server.FuzzTarget,
+		},
+	}
+}
+
 // Index provides a sanity check that server is running
-func Index(w http.ResponseWriter, r *http.Request) {
+func (server *Server) Index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Welcome!")
 }
 
-// DbName is name of db to connect to
-const DbName = "athena"
-
-// Localhost is name of host
-const Localhost = "localhost"
-
-// Port is port number of db
-const Port = "27017"
-
-// ExceptionsCollection for exceptions
-const ExceptionsCollection = "exceptions"
-
-// Exception datatype
-type Exception struct {
-	Verb     string `bson:"Verb"`
-	Path     string `bson:"Path"`
-	Class    string `bson:"Class"`
-	Message  string `bson:"Message"`
-	TargetID string `bson:"TargetID"`
-}
-
-//Exceptions endpoint retunrs exceptions associated with fuzz target id
-func Exceptions(w http.ResponseWriter, r *http.Request) {
+//ExceptionsHandler endpoint retunrs exceptions associated with fuzz target id
+func (server *Server) ExceptionsHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	targetID := vars["targetID"]
 	fmt.Printf("Target id: %v", targetID)
-	// Connect to mongo
-	client, err := database.NewClient(Localhost, Port, DbName)
+
+	var result database.Exception
+	query := bson.M{"TargetID": targetID}
+	err := server.Exceptions.ReadOne(query, &result)
 	if err != nil {
 		err = fmt.Errorf("error connecting to db: %v", err)
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	var results Exception
-	query := bson.M{"TargetID": targetID}
-	err = client.ReadOne(ExceptionsCollection, query, &results)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-	fmt.Println(results.Verb)
-	fmt.Println(results.Path)
+	fmt.Println(result)
+
+	// Connect to mongo
+	// client, err := database.NewClient(Localhost, Port, DbName)
+	// if err != nil {
+	// 	err = fmt.Errorf("error connecting to db: %v", err)
+	// 	http.Error(w, err.Error(), 500)
+	// 	return
+	// }
+	// var results Exception
+	// query := bson.M{"TargetID": targetID}
+	// err = client.ReadOne(ExceptionsCollection, query, &results)
+	// if err != nil {
+	// 	http.Error(w, err.Error(), 500)
+	// 	return
+	// }
+	// fmt.Println(results.Verb)
+	// fmt.Println(results.Path)
 }
 
 // Read in user data.  We expect: a target name, []v1.Container, a database name, type
@@ -82,7 +106,7 @@ func readBody(w http.ResponseWriter, r *http.Request) ([]v1.Container, error) {
 	return containers, nil
 }
 
-func FuzzTarget(w http.ResponseWriter, r *http.Request) {
+func (server Server) FuzzTarget(w http.ResponseWriter, r *http.Request) {
 	// Get list of containers pushed by user
 	containers, err := readBody(w, r)
 	if err != nil {

@@ -3,6 +3,8 @@ package server
 import (
 	"net/http"
 
+	"github.com/mruck/athena/frontend/database"
+
 	"github.com/gorilla/mux"
 )
 
@@ -15,8 +17,15 @@ type Route struct {
 
 type Routes []Route
 
-func NewRouter() *mux.Router {
+func NewRouter() (*mux.Router, error) {
+	db := database.MustGetDatabase("localhost", "27017", "athena")
+	server, err := NewServer(db)
+	if err != nil {
+		return nil, err
+	}
+
 	router := mux.NewRouter().StrictSlash(true)
+	routes := server.getRoutes()
 	for _, route := range routes {
 		router.
 			Methods(route.Method).
@@ -24,27 +33,5 @@ func NewRouter() *mux.Router {
 			Name(route.Name).
 			Handler(route.HandlerFunc)
 	}
-
-	return router
-}
-
-var routes = Routes{
-	Route{
-		"Index",
-		"GET",
-		"/",
-		Index,
-	},
-	Route{
-		"Exceptions",
-		"GET",
-		"/Exceptions/{targetID}",
-		Exceptions,
-	},
-	Route{
-		"FuzzTarget",
-		"POST",
-		"/FuzzTarget",
-		FuzzTarget,
-	},
+	return router, nil
 }
