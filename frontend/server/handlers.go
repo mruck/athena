@@ -11,31 +11,51 @@ import (
 	v1 "k8s.io/api/core/v1"
 )
 
+// Index provides a sanity check that server is running
 func Index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Welcome!")
 }
 
+// DbName is name of db to connect to
 const DbName = "athena"
+
+// Localhost is name of host
 const Localhost = "localhost"
+
+// Port is port number of db
 const Port = "27101"
 
-// Return exceptions associated with fuzz target id
+// ExceptionsCollection for exceptions
+const ExceptionsCollection = "exceptions"
+
+// Exception datatype
+type Exception struct {
+	Verb     string `bson:"Verb"`
+	Path     string `bson:"Path"`
+	Class    string `bson:"Class"`
+	Message  string `bson:"Message"`
+	TargetID string `bson:"TargetID"`
+}
+
+//Exceptions endpoint retunrs exceptions associated with fuzz target id
 func Exceptions(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	targetID := vars["targetId"]
 	fmt.Fprintf(w, "Target id: %v", targetID)
-	// Poll mongodb
+	// Connect to mongo
 	client, err := database.NewClient(Localhost, Port, DbName)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	results, err := client.LookUp(targetID)
+	var results Exception
+	err = client.ReadOne(ExceptionsCollection, targetID, &results)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	fmt.Println(results)
+	fmt.Println(results.Verb)
+	fmt.Println(results.Path)
 }
 
 // Read in user data.  We expect: a target name, []v1.Container, a database name, type

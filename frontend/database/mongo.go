@@ -2,13 +2,14 @@ package database
 
 import (
 	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 )
 
+// Client to MongoDB
 type Client struct {
 	database *mgo.Database
 }
 
+// NewClient creates a connection to the target db
 func NewClient(host string, port string, database string) (*Client, error) {
 	// Get a client
 	target := host + ":" + port
@@ -20,10 +21,6 @@ func NewClient(host string, port string, database string) (*Client, error) {
 	// Optional. Switch the session to a monotonic behavior.
 	session.SetMode(mgo.Monotonic, true)
 	return &Client{session.DB(database)}, nil
-}
-
-type Bsonable interface {
-	ToBSON() bson.M
 }
 
 // WriteOne writes one entry to given table.
