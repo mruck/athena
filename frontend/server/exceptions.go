@@ -25,7 +25,11 @@ func NewExceptionsManager(db *mgo.Database) *ExceptionsManager {
 }
 
 func (manager *ExceptionsManager) GetAll(targetID string) ([]Exception, error) {
-	return nil, nil
+	var results []Exception
+	query := bson.M{"TargetID": targetID}
+	iter := manager.collection.Find(query).Limit(100).Iter()
+	err := iter.All(&results)
+	return results, err
 }
 
 // ReadOne reads a single exception by target id
@@ -38,4 +42,8 @@ func (manager *ExceptionsManager) ReadOne(targetID string) (Exception, error) {
 
 func (manager *ExceptionsManager) WriteOne(exc Exception) error {
 	return manager.collection.Insert(exc)
+}
+
+func (manager *ExceptionsManager) Drop() error {
+	return manager.collection.DropCollection()
 }
