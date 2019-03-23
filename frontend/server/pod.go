@@ -33,7 +33,7 @@ func getAthenaContainer(targetID string) v1.Container {
 
 // Add the Athena container to the uninstrumented pod
 func InjectAthenaContainer(pod v1.Pod) v1.Pod {
-	athenaPodName := NewTargetId()
+	athenaPodName := NewTargetID()
 	pod.ObjectMeta.Name = athenaPodName
 	athenaContainer := getAthenaContainer(athenaPodName)
 	pod.Spec.Containers = append(pod.Spec.Containers, athenaContainer)
@@ -48,9 +48,9 @@ func buildPod(containers []v1.Container) v1.Pod {
 	pod.APIVersion = "v1"
 	pod.Kind = "Pod"
 	// Unique identifier for pod and target
-	targetId := NewTargetId()
-	pod.ObjectMeta.Name = targetId
-	pod.ObjectMeta.Labels = map[string]string{"fuzz_pod": "true", "target_id": targetId}
+	targetID := NewTargetID()
+	pod.ObjectMeta.Name = targetID
+	pod.ObjectMeta.Labels = map[string]string{"fuzz_pod": "true", "targetID": targetID}
 	// Add target containers
 	pod.Spec.Containers = containers
 	// Add shared mount
