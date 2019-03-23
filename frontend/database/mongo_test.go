@@ -9,14 +9,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-type Exception struct {
-	Verb     string `bson:"Verb"`
-	Path     string `bson:"Path"`
-	Class    string `bson:"Class"`
-	Message  string `bson:"Message"`
-	TargetID string `bson:"TargetID"`
-}
-
 func TestWriteRead(t *testing.T) {
 	cli, err := NewClient("localhost", "27017", "test")
 	require.NoError(t, err)

@@ -14,7 +14,10 @@ import (
 )
 
 func main() {
-	router := server.NewRouter()
+	router, err := server.NewRouter()
+	if err != nil {
+		panic(err)
+	}
 
 	fmt.Printf("Listening on 1111\n")
 	log.Fatal(http.ListenAndServe(":1111", router))
