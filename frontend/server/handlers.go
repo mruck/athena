@@ -60,9 +60,12 @@ func (server *Server) ExceptionsHandler(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	for _, result := range results {
-		fmt.Println(result)
+	resultBytes, err := json.Marshal(results)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
 	}
+	w.Write(resultBytes)
 }
 
 // Read in user data.  We expect: a target name, []v1.Container, a database name, type
