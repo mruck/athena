@@ -1,6 +1,9 @@
 package server
 
-import "gopkg.in/mgo.v2"
+import (
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
+)
 
 // Exception datatype
 type Exception struct {
@@ -25,8 +28,12 @@ func (manager *ExceptionsManager) GetAll(targetID string) ([]Exception, error) {
 	return nil, nil
 }
 
-func (manager *ExceptionsManager) ReadOne(filter interface{}, output interface{}) error {
-	return manager.collection.Find(filter).One(output)
+// ReadOne reads a single exception by target id
+func (manager *ExceptionsManager) ReadOne(targetID string) (Exception, error) {
+	var result Exception
+	query := bson.M{"TargetID": targetID}
+	err := manager.collection.Find(query).One(&result)
+	return result, err
 }
 
 func (manager *ExceptionsManager) WriteOne(exc Exception) error {
