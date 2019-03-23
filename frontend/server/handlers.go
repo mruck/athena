@@ -8,7 +8,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 	v1 "k8s.io/api/core/v1"
 )
 
@@ -56,8 +55,7 @@ func (server *Server) ExceptionsHandler(w http.ResponseWriter, r *http.Request) 
 	fmt.Printf("Target id: %v", targetID)
 
 	var result Exception
-	query := bson.M{"TargetID": targetID}
-	err := server.Exceptions.ReadOne(query, &result)
+	result, err := server.Exceptions.ReadOne(targetID)
 	if err != nil {
 		err = fmt.Errorf("error connecting to db: %v", err)
 		http.Error(w, err.Error(), 500)
