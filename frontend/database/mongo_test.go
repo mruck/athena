@@ -1,7 +1,6 @@
 package database
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -9,18 +8,11 @@ import (
 )
 
 type Exception struct {
-	Verb     string
-	Path     string
-	Class    string
-	Message  string
-	TargetID string
-}
-
-func (ex Exception) ToBSON() bson.M {
-	return bson.M{
-		"Verb": ex.Verb,
-		"Path": ex.Path,
-	}
+	Verb     string `bson:"Verb"`
+	Path     string `bson:"Path"`
+	Class    string `bson:"Class"`
+	Message  string `bson:"Message"`
+	TargetID string `bson:"TargetID"`
 }
 
 func TestWriteRead(t *testing.T) {
@@ -28,11 +20,16 @@ func TestWriteRead(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, cli)
 
-	cli.WriteOne("exceptions", &Exception{"v", "p", "c", "m", "t"})
+	err = cli.WriteOne("exceptions", &Exception{"put", "/test", "InvalidWrite", "This is a test message", "123456"})
+	require.NoError(t, err)
+
 	var result Exception
-	cli.ReadOne("exceptions", bson.M{"verb": "v"}, &result)
-	fmt.Println(result.Verb)
-	fmt.Println(result.Path)
+	err = cli.ReadOne("exceptions", bson.M{"TargetID": "123456"}, &result)
+	require.NoError(t, err)
+	require.Equal(t, "put", result.Verb)
+	require.Equal(t, "/test", result.Path)
+	require.Equal(t, "InvalidWrite", result.Class)
+	require.Equal(t, "This is a test message", result.Message)
 }
 
 func TestMongoClient(t *testing.T) {
