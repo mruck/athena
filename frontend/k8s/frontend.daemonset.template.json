@@ -21,12 +21,20 @@
                     {
                         "name": "frontend",
                         "image": "gcr.io/athena-fuzzer/frontend:48a081767f",
+                        "env": [
+                        ],
                         "command": [
                             "bash",
                             "-c",
                             "go run *.go"
+                        ],
+                        "volumeMounts": [
+                            { "name": "kubeconfig", "mountPath": "/etc/secrets/kubeconfig" }
                         ]
                     }
+                ],
+                "volumes": [
+                    { "name": "kubeconfig", "secret": { "secretName": "kubeconfig-frontend" } }
                 ]
             }
         }

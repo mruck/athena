@@ -1,4 +1,4 @@
-GIT_SHA = $(shell git log | head -n 1 | cut -f 2 -d ' ' | head -c 10)
+GIT_SHA = $(shell bash scripts/get_git_sha.sh)
 VENV_LOCATION ?= $(shell pwd)/venv
 
 MITM_TARGET ?= 3000

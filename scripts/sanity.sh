@@ -12,17 +12,11 @@ function __is_pod_ready() {
 branch=$(git branch | grep \* | cut -d ' ' -f 2)
 ref=$(git rev-parse $branch | tr -d '\n')
 echo "Git branch/ref: $branch/$ref"
-GIT_SHA=$(git log | head -n 1 | cut -f 2 -d ' ' | head -c 10)
-ORIGINAL_GIT_SHA=$GIT_SHA
-
-if [ "$(git diff --shortstat 2> /dev/null | tail -n1)" != "" ]; then
-    GIT_SHA=$GIT_SHA-$RANDOM
-fi
+GIT_SHA=$(bash scripts/get_git_sha.sh)
 POD_NAME=$GIT_SHA-$RANDOM
 
 # Build img and tag with git sha
 make fuzzer-client
-docker tag gcr.io/athena-fuzzer/athena:$ORIGINAL_GIT_SHA gcr.io/athena-fuzzer/athena:$GIT_SHA
 docker push gcr.io/athena-fuzzer/athena:$GIT_SHA
 
 mkdir -p /tmp/sanity/$POD_NAME
@@ -30,8 +24,8 @@ mkdir -p /tmp/sanity/$POD_NAME
 # Update image to reflect sha
 # Update pod name to reflect sha
 jq '.spec.containers[2].image = "gcr.io/athena-fuzzer/athena:'$GIT_SHA'"' pods/pod_sanity_template.json | \
-    jq '.metadata.name = "'$POD_NAME'"' > /tmp/sanity/$POD_NAME/pod.json 
-kubectl apply -f /tmp/sanity/$POD_NAME/pod.json 
+    jq '.metadata.name = "'$POD_NAME'"' > /tmp/sanity/$POD_NAME/pod.json
+kubectl apply -f /tmp/sanity/$POD_NAME/pod.json
 
 # Wait for pod to be created
 while [ ! "$(__is_pod_ready $POD_NAME)" = "OK" ]; do echo "Polling pod..."; sleep 1; done

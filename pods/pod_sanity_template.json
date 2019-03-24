@@ -41,9 +41,6 @@
       {
         "name": "athena",
         "image": "gcr.io/athena-fuzzer/athena:4",
-        "command": [
-          "./run_client.sh"
-        ],
         "volumeMounts": [
           {
             "mountPath": "/tmp/results",
