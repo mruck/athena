@@ -1,4 +1,4 @@
-FROM golang:1.11
+FROM golang:1.12
 
 RUN apt-get update && apt-get install -y \
     apt-transport-https \
@@ -14,4 +14,3 @@ ADD . .
 RUN mkdir -p /root/.kube
 RUN mv k8s/kubeconfig.yaml /root/.kube/config
 CMD go run *.go
-
