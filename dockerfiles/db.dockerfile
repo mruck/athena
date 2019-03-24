@@ -4,9 +4,9 @@ from debian:buster
 RUN apt-get update
 RUN apt-get install -y postgresql-client \
 sudo \
-vim 
+vim
 RUN mkdir /db
-ADD create_db.sh /db
-ADD discourse.dump /db/db.pgdump
+ADD ./fuzzer/create_db.sh /db
+ADD ./fuzzer/discourse.dump /db/db.pgdump
 WORKDIR /db
 ENTRYPOINT ./create_db.sh
