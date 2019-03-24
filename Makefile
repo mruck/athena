@@ -3,7 +3,12 @@ VENV_LOCATION ?= $(shell pwd)/venv
 
 MITM_TARGET ?= 3000
 
-.PHONY: postgres-start postgres-stop redis-start redis-stop python-test venv frontend
+.PHONY: postgres-start postgres-stop redis-start redis-stop python-test venv frontend debug-deployment
+
+# Bump images in debug deployment
+debug-deployment: fuzzer-client discourse-server
+	jq '.spec.template.spec.containers[1].image = "gcr.io/athena-fuzzer/discourse:'$(GIT_SHA)'"' pods/debug.deployment.json | jq '.spec.template.spec.containers[2].image = "gcr.io/athena-fuzzer/athena:'$(GIT_SHA)'"' > /tmp/deployments/$(GIT_SHA)
+	kubectl apply -f /tmp/deployments/$(GIT_SHA)
 
 postgres-stop:
 	-docker rm -f my-postgres
