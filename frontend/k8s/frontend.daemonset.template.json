@@ -17,11 +17,13 @@
                 }
             },
             "spec": {
+                "automountServiceAccountToken": false,
                 "containers": [
                     {
                         "name": "frontend",
                         "image": "gcr.io/athena-fuzzer/frontend:48a081767f",
                         "env": [
+                            {"name": "KUBECONFIG", "value": "/etc/secrets/kubeconfig/kubeconfig"}
                         ],
                         "command": [
                             "bash",
