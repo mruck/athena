@@ -21,4 +21,5 @@ RUN make venv
 
 ADD . /client
 
-ENTRYPOINT ./fuzzer/run_client.sh
+WORKDIR /client/fuzzer
+ENTRYPOINT ./run_client.sh
