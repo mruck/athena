@@ -15,7 +15,7 @@ venv: pip-reqs.txt
 	-rm -rf $(VENV_LOCATION)
 	virtualenv -p python3 $(VENV_LOCATION)
 	$(VENV_LOCATION)/bin/pip install -r pip-reqs.txt
-	ln -s $(shell pwd) $(VENV_LOCATION)/lib/python3.7/site-packages/fuzzer
+	ln -s $(shell pwd)/fuzzer $(VENV_LOCATION)/lib/python3.7/site-packages/fuzzer
 	printf 'Please run the following:\nsource $(VENV_LOCATION)/bin/activate\n'
 
 fuzzer-db:

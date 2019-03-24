@@ -7,8 +7,8 @@ RUN apt-get update && apt-get install -y bpython3 \
     python3-pip \
     sudo \
     watch \
-    vim 
-RUN pip3 install psycopg2 requests 
+    vim
+RUN pip3 install psycopg2 requests
 RUN pip3 install --upgrade virtualenv
 
 RUN mkdir /client
@@ -21,4 +21,4 @@ RUN make venv
 
 ADD . /client
 
-ENTRYPOINT ./run_client.sh
+ENTRYPOINT ./fuzzer/run_client.sh
