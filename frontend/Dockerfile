@@ -12,5 +12,4 @@ RUN mkdir /frontend
 WORKDIR /frontend
 ADD . .
 RUN mkdir -p /root/.kube
-RUN mv k8s/kubeconfig.yaml /root/.kube/config
 CMD go run *.go

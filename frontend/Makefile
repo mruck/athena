@@ -1,6 +1,6 @@
 .PHONY: frontend_img frontend_deploy
 
-GIT_SHA = $(shell git log | head -n 1 | cut -f 2 -d ' ' | head -c 10)
+GIT_SHA = $(shell bash ../scripts/get_git_sha.sh)
 
 frontend_img:
 	cp ~/.kube/config  k8s/kubeconfig.yaml
