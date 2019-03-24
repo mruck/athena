@@ -18,7 +18,8 @@ type Route struct {
 type Routes []Route
 
 func NewRouter() (*mux.Router, error) {
-	db := database.MustGetDatabase("localhost", "27017", "athena")
+	host := MustGetHost()
+	db := database.MustGetDatabase(host, "27017", "athena")
 	server, err := NewServer(db)
 	if err != nil {
 		return nil, err
