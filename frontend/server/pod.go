@@ -14,9 +14,8 @@ import (
 // Generate an Athena Container.
 func getAthenaContainer(targetID string) v1.Container {
 	var AthenaContainer = v1.Container{
-		Name:    "athena",
-		Image:   "gcr.io/athena-fuzzer/athena:07b1cc1e09",
-		Command: []string{"./run_client.sh"},
+		Name:  "athena",
+		Image: "gcr.io/athena-fuzzer/athena:2c9c689c4b74aec28e6a",
 		VolumeMounts: []v1.VolumeMount{
 			v1.VolumeMount{
 				Name:      "results-dir",
