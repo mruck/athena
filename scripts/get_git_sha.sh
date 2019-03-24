@@ -9,5 +9,4 @@ repo_root=$(git rev-parse --show-toplevel)
 git_sha=$(git log | head -n 1 | cut -f 2 -d ' ' | head -c 10)
 suffix=$([ -z "$(git status --porcelain)" ] || hash_source $repo_root)
 
-echo "$git_sha"
-echo "$suffix"
+echo "$git_sha""$suffix"
