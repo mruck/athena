@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"os/exec"
+	"runtime"
 
 	"github.com/google/uuid"
 )
@@ -11,6 +12,17 @@ import (
 func NewTargetID() string {
 	return uuid.New().String()
 
+}
+
+//MustGetHost returns the host platform. Useful to tell if we are on k8s or local
+func MustGetHost() string {
+	if runtime.GOOS == "linux" {
+		return "mongodb-service"
+	}
+	if runtime.GOOS == "darwin" {
+		return "localhost"
+	}
+	panic("Unsupported OS")
 }
 
 // Capture stdout/stderr of exec.Command. If it errors, wrap the error
