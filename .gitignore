@@ -4,3 +4,4 @@ cookie
 *.pyc
 .vscode/
 venv
+.kubeconfig
