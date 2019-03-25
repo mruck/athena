@@ -23,6 +23,7 @@
                         "name": "frontend",
                         "image": "gcr.io/athena-fuzzer/frontend:48a081767f",
                         "env": [
+                            {"name": "ATHENA_IMAGE", "value": ""},
                             {"name": "KUBECONFIG", "value": "/etc/secrets/kubeconfig/kubeconfig"}
                         ],
                         "command": [
