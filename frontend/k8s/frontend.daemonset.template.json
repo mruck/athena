@@ -26,11 +26,6 @@
                             {"name": "ATHENA_IMAGE", "value": ""},
                             {"name": "KUBECONFIG", "value": "/etc/secrets/kubeconfig/kubeconfig"}
                         ],
-                        "command": [
-                            "bash",
-                            "-c",
-                            "go run *.go"
-                        ],
                         "volumeMounts": [
                             { "name": "kubeconfig", "mountPath": "/etc/secrets/kubeconfig" }
                         ]
