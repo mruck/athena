@@ -7,7 +7,7 @@
   "spec": {
     "type": "NodePort",
     "ports": [{
-      "port": 1111,
+      "port": 8081,
       "nodePort": 30080
     }],
     "selector": {
