@@ -107,7 +107,11 @@ func (server Server) FuzzTarget(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Add the Athena Container to the uninstrumented pod
-	pod = InjectAthenaContainer(pod)
+	err = InjectAthenaContainer(&pod)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 
 	// Launch the pod with the athena container
 	err = RunPod(w, pod, false)
