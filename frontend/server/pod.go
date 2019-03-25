@@ -12,10 +12,15 @@ import (
 )
 
 // Generate an Athena Container.
-func getAthenaContainer(targetID string) v1.Container {
+func getAthenaContainer(targetID string) (*v1.Container, error) {
+	image := os.Getenv("ATHENA_IMAGE")
+	if image == "" {
+		err := fmt.Errorf("No Athena image provided")
+		return nil, err
+	}
 	var AthenaContainer = v1.Container{
 		Name:  "athena",
-		Image: "gcr.io/athena-fuzzer/athena:2c9c689c4b74aec28e6a",
+		Image: image,
 		VolumeMounts: []v1.VolumeMount{
 			v1.VolumeMount{
 				Name:      "results-dir",
@@ -26,17 +31,20 @@ func getAthenaContainer(targetID string) v1.Container {
 	AthenaContainer.Env = []v1.EnvVar{
 		v1.EnvVar{Name: "TARGET_ID", Value: targetID},
 	}
-	return AthenaContainer
+	return &AthenaContainer, nil
 
 }
 
 // Add the Athena container to the uninstrumented pod
-func InjectAthenaContainer(pod v1.Pod) v1.Pod {
+func InjectAthenaContainer(pod *v1.Pod) error {
 	athenaPodName := NewTargetID()
 	pod.ObjectMeta.Name = athenaPodName
-	athenaContainer := getAthenaContainer(athenaPodName)
-	pod.Spec.Containers = append(pod.Spec.Containers, athenaContainer)
-	return pod
+	athenaContainer, err := getAthenaContainer(athenaPodName)
+	if err != nil {
+		return err
+	}
+	pod.Spec.Containers = append(pod.Spec.Containers, *athenaContainer)
+	return nil
 }
 
 // Build a vanilla pod spec.  This pod is uninstrumented/barebones
