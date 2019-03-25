@@ -6,10 +6,8 @@ set -e
 
 echo "Building and deploying frontend"
 make frontend_deploy
-echo "Sleeping 120 while frontend deploys"
-sleep 120
+sleep 30
 containers=$(cat scripts/containers.json)
-echo $containers
 echo "Hitting /FuzzTarget"
 pod=$(curl -d "$containers" http://35.192.59.73:30080/FuzzTarget)
 if [ -z “$pod” ]; then
