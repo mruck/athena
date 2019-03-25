@@ -3,7 +3,7 @@ VENV_LOCATION ?= $(shell pwd)/venv
 
 MITM_TARGET ?= 3000
 
-.PHONY: postgres-start postgres-stop redis-start redis-stop python-test venv frontend debug-deployment
+.PHONY: postgres-start postgres-stop redis-start redis-stop python-test venv debug-deployment frontend_deploy frontend_img
 
 # Bump images in debug deployment
 debug-deployment: fuzzer-client discourse-server
@@ -32,6 +32,14 @@ run-db:
 fuzzer-client:
 	docker build -f dockerfiles/client.dockerfile -t gcr.io/athena-fuzzer/athena:$(GIT_SHA) .
 	docker push gcr.io/athena-fuzzer/athena:$(GIT_SHA)
+
+frontend_img:
+	docker build -t gcr.io/athena-fuzzer/frontend:$(GIT_SHA) frontend
+	docker push gcr.io/athena-fuzzer/frontend:$(GIT_SHA)
+
+frontend_deploy: frontend_img fuzzer-client
+	jq '.spec.template.spec.containers[0].image = "gcr.io/athena-fuzzer/frontend:'$(GIT_SHA)'"' frontend/k8s/frontend.daemonset.template.json | jq '.spec.template.spec.containers[0].env[0].value = "gcr.io/athena-fuzzer/athena:'$(GIT_SHA)'"' > /tmp/frontend.daemonset.json
+	kubectl apply -f /tmp/frontend.daemonset.json
 
 discourse-server:
 	docker build -t gcr.io/athena-fuzzer/discourse:$(GIT_SHA) -f ../discourse-fork/Dockerfile ..
