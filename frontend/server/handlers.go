@@ -68,32 +68,36 @@ func (server *Server) ExceptionsHandler(w http.ResponseWriter, r *http.Request) 
 	w.Write(resultBytes)
 }
 
-// Read in user data.  We expect: a target name, []v1.Container, a database name, type
-// and port.
-func readBody(w http.ResponseWriter, r *http.Request) ([]v1.Container, error) {
+// Read body from request and marshal into opaque struct
+func readBody(w http.ResponseWriter, r *http.Request, containers *[]v1.Container) error {
 	b, err := ioutil.ReadAll(r.Body)
 	defer r.Body.Close()
 	if err != nil {
 		err = fmt.Errorf("error reading from body: %v", err)
 		http.Error(w, err.Error(), 500)
-		return nil, err
+		return err
 	}
 	// Unmarshal
-	var containers []v1.Container
-	err = json.Unmarshal(b, &containers)
+	err = json.Unmarshal(b, containers)
 	if err != nil {
 		err = fmt.Errorf("error unmarshaling []v1.Container: %v", err)
 		http.Error(w, err.Error(), 500)
-		return nil, err
+		return err
 	}
-	return containers, nil
+	return nil
+}
+
+// User input is expected in this form
+type Target struct {
+	//Name       string
+	Containers []v1.Container
 }
 
 func (server Server) FuzzTarget(w http.ResponseWriter, r *http.Request) {
 	// Get list of containers pushed by user
-	containers, err := readBody(w, r)
+	var containers []v1.Container
+	err := readBody(w, r, &containers)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
 		return
 	}
 
