@@ -3,7 +3,6 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -74,29 +73,10 @@ type Target struct {
 	Containers []v1.Container
 }
 
-// Read body from request and marshal into opaque struct
-func readBody(w http.ResponseWriter, r *http.Request, dst *Target) error {
-	b, err := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
-	if err != nil {
-		err = fmt.Errorf("error reading from body: %v", err)
-		http.Error(w, err.Error(), 500)
-		return err
-	}
-	// Unmarshal
-	err = json.Unmarshal(b, dst)
-	if err != nil {
-		err = fmt.Errorf("error unmarshaling []v1.Container: %v", err)
-		http.Error(w, err.Error(), 500)
-		return err
-	}
-	return nil
-}
-
 func (server Server) FuzzTarget(w http.ResponseWriter, r *http.Request) {
 	// Get list of containers pushed by user
 	var target Target
-	err := readBody(w, r, &target)
+	err := ParseBody(w, r, &target)
 	if err != nil {
 		return
 	}

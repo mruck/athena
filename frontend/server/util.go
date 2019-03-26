@@ -1,7 +1,10 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"os/exec"
 	"runtime"
 
@@ -40,4 +43,23 @@ func ExecWrapper(proc *exec.Cmd) ([]byte, error) {
 		return stdoutStderr, err
 	}
 	return stdoutStderr, nil
+}
+
+// ParseBody reads from request and marshal into opaque struct
+func ParseBody(w http.ResponseWriter, r *http.Request, dst interface{}) error {
+	b, err := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
+	if err != nil {
+		err = fmt.Errorf("error reading from body: %v", err)
+		http.Error(w, err.Error(), 500)
+		return err
+	}
+	// Unmarshal
+	err = json.Unmarshal(b, dst)
+	if err != nil {
+		err = fmt.Errorf("error unmarshaling []v1.Container: %v", err)
+		http.Error(w, err.Error(), 500)
+		return err
+	}
+	return nil
 }
