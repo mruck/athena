@@ -80,10 +80,9 @@ func (server Server) FuzzTarget(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	fmt.Printf("Fuzzing target %s\n", target.Name)
 
 	// Generate a vanilla pod with the user provided containers
-	pod := buildPod(target.Containers)
+	pod := buildPod(target.Containers, target.Name)
 
 	// Sanity check that the uninstrumented target runs
 	err = RunPod(w, pod, true)
@@ -91,8 +90,7 @@ func (server Server) FuzzTarget(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Add the Athena Container to the uninstrumented pod
-	err = InjectAthenaContainer(&pod)
+	err = MakeFuzzable(&pod)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
