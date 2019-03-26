@@ -70,7 +70,7 @@ func (server *Server) ExceptionsHandler(w http.ResponseWriter, r *http.Request) 
 
 // User input is expected in this form
 type Target struct {
-	//Name       string
+	Name       string
 	Containers []v1.Container
 }
 
@@ -100,10 +100,10 @@ func (server Server) FuzzTarget(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	containers := target.Containers
+	fmt.Printf("Fuzzing target %s\n", target.Name)
 
 	// Generate a vanilla pod with the user provided containers
-	pod := buildPod(containers)
+	pod := buildPod(target.Containers)
 
 	// Sanity check that the uninstrumented target runs
 	err = RunPod(w, pod, true)
