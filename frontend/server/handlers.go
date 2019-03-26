@@ -68,8 +68,14 @@ func (server *Server) ExceptionsHandler(w http.ResponseWriter, r *http.Request) 
 	w.Write(resultBytes)
 }
 
+// User input is expected in this form
+type Target struct {
+	//Name       string
+	Containers []v1.Container
+}
+
 // Read body from request and marshal into opaque struct
-func readBody(w http.ResponseWriter, r *http.Request, containers *[]v1.Container) error {
+func readBody(w http.ResponseWriter, r *http.Request, dst *Target) error {
 	b, err := ioutil.ReadAll(r.Body)
 	defer r.Body.Close()
 	if err != nil {
@@ -78,7 +84,7 @@ func readBody(w http.ResponseWriter, r *http.Request, containers *[]v1.Container
 		return err
 	}
 	// Unmarshal
-	err = json.Unmarshal(b, containers)
+	err = json.Unmarshal(b, dst)
 	if err != nil {
 		err = fmt.Errorf("error unmarshaling []v1.Container: %v", err)
 		http.Error(w, err.Error(), 500)
@@ -87,19 +93,14 @@ func readBody(w http.ResponseWriter, r *http.Request, containers *[]v1.Container
 	return nil
 }
 
-// User input is expected in this form
-type Target struct {
-	//Name       string
-	Containers []v1.Container
-}
-
 func (server Server) FuzzTarget(w http.ResponseWriter, r *http.Request) {
 	// Get list of containers pushed by user
-	var containers []v1.Container
-	err := readBody(w, r, &containers)
+	var target Target
+	err := readBody(w, r, &target)
 	if err != nil {
 		return
 	}
+	containers := target.Containers
 
 	// Generate a vanilla pod with the user provided containers
 	pod := buildPod(containers)
