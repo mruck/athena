@@ -104,5 +104,5 @@ func (server Server) FuzzTarget(w http.ResponseWriter, r *http.Request) {
 
 	// We are fuzzing!
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(pod.ObjectMeta.Name))
+	w.Write([]byte(pod.ObjectMeta.Labels["TargetID"]))
 }

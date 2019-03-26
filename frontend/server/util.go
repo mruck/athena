@@ -14,13 +14,13 @@ import (
 //NewTargetID returns a uuid for the fuzz target of the form:
 // targetName - target - uuid
 func NewTargetID(name string) string {
-	return name + "-target-" + uuid.New().String()
+	return name + "-target-" + uuid.New().String()[:8]
 }
 
 //NewPodID returns a uuid for the pod of the form:
 // targetName - pod - uuid
 func NewPodID(name string) string {
-	return name + "-pod-" + uuid.New().String()
+	return name + "-pod-" + uuid.New().String()[:8]
 }
 
 //MustGetHost returns the host platform. Useful to tell if we are on k8s or local
