@@ -9,11 +9,11 @@ make frontend_deploy
 sleep 30
 containers=$(cat scripts/target.json)
 echo "Hitting /FuzzTarget"
-pod=$(curl -d "$containers" http://35.238.131.114:30080/FuzzTarget)
-if [ -z “$pod” ]; then
-    echo "Error spawning target"; echo $pod; exit
+target_id=$(curl -d "$containers" http://35.238.131.114:30080/FuzzTarget)
+if [ -z “$target_id” ]; then
+    echo "Error spawning target"; exit
 fi
-echo "spawned pod: $pod"
+echo "spawned pod with target id: $target_id"
 sleep 120
-exceptions=$(curl http://35.238.131.114:30080/Exceptions/$pod)
+exceptions=$(curl http://35.238.131.114:30080/Exceptions/$target_id)
 echo "exceptions: $exceptions"
