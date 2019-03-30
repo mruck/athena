@@ -37,9 +37,8 @@ func getAthenaContainer(targetID string) (*v1.Container, error) {
 
 // Add the Athena container to the uninstrumented pod
 func InjectAthenaContainer(pod *v1.Pod) error {
-	athenaPodName := NewTargetID()
-	pod.ObjectMeta.Name = athenaPodName
-	athenaContainer, err := getAthenaContainer(athenaPodName)
+	targetID := pod.ObjectMeta.Labels["TargetID"]
+	athenaContainer, err := getAthenaContainer(targetID)
 	if err != nil {
 		return err
 	}
@@ -47,17 +46,29 @@ func InjectAthenaContainer(pod *v1.Pod) error {
 	return nil
 }
 
+//MakeFuzzable makes a pod fuzzable by injecting the Athena container
+func MakeFuzzable(pod *v1.Pod) error {
+	// Make this a new pod
+	name := pod.ObjectMeta.Labels["name"]
+	pod.ObjectMeta.Name = NewPodID(name)
+
+	// Unique identifier for target
+	targetID := NewTargetID(name)
+	pod.ObjectMeta.Labels = map[string]string{"fuzz_pod": "true", "TargetID": targetID, "name": name}
+
+	// Add the Athena Container to the uninstrumented pod
+	return InjectAthenaContainer(pod)
+}
+
 // Build a vanilla pod spec.  This pod is uninstrumented/barebones
 // (i.e. no Athena container injected)
-func buildPod(containers []v1.Container) v1.Pod {
+func buildPod(containers []v1.Container, name string) v1.Pod {
 	var pod v1.Pod
 	// Basic initialization
 	pod.APIVersion = "v1"
 	pod.Kind = "Pod"
-	// Unique identifier for pod and target
-	targetID := NewTargetID()
-	pod.ObjectMeta.Name = targetID
-	pod.ObjectMeta.Labels = map[string]string{"fuzz_pod": "true", "targetID": targetID}
+	pod.ObjectMeta.Name = NewPodID(name)
+	pod.ObjectMeta.Labels = map[string]string{"name": name}
 	// Add target containers
 	pod.Spec.Containers = containers
 	// Add shared mount

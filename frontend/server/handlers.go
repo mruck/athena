@@ -3,7 +3,6 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -68,37 +67,22 @@ func (server *Server) ExceptionsHandler(w http.ResponseWriter, r *http.Request) 
 	w.Write(resultBytes)
 }
 
-// Read in user data.  We expect: a target name, []v1.Container, a database name, type
-// and port.
-func readBody(w http.ResponseWriter, r *http.Request) ([]v1.Container, error) {
-	b, err := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
-	if err != nil {
-		err = fmt.Errorf("error reading from body: %v", err)
-		http.Error(w, err.Error(), 500)
-		return nil, err
-	}
-	// Unmarshal
-	var containers []v1.Container
-	err = json.Unmarshal(b, &containers)
-	if err != nil {
-		err = fmt.Errorf("error unmarshaling []v1.Container: %v", err)
-		http.Error(w, err.Error(), 500)
-		return nil, err
-	}
-	return containers, nil
+// User input is expected in this form
+type Target struct {
+	Name       string
+	Containers []v1.Container
 }
 
 func (server Server) FuzzTarget(w http.ResponseWriter, r *http.Request) {
 	// Get list of containers pushed by user
-	containers, err := readBody(w, r)
+	var target Target
+	err := ParseBody(w, r, &target)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
 		return
 	}
 
 	// Generate a vanilla pod with the user provided containers
-	pod := buildPod(containers)
+	pod := buildPod(target.Containers, target.Name)
 
 	// Sanity check that the uninstrumented target runs
 	err = RunPod(w, pod, true)
@@ -106,8 +90,7 @@ func (server Server) FuzzTarget(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Add the Athena Container to the uninstrumented pod
-	err = InjectAthenaContainer(&pod)
+	err = MakeFuzzable(&pod)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -121,5 +104,5 @@ func (server Server) FuzzTarget(w http.ResponseWriter, r *http.Request) {
 
 	// We are fuzzing!
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(pod.ObjectMeta.Name))
+	w.Write([]byte(pod.ObjectMeta.Labels["TargetID"]))
 }
