@@ -1,0 +1,43 @@
+{
+  "port": 3000,
+  "db": {
+    "name": "huggin_production",
+    "port": 5432,
+    "host": "localhost",
+    "user": "root",
+    "password": "password"
+  },
+  "name": "huggin",
+  "containers": [
+    {
+      "env": [
+        {
+          "name": "POSTGRES_USER",
+          "value": "root"
+        }
+      ],
+      "image": "postgres:10.5",
+      "name": "my-postgres"
+    },
+    {
+      "name": "target",
+      "image": "huginn/huginn:8757d2ae9e1440daa5a7ce6fb9e735f4d03dfdfa",
+      "env": [
+        {
+          "name": "RESULTS_PATH",
+          "value": "/tmp/results"
+        },
+        {
+          "name": "POSTGRES_PORT_5432_TCP_ADDR",
+          "value": "localhost"
+        }
+      ],
+      "volumeMounts": [
+        {
+          "mountPath": "/tmp/results",
+          "name": "results-dir"
+        }
+      ]
+    }
+  ]
+}
