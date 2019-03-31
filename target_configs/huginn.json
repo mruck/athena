@@ -1,7 +1,7 @@
 {
   "port": 3000,
   "db": {
-    "name": "huggin_production",
+    "name": "huginn_production",
     "port": 5432,
     "host": "localhost",
     "user": "root",
