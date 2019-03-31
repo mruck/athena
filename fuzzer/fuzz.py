@@ -176,7 +176,7 @@ def fuzz(
 
     # open a connection with the server (need this to keep track of cookies)
     conn = netutils.Connection(state.cookies)
-    conn.is_alive()
+    conn.is_alive(PORT)
 
     # TODO: Get rid of this or move it to postgres2
     postgres.connect_to_db(FUZZ_DB)
