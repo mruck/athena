@@ -1,4 +1,12 @@
 {
+  "port": 8080,
+  "db": {
+    "name": "fuzz_db",
+    "port": 5342,
+    "host": "localhost",
+    "user": "root",
+    "password": "mysecretpassword"
+  },
   "name": "discourse",
   "containers": [
     {

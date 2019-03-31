@@ -38,9 +38,9 @@ def target_db_port():
 
 
 def target_dbname():
-    db = os.getenv("TARGET_DBNAME")
+    db = os.getenv("TARGET_DB_NAME")
     if db is None:
-        print("Error: TARGET_DBNAME not specified")
+        print("Error: TARGET_DB_NAME not specified")
         exit(1)
     return db
 
