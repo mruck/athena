@@ -67,12 +67,26 @@ func (server *Server) ExceptionsHandler(w http.ResponseWriter, r *http.Request) 
 	w.Write(resultBytes)
 }
 
-// User input is expected in this form
+// TargetDB containers metadata about the database we are instrumenting
+type TargetDB struct {
+	User     string
+	Password string
+	Host     string
+	Port     int
+	Name     string
+}
+
+// Target is the expected form of user input
 type Target struct {
-	Name       string
+	// Name of the target application
+	Name string
+	// Port the target app is running on
+	Port       int
+	Db         TargetDB
 	Containers []v1.Container
 }
 
+// FuzzTarget is an endpoint to upload metadata about a target and start a fuzz job
 func (server Server) FuzzTarget(w http.ResponseWriter, r *http.Request) {
 	// Get list of containers pushed by user
 	var target Target
@@ -90,7 +104,7 @@ func (server Server) FuzzTarget(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = MakeFuzzable(&pod)
+	err = MakeFuzzable(&pod, &target)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

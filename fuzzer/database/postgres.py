@@ -72,9 +72,12 @@ def connect_to_db(db_name):
     global cursor
     global conn
 
-    conn_str = (
-        "port='5432' dbname='%s' user='root' host='localhost' password='mysecretpassword'"
-        % db_name
+    conn_str = "port='%s' dbname='%s' user='%s' host='%s' password='%s'" % (
+        util.target_db_port(),
+        db_name,
+        util.target_db_user(),
+        util.target_db_host(),
+        util.target_db_password(),
     )
     conn = psycopg2.connect(conn_str)
     cursor = conn.cursor()

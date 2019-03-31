@@ -21,6 +21,54 @@ rand_counter = 0
 logger = logging.getLogger("debug")
 
 
+def target_app_port():
+    port = os.getenv("TARGET_APP_PORT")
+    if port is None:
+        print("Error: TARGET_APP_PORT not specified")
+        exit(1)
+    return int(port)
+
+
+def target_db_port():
+    port = os.getenv("TARGET_DB_PORT")
+    if port is None:
+        print("Error: TARGET_DB_PORT not specified")
+        exit(1)
+    return port
+
+
+def target_dbname():
+    db = os.getenv("TARGET_DB_NAME")
+    if db is None:
+        print("Error: TARGET_DB_NAME not specified")
+        exit(1)
+    return db
+
+
+def target_db_host():
+    host = os.getenv("TARGET_DB_HOST")
+    if host is None:
+        print("Error: TARGET_DB_HOST not specified")
+        exit(1)
+    return host
+
+
+def target_db_user():
+    user = os.getenv("TARGET_DB_USER")
+    if user is None:
+        print("Error: TARGET_DB_USER not specified")
+        exit(1)
+    return user
+
+
+def target_db_password():
+    password = os.getenv("TARGET_DB_PASSWORD")
+    if password is None:
+        print("Error: TARGET_DB_PASSWORD not specified")
+        exit(1)
+    return password
+
+
 def get_target_id():
     target_id = os.getenv("TARGET_ID")
     # Use a dummy id

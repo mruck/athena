@@ -7,20 +7,37 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	v1 "k8s.io/api/core/v1"
 )
 
+func buildEnv(targetID string, target *Target) []v1.EnvVar {
+	return []v1.EnvVar{
+		v1.EnvVar{Name: "TARGET_APP_PORT", Value: strconv.Itoa(target.Port)},
+		v1.EnvVar{Name: "TARGET_DB_HOST", Value: target.Db.Host},
+		v1.EnvVar{Name: "TARGET_DB_USER", Value: target.Db.User},
+		v1.EnvVar{Name: "TARGET_DB_PASSWORD", Value: target.Db.Password},
+		v1.EnvVar{Name: "TARGET_DB_PORT", Value: strconv.Itoa(target.Db.Port)},
+		v1.EnvVar{Name: "TARGET_DB_NAME", Value: target.Db.Name},
+		v1.EnvVar{Name: "TARGET_ID", Value: targetID},
+	}
+}
+
 // Generate an Athena Container.
-func getAthenaContainer(targetID string) (*v1.Container, error) {
+func buildAthenaContainer(targetID string, target *Target) (*v1.Container, error) {
+	// We expect the frontend to be provided the latest athena image,
+	// otherwise how else will we know which image to run?
 	image := os.Getenv("ATHENA_IMAGE")
 	if image == "" {
-		err := fmt.Errorf("No Athena image provided")
+		err := fmt.Errorf("no Athena image provided")
 		return nil, err
 	}
+	env := buildEnv(targetID, target)
 	var AthenaContainer = v1.Container{
 		Name:  "athena",
 		Image: image,
+		Env:   env,
 		VolumeMounts: []v1.VolumeMount{
 			v1.VolumeMount{
 				Name:      "results-dir",
@@ -28,17 +45,14 @@ func getAthenaContainer(targetID string) (*v1.Container, error) {
 			},
 		},
 	}
-	AthenaContainer.Env = []v1.EnvVar{
-		v1.EnvVar{Name: "TARGET_ID", Value: targetID},
-	}
 	return &AthenaContainer, nil
 
 }
 
 // Add the Athena container to the uninstrumented pod
-func InjectAthenaContainer(pod *v1.Pod) error {
+func InjectAthenaContainer(pod *v1.Pod, target *Target) error {
 	targetID := pod.ObjectMeta.Labels["TargetID"]
-	athenaContainer, err := getAthenaContainer(targetID)
+	athenaContainer, err := buildAthenaContainer(targetID, target)
 	if err != nil {
 		return err
 	}
@@ -47,7 +61,7 @@ func InjectAthenaContainer(pod *v1.Pod) error {
 }
 
 //MakeFuzzable makes a pod fuzzable by injecting the Athena container
-func MakeFuzzable(pod *v1.Pod) error {
+func MakeFuzzable(pod *v1.Pod, target *Target) error {
 	// Make this a new pod
 	name := pod.ObjectMeta.Labels["name"]
 	pod.ObjectMeta.Name = NewPodID(name)
@@ -57,7 +71,7 @@ func MakeFuzzable(pod *v1.Pod) error {
 	pod.ObjectMeta.Labels = map[string]string{"fuzz_pod": "true", "TargetID": targetID, "name": name}
 
 	// Add the Athena Container to the uninstrumented pod
-	return InjectAthenaContainer(pod)
+	return InjectAthenaContainer(pod, target)
 }
 
 // Build a vanilla pod spec.  This pod is uninstrumented/barebones
