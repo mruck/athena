@@ -7,7 +7,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"gopkg.in/mgo.v2"
-	v1 "k8s.io/api/core/v1"
 )
 
 type Server struct {
@@ -67,25 +66,6 @@ func (server *Server) ExceptionsHandler(w http.ResponseWriter, r *http.Request) 
 	w.Write(resultBytes)
 }
 
-// TargetDB containers metadata about the database we are instrumenting
-type TargetDB struct {
-	User     string
-	Password string
-	Host     string
-	Port     int
-	Name     string
-}
-
-// Target is the expected form of user input
-type Target struct {
-	// Name of the target application
-	Name string
-	// Port the target app is running on
-	Port       int
-	Db         TargetDB
-	Containers []v1.Container
-}
-
 // FuzzTarget is an endpoint to upload metadata about a target and start a fuzz job
 func (server Server) FuzzTarget(w http.ResponseWriter, r *http.Request) {
 	// Get list of containers pushed by user
@@ -95,8 +75,14 @@ func (server Server) FuzzTarget(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = ValidateTarget(&target)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
 	// Generate a vanilla pod with the user provided containers
-	pod := buildPod(target.Containers, target.Name)
+	pod := buildPod(target.Containers, *target.Name)
 
 	// Sanity check that the uninstrumented target runs
 	err = RunPod(w, pod, true)

@@ -14,12 +14,12 @@ import (
 
 func buildEnv(targetID string, target *Target) []v1.EnvVar {
 	return []v1.EnvVar{
-		v1.EnvVar{Name: "TARGET_APP_PORT", Value: strconv.Itoa(target.Port)},
-		v1.EnvVar{Name: "TARGET_DB_HOST", Value: target.Db.Host},
-		v1.EnvVar{Name: "TARGET_DB_USER", Value: target.Db.User},
-		v1.EnvVar{Name: "TARGET_DB_PASSWORD", Value: target.Db.Password},
-		v1.EnvVar{Name: "TARGET_DB_PORT", Value: strconv.Itoa(target.Db.Port)},
-		v1.EnvVar{Name: "TARGET_DB_NAME", Value: target.Db.Name},
+		v1.EnvVar{Name: "TARGET_APP_PORT", Value: strconv.Itoa(*target.Port)},
+		v1.EnvVar{Name: "TARGET_DB_HOST", Value: *target.Db.Host},
+		v1.EnvVar{Name: "TARGET_DB_USER", Value: *target.Db.User},
+		v1.EnvVar{Name: "TARGET_DB_PASSWORD", Value: *target.Db.Password},
+		v1.EnvVar{Name: "TARGET_DB_PORT", Value: strconv.Itoa(*target.Db.Port)},
+		v1.EnvVar{Name: "TARGET_DB_NAME", Value: *target.Db.Name},
 		v1.EnvVar{Name: "TARGET_ID", Value: targetID},
 	}
 }
