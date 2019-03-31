@@ -7,18 +7,20 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	v1 "k8s.io/api/core/v1"
 )
 
-func buildEnv(target *Target) []v1.EnvVar {
+func buildEnv(targetID string, target *Target) []v1.EnvVar {
 	return []v1.EnvVar{
-		v1.EnvVar{Name: "TARGET_APP_PORT", Value: string(target.Port)},
+		v1.EnvVar{Name: "TARGET_APP_PORT", Value: strconv.Itoa(target.Port)},
 		v1.EnvVar{Name: "TARGET_DB_HOST", Value: target.Db.Host},
 		v1.EnvVar{Name: "TARGET_DB_USER", Value: target.Db.User},
 		v1.EnvVar{Name: "TARGET_DB_PASSWORD", Value: target.Db.Password},
-		v1.EnvVar{Name: "TARGET_DB_PORT", Value: string(target.Db.Port)},
-		v1.EnvVar{Name: "TARGET_DBNAME", Value: target.Db.Name},
+		v1.EnvVar{Name: "TARGET_DB_PORT", Value: strconv.Itoa(target.Db.Port)},
+		v1.EnvVar{Name: "TARGET_DB_NAME", Value: target.Db.Name},
+		v1.EnvVar{Name: "TARGET_ID", Value: targetID},
 	}
 }
 
@@ -31,7 +33,7 @@ func buildAthenaContainer(targetID string, target *Target) (*v1.Container, error
 		err := fmt.Errorf("no Athena image provided")
 		return nil, err
 	}
-	env := buildEnv(target)
+	env := buildEnv(targetID, target)
 	var AthenaContainer = v1.Container{
 		Name:  "athena",
 		Image: image,
@@ -42,9 +44,6 @@ func buildAthenaContainer(targetID string, target *Target) (*v1.Container, error
 				MountPath: "/tmp/results",
 			},
 		},
-	}
-	AthenaContainer.Env = []v1.EnvVar{
-		v1.EnvVar{Name: "TARGET_ID", Value: targetID},
 	}
 	return &AthenaContainer, nil
 
