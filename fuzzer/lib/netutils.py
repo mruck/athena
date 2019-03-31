@@ -51,9 +51,9 @@ class Connection:
                 )
             except urllib.error.URLError:
                 pass
-        if ret_code != 200:
-            print("Error: ret code is %d" % ret_code)
-            assert False
+        # if ret_code != 200:
+        #    print("Error: ret code is %d" % ret_code)
+        #    assert False
 
     def _format_body_params(self, body, headers):
         # The HAR sent JSON so lets stick to that

@@ -43,3 +43,4 @@
 {"git_ref":"2f4d3edf072d6bc8a661b374acab30ad0f693348","git_branch":"env_vars","coverage":16.99992199485166,"success_rate":0.5616883116883117,"total_requests":308,"status_codes":{"200":173,"400":16,"403":15,"404":79,"409":2,"422":13,"500":10}}
 {"git_ref":"ba9fe9e5411250186b5b3f4497591d2ad91e0dec","git_branch":"env_vars","coverage":17.064926285134817,"success_rate":0.5620915032679739,"total_requests":306,"status_codes":{"200":172,"400":15,"403":15,"404":79,"409":2,"422":13,"500":10}}
 {"git_ref":"02323f48330379ac5cba0f08f6b3c0731e8e07c7","git_branch":"env_vars","coverage":17.168933149587872,"success_rate":0.5732899022801303,"total_requests":307,"status_codes":{"200":176,"400":16,"403":15,"404":76,"409":2,"422":13,"500":9}}
+{"git_ref":"dc17c4f6ca002adeebfe1dbacb4c20d61c0f3da2","git_branch":"huginn","coverage":17.08572765802543,"success_rate":0.5584415584415584,"total_requests":308,"status_codes":{"200":172,"400":16,"403":15,"404":80,"409":2,"422":13,"500":10}}
