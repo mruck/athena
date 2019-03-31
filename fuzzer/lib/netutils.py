@@ -40,14 +40,14 @@ class Connection:
         if len(query_params) > 0:
             print(query_params)
 
-    def is_alive(self):
+    def is_alive(self, port):
         ret_code = None
         while ret_code is None:
             time.sleep(5)
             print("Polling...")
             try:
                 ret_code = self.send_request(
-                    "http://localhost:8080/rails/info/routes", "GET"
+                    "http://localhost:%s/rails/info/routes" % port, "GET"
                 )
             except urllib.error.URLError:
                 pass
