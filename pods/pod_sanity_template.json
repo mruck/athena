@@ -41,6 +41,16 @@
       {
         "name": "athena",
         "image": "gcr.io/athena-fuzzer/athena:4",
+        "env": [
+          {
+            "name": "TARGET_APP_PORT",
+            "value": "8080"
+          },
+          {
+            "name": "TARGET_DBNAME",
+            "value": "fuzz_db"
+          }
+        ],
         "volumeMounts": [
           {
             "mountPath": "/tmp/results",

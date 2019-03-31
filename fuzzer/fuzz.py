@@ -23,6 +23,7 @@ import fuzzer.database.postgres2 as postgres2
 import fuzzer.fuzz_state as fuzz_state
 import fuzzer.fuzz_stats as fuzz_stats
 import fuzzer.lib.netutils as netutils
+import fuzzer.lib.util as util
 
 # Max attempts allowed for querying an endpoint
 # after all parameters have been mutated
@@ -36,8 +37,8 @@ HAR_DUMP = "preprocess/visited_routes.json"
 logger = logging.getLogger("debug")
 
 RESULTS_PATH = "/tmp/results"
-PORT = 8080
-FUZZ_DB = "fuzz_db"
+PORT = util.target_app_port()
+FUZZ_DB = util.target_dbname()
 
 
 def init_logger(quiet=None):

@@ -47,6 +47,16 @@
             "image": "gcr.io/athena-fuzzer/athena:72b22b2947",
             "command": ["/bin/bash"],
             "args": ["-c", "while true; do sleep 1000;done"],
+            "env": [
+              {
+                "name": "TARGET_APP_PORT",
+                "value": "8080"
+              },
+              {
+                "name": "TARGET_DBNAME",
+                "value": "fuzz_db"
+              }
+            ],
             "volumeMounts": [
               {
                 "mountPath": "/tmp/results",
