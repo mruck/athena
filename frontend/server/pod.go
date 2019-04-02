@@ -60,6 +60,26 @@ func InjectAthenaContainer(pod *v1.Pod, target *Target) error {
 	return nil
 }
 
+// Build init container for rails-fork
+func mountRails(pod *v1.Pod) {
+	image := os.Getenv("RAILS_IMAGE")
+	if image == "" {
+		image = "some default image"
+		fmt.Printf("No rails image provided.  Using default image %s\n", image)
+	}
+	var railsContainer = v1.Container{
+		Name:  "rails-fork",
+		Image: image,
+		VolumeMounts: []v1.VolumeMount{
+			v1.VolumeMount{
+				Name:      "rails-fork",
+				MountPath: "/rails-fork",
+			},
+		},
+	}
+	pod.Spec.InitContainers = []v1.Container{railsContainer}
+}
+
 //MakeFuzzable makes a pod fuzzable by injecting the Athena container
 func MakeFuzzable(pod *v1.Pod, target *Target) error {
 	// Make this a new pod
@@ -69,6 +89,8 @@ func MakeFuzzable(pod *v1.Pod, target *Target) error {
 	// Unique identifier for target
 	targetID := NewTargetID(name)
 	pod.ObjectMeta.Labels = map[string]string{"fuzz_pod": "true", "TargetID": targetID, "name": name}
+
+	// Mount rails-fork
 
 	// Add the Athena Container to the uninstrumented pod
 	return InjectAthenaContainer(pod, target)
