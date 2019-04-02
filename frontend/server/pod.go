@@ -69,6 +69,12 @@ func buildRailsContainer() v1.Container {
 	return v1.Container{
 		Name:  "rails-fork",
 		Image: image,
+		VolumeMounts: []v1.VolumeMount{
+			v1.VolumeMount{
+				Name:      "rails-fork",
+				MountPath: "/rails-fork",
+			},
+		},
 	}
 }
 
