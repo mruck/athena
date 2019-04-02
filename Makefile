@@ -1,9 +1,12 @@
-GIT_SHA = $(shell bash scripts/get_git_sha.sh)
+GIT_SHA ?= $(shell bash scripts/get_git_sha.sh)
 VENV_LOCATION ?= $(shell pwd)/venv
 
 MITM_TARGET ?= 3000
 
 .PHONY: postgres-start postgres-stop redis-start redis-stop python-test venv debug-deployment frontend_deploy frontend_img
+
+rails:
+	GIT_SHA=$(GIT_SHA) $(MAKE) -C ../rails-fork rails
 
 # Bump images in debug deployment
 debug-deployment: fuzzer-client discourse-server
