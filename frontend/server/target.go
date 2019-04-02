@@ -55,5 +55,11 @@ func ValidateTarget(target *Target) error {
 	if target.Db.Name == nil {
 		return fmt.Errorf("error: must specify db name")
 	}
+	// Ensure the list of containers provided includes a container named "target".
+	// This is where rails-fork lives, and also the target application source code
+	// for instrumenting.
+	if GetTargetContainer(target.Containers) == nil {
+		return fmt.Errorf("Please provide a container named \"target\"")
+	}
 	return nil
 }

@@ -60,24 +60,51 @@ func InjectAthenaContainer(pod *v1.Pod, target *Target) error {
 	return nil
 }
 
-// Build init container for rails-fork
-func mountRails(pod *v1.Pod) {
+func buildRailsContainer() v1.Container {
 	image := os.Getenv("RAILS_IMAGE")
 	if image == "" {
-		image = "some default image"
+		image = "gcr.io/athena-fuzzer/rails:6f8a54aa0acd97a1c780"
 		fmt.Printf("No rails image provided.  Using default image %s\n", image)
 	}
-	var railsContainer = v1.Container{
+	return v1.Container{
 		Name:  "rails-fork",
 		Image: image,
-		VolumeMounts: []v1.VolumeMount{
-			v1.VolumeMount{
-				Name:      "rails-fork",
-				MountPath: "/rails-fork",
-			},
+	}
+}
+
+func GetTargetContainer(containers []v1.Container) *v1.Container {
+	for _, container := range containers {
+		// Found it
+		if container.Name == "target" {
+			return &container
+		}
+	}
+	return nil
+}
+
+// Build init container for rails-fork and add shared mount in target directory
+// to copy rails-fork to
+func mountRails(pod *v1.Pod) {
+	// Generate rails-fork container
+	railsContainer := buildRailsContainer()
+	pod.Spec.InitContainers = []v1.Container{railsContainer}
+
+	// Add rails-fork mount point to target container so that it can use our rails
+	targetContainer := GetTargetContainer(pod.Spec.Containers)
+	railsVolumeMount := v1.VolumeMount{
+		Name:      "rails-fork",
+		MountPath: "/rails-fork",
+	}
+	targetContainer.VolumeMounts = append(targetContainer.VolumeMounts, railsVolumeMount)
+
+	// Add rails-fork volume to pod spec
+	railsVolume := v1.Volume{
+		Name: "rails-fork",
+		VolumeSource: v1.VolumeSource{
+			EmptyDir: &v1.EmptyDirVolumeSource{},
 		},
 	}
-	pod.Spec.InitContainers = []v1.Container{railsContainer}
+	pod.Spec.Volumes = append(pod.Spec.Volumes, railsVolume)
 }
 
 //MakeFuzzable makes a pod fuzzable by injecting the Athena container
@@ -91,6 +118,7 @@ func MakeFuzzable(pod *v1.Pod, target *Target) error {
 	pod.ObjectMeta.Labels = map[string]string{"fuzz_pod": "true", "TargetID": targetID, "name": name}
 
 	// Mount rails-fork
+	mountRails(pod)
 
 	// Add the Athena Container to the uninstrumented pod
 	return InjectAthenaContainer(pod, target)
