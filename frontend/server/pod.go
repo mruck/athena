@@ -79,10 +79,10 @@ func buildRailsContainer() v1.Container {
 }
 
 func GetTargetContainer(containers []v1.Container) *v1.Container {
-	for _, container := range containers {
+	for i, container := range containers {
 		// Found it
 		if container.Name == "target" {
-			return &container
+			return &containers[i]
 		}
 	}
 	return nil
@@ -96,11 +96,11 @@ func mountRails(pod *v1.Pod) {
 	pod.Spec.InitContainers = []v1.Container{railsContainer}
 
 	// Add rails-fork mount point to target container so that it can use our rails
-	targetContainer := GetTargetContainer(pod.Spec.Containers)
 	railsVolumeMount := v1.VolumeMount{
 		Name:      "rails-fork",
 		MountPath: "/rails-fork",
 	}
+	targetContainer := GetTargetContainer(pod.Spec.Containers)
 	targetContainer.VolumeMounts = append(targetContainer.VolumeMounts, railsVolumeMount)
 
 	// Add rails-fork volume to pod spec
