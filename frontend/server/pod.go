@@ -167,16 +167,17 @@ func writePodSpecToDisc(pod v1.Pod, dst string) error {
 	// Marshal pod
 	podBytes, err := json.Marshal(pod)
 	if err != nil {
-		err = fmt.Errorf("Error marshaling pod spec: %v", err)
+		err = fmt.Errorf("error marshaling pod spec: %v", err)
 		return err
 	}
 
 	// Write pod spec to disc
 	err = ioutil.WriteFile(dst, podBytes, 0644)
 	if err != nil {
-		err = fmt.Errorf("Error writing pod spec to disc: %v", err)
+		err = fmt.Errorf("error writing pod spec to disc: %v", err)
 		return err
 	}
+	fmt.Printf("Pod spec written to %s\n", dst)
 
 	return nil
 
