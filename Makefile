@@ -17,7 +17,7 @@ postgres-stop:
 	-docker rm -f my-postgres
 
 postgres-start: postgres-stop
-	docker run -p 5432:5432 -e POSTGRES_USER="root" -d postgres
+	docker run --name my-postgres -e POSTGRES_USER="root" -d postgres
 
 venv: pip-reqs.txt
 	-rm -rf $(VENV_LOCATION)
