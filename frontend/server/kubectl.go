@@ -3,7 +3,10 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"time"
 
 	v1 "k8s.io/api/core/v1"
@@ -72,4 +75,87 @@ func PollPodReady(podName string) (bool, error) {
 	}
 	fmt.Println("Pod not ready. Are there enough resources? Maybe you should delete all pods", podName)
 	return false, nil
+}
+
+// Build a vanilla pod spec.  This pod is uninstrumented/barebones
+// (i.e. no Athena container injected)
+func buildPod(containers []v1.Container, name string) v1.Pod {
+	var pod v1.Pod
+	// Basic initialization
+	pod.APIVersion = "v1"
+	pod.Kind = "Pod"
+	pod.ObjectMeta.Name = NewPodID(name)
+	pod.ObjectMeta.Labels = map[string]string{"name": name}
+	// Add target containers
+	pod.Spec.Containers = containers
+	return pod
+}
+
+const PodSpecDir = "/tmp/pod_specs"
+
+// Get a file to write the pod spec to
+func getPodSpecDest(pod *v1.Pod) string {
+	_ = os.Mkdir(PodSpecDir, 0700)
+	return filepath.Join(PodSpecDir, pod.ObjectMeta.Name)
+}
+
+// Marshal pod and write to disc.
+func writePodSpecToDisc(pod *v1.Pod, dst string) error {
+
+	// Marshal pod
+	podBytes, err := json.Marshal(*pod)
+	if err != nil {
+		err = fmt.Errorf("error marshaling pod spec: %v", err)
+		return err
+	}
+
+	// Write pod spec to disc
+	err = ioutil.WriteFile(dst, podBytes, 0644)
+	if err != nil {
+		err = fmt.Errorf("error writing pod spec to disc: %v", err)
+		return err
+	}
+	fmt.Printf("Pod spec written to %s\n", dst)
+
+	return nil
+
+}
+
+// Given a v1.Pod, write the spec to disc, launch the pod, then poll
+// until all containers are ready or it times out
+func RunPod(pod *v1.Pod, deletePod bool) error {
+	// Write pod spec to disc
+	podSpecPath := getPodSpecDest(pod)
+	err := writePodSpecToDisc(pod, podSpecPath)
+	if err != nil {
+		return err
+	}
+
+	// Launch pod
+	err = LaunchPod(podSpecPath)
+	if err != nil {
+		return err
+	}
+
+	// Poll pod until it's ready or we hit a timeout
+	ready, err := PollPodReady(pod.ObjectMeta.Name)
+
+	// Reap the pod if specified
+	if deletePod {
+		err = DeletePod(pod.ObjectMeta.Name)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Handle polling errors
+	if err != nil {
+		return err
+	} else if !ready {
+		err = fmt.Errorf("pod not ready. Are there enough resources? Maybe you should delete all pods")
+		return err
+	}
+
+	return nil
+
 }
