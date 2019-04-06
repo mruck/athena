@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/mruck/athena/frontend/log"
 	v1 "k8s.io/api/core/v1"
 )
 
@@ -18,8 +19,7 @@ func DeletePod(podName string) {
 	cmd := exec.Command("kubectl", "delete", "pod", podName)
 	_, err := ExecWrapper(cmd)
 	if err != nil {
-		//log.Errof("Failed to delete pod %s: %v", podName, err)
-		fmt.Printf("Failed to delete pod %s: %v", podName, err)
+		log.Errorf("Failed to delete pod %s: %v", podName, err)
 	}
 }
 
