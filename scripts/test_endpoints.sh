@@ -7,7 +7,7 @@ set -e
 echo "Building and deploying frontend"
 make frontend_deploy
 sleep 30
-containers=$(cat scripts/target.json)
+containers=$(cat target_configs/discourse.json)
 echo "Hitting /FuzzTarget"
 target_id=$(curl -d "$containers" http://35.238.131.114:30080/FuzzTarget)
 if [ -z “$target_id” ]; then
