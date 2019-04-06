@@ -24,12 +24,6 @@
       "image": "gcr.io/athena-fuzzer/discourse:8f1bc6525d",
       "command": [
         "./run_server.sh"
-      ],
-      "env": [
-        {
-          "name": "RESULTS_PATH",
-          "value": "/tmp/results"
-        }
       ]
     }
   ]
