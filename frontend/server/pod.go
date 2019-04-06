@@ -164,15 +164,6 @@ func buildPod(containers []v1.Container, name string) v1.Pod {
 	pod.ObjectMeta.Labels = map[string]string{"name": name}
 	// Add target containers
 	pod.Spec.Containers = containers
-	// Add shared mount
-	pod.Spec.Volumes = []v1.Volume{
-		v1.Volume{
-			Name: "results-dir",
-			VolumeSource: v1.VolumeSource{
-				EmptyDir: &v1.EmptyDirVolumeSource{},
-			},
-		},
-	}
 	return pod
 }
 
