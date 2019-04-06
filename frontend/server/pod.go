@@ -139,15 +139,12 @@ func mountResultsDir(pod *v1.Pod) {
 	pod.Spec.Volumes = append(pod.Spec.Volumes, resultsVolume)
 }
 
-//MakeFuzzable makes a pod fuzzable by injecting the Athena container
-func MakeFuzzable(pod *v1.Pod, target *Target) error {
+// InstrumentRails mounts our rails in the target container and mounts the
+// results directory.  This is done in memory.
+func InstrumentRails(pod *v1.Pod, target *Target) {
 	// Make this a new pod
 	name := pod.ObjectMeta.Labels["name"]
 	pod.ObjectMeta.Name = NewPodID(name)
-
-	// Unique identifier for target
-	targetID := NewTargetID(name)
-	pod.ObjectMeta.Labels = map[string]string{"fuzz_pod": "true", "TargetID": targetID, "name": name}
 
 	// Mount rails-fork
 	mountRails(pod)
@@ -158,6 +155,17 @@ func MakeFuzzable(pod *v1.Pod, target *Target) error {
 	// Tell our rails-fork where the target app lives
 	targetContainer := GetTargetContainer(pod.Spec.Containers)
 	targetContainer.Env = append(targetContainer.Env, v1.EnvVar{Name: "TARGET_APP_PATH", Value: *target.AppPath})
+}
+
+//MakeFuzzable makes a pod fuzzable by injecting the Athena container
+func MakeFuzzable(pod *v1.Pod, target *Target) error {
+	// Make this a new pod
+	name := pod.ObjectMeta.Labels["name"]
+	pod.ObjectMeta.Name = NewPodID(name)
+
+	// Unique identifier for target
+	targetID := NewTargetID(name)
+	pod.ObjectMeta.Labels = map[string]string{"fuzz_pod": "true", "TargetID": targetID, "name": name}
 
 	// Add the Athena Container to the uninstrumented pod
 	return InjectAthenaContainer(pod, target)
