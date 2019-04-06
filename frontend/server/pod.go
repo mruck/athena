@@ -113,6 +113,8 @@ func mountRails(pod *v1.Pod) {
 	pod.Spec.Volumes = append(pod.Spec.Volumes, railsVolume)
 }
 
+const ResultsPath = "/tmp/results"
+
 // Mount results directory in for sharing results between athena and target
 func mountResultsDir(pod *v1.Pod) {
 	// Add results dir container
@@ -122,6 +124,10 @@ func mountResultsDir(pod *v1.Pod) {
 	}
 	targetContainer := GetTargetContainer(pod.Spec.Containers)
 	targetContainer.VolumeMounts = append(targetContainer.VolumeMounts, resultsVolumeMount)
+
+	// Add env var telling rails where to write results
+	resultsEnvVar := v1.EnvVar{Name: "RESULTS_PATH", Value: ResultsPath}
+	targetContainer.Env = append(targetContainer.Env, resultsEnvVar)
 
 	// Add results volume to pod spec
 	resultsVolume := v1.Volume{
