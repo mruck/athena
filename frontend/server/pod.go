@@ -113,6 +113,26 @@ func mountRails(pod *v1.Pod) {
 	pod.Spec.Volumes = append(pod.Spec.Volumes, railsVolume)
 }
 
+// Mount results directory in for sharing results between athena and target
+func mountResultsDir(pod *v1.Pod) {
+	// Add results dir container
+	resultsVolumeMount := v1.VolumeMount{
+		Name:      "results-dir",
+		MountPath: "/tmp/results",
+	}
+	targetContainer := GetTargetContainer(pod.Spec.Containers)
+	targetContainer.VolumeMounts = append(targetContainer.VolumeMounts, resultsVolumeMount)
+
+	// Add results volume to pod spec
+	resultsVolume := v1.Volume{
+		Name: "results-dir",
+		VolumeSource: v1.VolumeSource{
+			EmptyDir: &v1.EmptyDirVolumeSource{},
+		},
+	}
+	pod.Spec.Volumes = append(pod.Spec.Volumes, resultsVolume)
+}
+
 //MakeFuzzable makes a pod fuzzable by injecting the Athena container
 func MakeFuzzable(pod *v1.Pod, target *Target) error {
 	// Make this a new pod
@@ -125,6 +145,9 @@ func MakeFuzzable(pod *v1.Pod, target *Target) error {
 
 	// Mount rails-fork
 	mountRails(pod)
+
+	// Mount results directory for sharing results
+	mountResultsDir(pod)
 
 	// Add the Athena Container to the uninstrumented pod
 	return InjectAthenaContainer(pod, target)
