@@ -156,6 +156,10 @@ func MakeFuzzable(pod *v1.Pod, target *Target) error {
 	// Mount results directory for sharing results
 	mountResultsDir(pod)
 
+	// Tell our rails-fork where the target app lives
+	targetContainer := GetTargetContainer(pod.Spec.Containers)
+	targetContainer.Env = append(targetContainer.Env, v1.EnvVar{Name: "TARGET_APP_PATH", Value: *target.AppPath})
+
 	// Add the Athena Container to the uninstrumented pod
 	return InjectAthenaContainer(pod, target)
 }

@@ -1,4 +1,5 @@
 {
+  "appPath": "/target",
   "port": 8080,
   "db": {
     "name": "fuzz_db",

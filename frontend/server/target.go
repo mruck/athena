@@ -17,6 +17,8 @@ type TargetDB struct {
 
 // Target is the expected form of user input
 type Target struct {
+	// Path to target application
+	AppPath *string
 	// Name of the target application
 	Name *string
 	// Port the target app is running on
@@ -28,6 +30,9 @@ type Target struct {
 // ValidateTarget checks user provided input.  We make all values in Target and TargetDB
 // be pointers because that's the only way to validate them
 func ValidateTarget(target *Target) error {
+	if target.AppPath == nil {
+		return fmt.Errorf("error: must specify path to target app")
+	}
 	if target.Name == nil {
 		return fmt.Errorf("error: must specify target name")
 	}
