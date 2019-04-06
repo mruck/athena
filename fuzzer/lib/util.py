@@ -29,6 +29,14 @@ def target_app_port():
     return int(port)
 
 
+def results_path():
+    results_path = os.getenv("RESULTS_PATH")
+    if results_path is None:
+        print("Error: RESULTS_PATH not specified")
+        exit(1)
+    return results_path
+
+
 def target_db_port():
     port = os.getenv("TARGET_DB_PORT")
     if port is None:
