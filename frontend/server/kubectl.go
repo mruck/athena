@@ -12,12 +12,15 @@ import (
 	v1 "k8s.io/api/core/v1"
 )
 
-// Delete pod via kubectl
-func DeletePod(podName string) error {
+// Delete pod via kubectl and log any errors
+func DeletePod(podName string) {
 	// Launch pod
 	cmd := exec.Command("kubectl", "delete", "pod", podName)
 	_, err := ExecWrapper(cmd)
-	return err
+	if err != nil {
+		//log.Errof("Failed to delete pod %s: %v", podName, err)
+		fmt.Printf("Failed to delete pod %s: %v", podName, err)
+	}
 }
 
 //Spin up pod with kubectl exec
@@ -123,7 +126,7 @@ func writePodSpecToDisc(pod *v1.Pod, dst string) error {
 
 // Given a v1.Pod, write the spec to disc, launch the pod, then poll
 // until all containers are ready or it times out
-func RunPod(pod *v1.Pod, deletePod bool) error {
+func RunPod(pod *v1.Pod) error {
 	// Write pod spec to disc
 	podSpecPath := getPodSpecDest(pod)
 	err := writePodSpecToDisc(pod, podSpecPath)
@@ -139,14 +142,6 @@ func RunPod(pod *v1.Pod, deletePod bool) error {
 
 	// Poll pod until it's ready or we hit a timeout
 	ready, err := PollPodReady(pod.ObjectMeta.Name)
-
-	// Reap the pod if specified
-	if deletePod {
-		err = DeletePod(pod.ObjectMeta.Name)
-		if err != nil {
-			return err
-		}
-	}
 
 	// Handle polling errors
 	if err != nil {

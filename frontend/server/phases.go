@@ -12,9 +12,10 @@ func runVanillaPod(target *Target) (*v1.Pod, error) {
 	fmt.Println("Launching vanilla pod")
 	// Generate a vanilla pod with the user provided containers
 	pod := buildPod(target.Containers, *target.Name)
+	defer DeletePod(pod.ObjectMeta.Name)
 
 	// Sanity check that the uninstrumented target runs
-	err := RunPod(&pod, true)
+	err := RunPod(&pod)
 	if err != nil {
 		return nil, err
 	}
@@ -26,9 +27,10 @@ func runCustomRailsPod(pod *v1.Pod, target *Target) error {
 	fmt.Println("Launching pod instrumented with rails")
 	// Modifies the pod spec in memory to point to our rails
 	InstrumentRails(pod, target)
+	defer DeletePod(pod.ObjectMeta.Name)
 
 	// Sanity check that the uninstrumented target runs
-	return RunPod(pod, true)
+	return RunPod(pod)
 }
 
 // DryRun sanity checks that our target is fuzzable.
@@ -58,7 +60,7 @@ func Fuzz(pod *v1.Pod, target *Target, w http.ResponseWriter) {
 	}
 
 	// Launch the pod with the athena container
-	err = RunPod(pod, false)
+	err = RunPod(pod)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
