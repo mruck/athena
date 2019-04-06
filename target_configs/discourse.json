@@ -30,12 +30,6 @@
           "name": "RESULTS_PATH",
           "value": "/tmp/results"
         }
-      ],
-      "volumeMounts": [
-        {
-          "mountPath": "/tmp/results",
-          "name": "results-dir"
-        }
       ]
     }
   ]
