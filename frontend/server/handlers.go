@@ -7,7 +7,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"gopkg.in/mgo.v2"
-	v1 "k8s.io/api/core/v1"
 )
 
 type Server struct {
@@ -64,19 +63,11 @@ func (server *Server) ExceptionsHandler(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	w.Write(resultBytes)
-}
-
-func runVanillaPod(containers []v1.Container, target *Target) (*v1.Pod, error) {
-	// Generate a vanilla pod with the user provided containers
-	pod := buildPod(target.Containers, *target.Name)
-
-	// Sanity check that the uninstrumented target runs
-	err := RunPod(&pod, true)
+	_, err = w.Write(resultBytes)
 	if err != nil {
-		return nil, err
+		http.Error(w, err.Error(), 500)
+		return
 	}
-	return &pod, nil
 }
 
 // FuzzTarget is an endpoint to upload metadata about a target and start a fuzz job
@@ -95,26 +86,12 @@ func (server Server) FuzzTarget(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pod, err := runVanillaPod(target.Containers, &target)
+	// Sanity check that the target is fuzzable
+	pod, err := DryRun(&target)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	err = MakeFuzzable(pod, &target)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	// Launch the pod with the athena container
-	err = RunPod(pod, false)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	// We are fuzzing!
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(pod.ObjectMeta.Labels["TargetID"]))
+	Fuzz(pod, &target, w)
 }
