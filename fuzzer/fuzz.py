@@ -36,7 +36,7 @@ HAR_DUMP = "preprocess/visited_routes.json"
 # Logger for general debugging
 logger = logging.getLogger("debug")
 
-RESULTS_PATH = "/tmp/results"
+RESULTS_PATH = util.results_path()
 PORT = util.target_app_port()
 FUZZ_DB = util.target_dbname()
 
