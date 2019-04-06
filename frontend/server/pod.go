@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -181,16 +180,16 @@ func buildPod(containers []v1.Container, name string) v1.Pod {
 const PodSpecDir = "/tmp/pod_specs"
 
 // Get a file to write the pod spec to
-func getPodSpecDest(pod v1.Pod) string {
+func getPodSpecDest(pod *v1.Pod) string {
 	_ = os.Mkdir(PodSpecDir, 0700)
 	return filepath.Join(PodSpecDir, pod.ObjectMeta.Name)
 }
 
 // Marshal pod and write to disc.
-func writePodSpecToDisc(pod v1.Pod, dst string) error {
+func writePodSpecToDisc(pod *v1.Pod, dst string) error {
 
 	// Marshal pod
-	podBytes, err := json.Marshal(pod)
+	podBytes, err := json.Marshal(*pod)
 	if err != nil {
 		err = fmt.Errorf("error marshaling pod spec: %v", err)
 		return err
@@ -210,19 +209,17 @@ func writePodSpecToDisc(pod v1.Pod, dst string) error {
 
 // Given a v1.Pod, write the spec to disc, launch the pod, then poll
 // until all containers are ready or it times out
-func RunPod(w http.ResponseWriter, pod v1.Pod, deletePod bool) error {
+func RunPod(pod *v1.Pod, deletePod bool) error {
 	// Write pod spec to disc
 	podSpecPath := getPodSpecDest(pod)
 	err := writePodSpecToDisc(pod, podSpecPath)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
 		return err
 	}
 
 	// Launch pod
 	err = LaunchPod(podSpecPath)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
 		return err
 	}
 
@@ -230,21 +227,18 @@ func RunPod(w http.ResponseWriter, pod v1.Pod, deletePod bool) error {
 	ready, err := PollPodReady(pod.ObjectMeta.Name)
 
 	// Reap the pod if specified
-	if deletePod == true {
+	if deletePod {
 		err = DeletePod(pod.ObjectMeta.Name)
 		if err != nil {
-			http.Error(w, err.Error(), 500)
 			return err
 		}
 	}
 
 	// Handle polling errors
 	if err != nil {
-		http.Error(w, err.Error(), 500)
 		return err
-	} else if ready != true {
-		err = fmt.Errorf("Pod not ready. Are there enough resources? Maybe you should delete all pods")
-		http.Error(w, err.Error(), 500)
+	} else if !ready {
+		err = fmt.Errorf("pod not ready. Are there enough resources? Maybe you should delete all pods")
 		return err
 	}
 
