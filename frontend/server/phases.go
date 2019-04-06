@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 
 	v1 "k8s.io/api/core/v1"
@@ -8,6 +9,7 @@ import (
 
 // Run an uninstrumented pod
 func runVanillaPod(target *Target) (*v1.Pod, error) {
+	fmt.Println("Launching vanilla pod")
 	// Generate a vanilla pod with the user provided containers
 	pod := buildPod(target.Containers, *target.Name)
 
@@ -21,6 +23,7 @@ func runVanillaPod(target *Target) (*v1.Pod, error) {
 
 // Run pod with our rails mounted in
 func runCustomRailsPod(pod *v1.Pod, target *Target) error {
+	fmt.Println("Launching pod instrumented with rails")
 	// Modifies the pod spec in memory to point to our rails
 	InstrumentRails(pod, target)
 
