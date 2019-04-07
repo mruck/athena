@@ -25,7 +25,7 @@
       "command": [
         "/scripts/init"
       ],
-      "image": "gcr.io/athena-fuzzer/huginn:rails-fork5",
+      "image": "gcr.io/athena-fuzzer/huginn:rails-fork8",
       "env": [
         {
           "name": "POSTGRES_PORT_5432_TCP_ADDR",
