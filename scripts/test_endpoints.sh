@@ -32,6 +32,7 @@ echo "spawned pod $POD_NAME with target id $TARGET_ID"
 while [ ! "$(__is_pod_ready $POD_NAME)" = "OK" ]; do echo "Polling pod..."; sleep 1; done
 
 echo "Tail logs of client at /tmp/sanity/$POD_NAME/client"
+mkdir -p /tmp/sanity/$POD_NAME
 (kubectl logs -f $POD_NAME athena  2>&1) > /tmp/sanity/$POD_NAME/client
 
 kubectl delete pod $POD_NAME
