@@ -1,14 +1,13 @@
 package server
 
 import (
-	"fmt"
-
+	"github.com/mruck/athena/frontend/log"
 	v1 "k8s.io/api/core/v1"
 )
 
 // Run an uninstrumented pod
 func runVanillaPod(target *Target) (*v1.Pod, error) {
-	fmt.Println("Launching vanilla pod")
+	log.Info("\nLaunching vanilla pod")
 	// Generate a vanilla pod with the user provided containers
 	pod := buildPod(target.Containers, *target.Name)
 	defer DeletePod(pod.ObjectMeta.Name)
@@ -18,18 +17,24 @@ func runVanillaPod(target *Target) (*v1.Pod, error) {
 	if err != nil {
 		return nil, err
 	}
+	// TODO: readiness probe
 	return &pod, nil
 }
 
 // Run pod with our rails mounted in
 func runCustomRailsPod(pod *v1.Pod, target *Target) error {
-	fmt.Println("Launching pod instrumented with rails")
+	log.Info("\nLaunching pod instrumented with rails")
 	// Modifies the pod spec in memory to point to our rails
 	InstrumentRails(pod, target)
 	defer DeletePod(pod.ObjectMeta.Name)
 
 	// Sanity check that the uninstrumented target runs
-	return RunPod(pod)
+	err := RunPod(pod)
+	if err != nil {
+		return err
+	}
+	// TODO: readiness probe
+	return nil
 }
 
 // DryRun sanity checks that our target is fuzzable.
