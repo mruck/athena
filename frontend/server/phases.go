@@ -2,7 +2,6 @@ package server
 
 import (
 	"fmt"
-	"net/http"
 
 	v1 "k8s.io/api/core/v1"
 )
@@ -52,25 +51,12 @@ func DryRun(target *Target) (*v1.Pod, error) {
 // Fuzz takes a pod, makes it fuzzable, and launches it.
 // Upon success, it writes the target id to the response
 // for querying by the client.
-func Fuzz(pod *v1.Pod, target *Target, w http.ResponseWriter) {
+func Fuzz(pod *v1.Pod, target *Target) error {
 	err := MakeFuzzable(pod, target)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		return err
 	}
 
 	// Launch the pod with the athena container
-	err = RunPod(pod)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	// Return the target id for querying later on
-	w.WriteHeader(http.StatusOK)
-	_, err = w.Write([]byte(pod.ObjectMeta.Labels["TargetID"]))
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
+	return RunPod(pod)
 }

@@ -61,7 +61,14 @@ func (server *Server) ExceptionsHandler(w http.ResponseWriter, r *http.Request) 
 	WriteJSONResponse(results, w)
 }
 
+// FuzzTargetInfo is the return result from FuzzTarget
+type FuzzTargetInfo struct {
+	PodName  string
+	TargetID string
+}
+
 // FuzzTarget is an endpoint to upload metadata about a target and start a fuzz job
+// It returns FuzzTargetInfo on success
 func (server Server) FuzzTarget(w http.ResponseWriter, r *http.Request) {
 	// Get list of containers pushed by user
 	var target Target
@@ -84,5 +91,16 @@ func (server Server) FuzzTarget(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	Fuzz(pod, &target, w)
+	// Launch pod for fuzzing
+	err = Fuzz(pod, &target)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	// Return the target id and pod name for querying later on
+	w.WriteHeader(http.StatusOK)
+	info := FuzzTargetInfo{TargetID: pod.ObjectMeta.Labels["TargetID"],
+		PodName: pod.Name}
+	WriteJSONResponse(info, w)
 }
