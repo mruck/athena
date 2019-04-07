@@ -23,7 +23,7 @@
     {
       "name": "target",
       "command": [
-        "bash", "-c", "mkdir /tmp/results && /scripts/init"
+        "/scripts/init"
       ],
       "image": "gcr.io/athena-fuzzer/huginn:rails-fork5",
       "env": [
