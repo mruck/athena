@@ -43,6 +43,10 @@
         "image": "gcr.io/athena-fuzzer/athena:4",
         "env": [
           {
+            "name": "RESULTS_PATH",
+            "value": "/tmp/results"
+          },
+          {
             "name": "TARGET_APP_PORT",
             "value": "8080"
           },
