@@ -19,8 +19,8 @@ echo "Hitting /FuzzTarget"
 CONTAINERS=$(cat target_configs/discourse.json)
 TARGET_META=$(curl -d "$CONTAINERS" http://35.238.131.114:30080/FuzzTarget)
 
-TARGET_ID=$(jq .TargetID <<< $TARGET_META)
-POD_NAME=$(jq .PodName <<< $TARGET_META)
+TARGET_ID=$(jq -r .TargetID <<< $TARGET_META)
+POD_NAME=$(jq -r .PodName <<< $TARGET_META)
 
 if [ -z “$TARGET_ID” ]; then
     echo "Error spawning target"; exit
