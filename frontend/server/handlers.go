@@ -1,7 +1,6 @@
 package server
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -58,16 +57,8 @@ func (server *Server) ExceptionsHandler(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	resultBytes, err := json.Marshal(results)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-	_, err = w.Write(resultBytes)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
+
+	WriteJSONResponse(results, w)
 }
 
 // FuzzTarget is an endpoint to upload metadata about a target and start a fuzz job

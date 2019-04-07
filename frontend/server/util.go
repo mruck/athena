@@ -69,3 +69,18 @@ func ParseBody(w http.ResponseWriter, r *http.Request, dst interface{}) error {
 	}
 	return nil
 }
+
+// WriteJSONResponse marshals the input and writes it to the response.
+// Any errors are also written to the response
+func WriteJSONResponse(input interface{}, w http.ResponseWriter) {
+	inputBytes, err := json.Marshal(input)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	_, err = w.Write(inputBytes)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+}
