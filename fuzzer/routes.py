@@ -1,5 +1,6 @@
 #! /usr/local/bin/python3
 
+import copy
 import json
 import os
 
@@ -100,14 +101,32 @@ class Route(object):
             json_line = json_line.strip()
             route_dict = json.loads(json_line)
             r = Route.from_dict(route_dict)
-            # Not sure why but some routes dont have verbs
-            if r.verb == "":
-                continue
-            # Some routes have verb GET|POST
-            if r.verb == "GET|POST":
-                continue
-            r.headers = default_headers[r.verb.lower()]
-            all_routes.append(r)
+            verbs = r.verb
+            if "GET" in verbs:
+                tmp = copy.deepcopy(r)
+                tmp.headers = default_headers["get"]
+                tmp.verb = "GET"
+                all_routes.append(tmp)
+            if "PUT" in verbs:
+                tmp = copy.deepcopy(r)
+                tmp.headers = default_headers["put"]
+                tmp.verb = "PUT"
+                all_routes.append(tmp)
+            if "POST" in verbs:
+                tmp = copy.deepcopy(r)
+                tmp.headers = default_headers["post"]
+                tmp.verb = "POST"
+                all_routes.append(tmp)
+            if "DELETE" in verbs:
+                tmp = copy.deepcopy(r)
+                tmp.headers = default_headers["delete"]
+                tmp.verb = "DELETE"
+                all_routes.append(tmp)
+            if "PATCH" in verbs:
+                tmp = copy.deepcopy(r)
+                tmp.headers = default_headers["patch"]
+                tmp.verb = "PATCH"
+                all_routes.append(tmp)
         return all_routes
 
     def escape_filename(self):
