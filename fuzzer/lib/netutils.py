@@ -47,7 +47,7 @@ class Connection:
             print("Polling...")
             try:
                 ret_code = self.send_request(
-                    "http://localhost:%s/rails/info/routes" % port, "GET"
+                    "http://localhost:%s/rails/info/pluralizations" % port, "GET"
                 )
             except urllib.error.URLError:
                 pass

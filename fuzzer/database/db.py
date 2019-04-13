@@ -19,6 +19,9 @@ RESULTS_PATH = "/tmp/results"
 
 
 def init_pluralization():
+    # TODO: I added a route /rails/info/pluralizations that we can
+    # query to get this info.  Right now I'm hitting in netutils.py
+    # as a health check but it should really be done here
     global pluralizations
     with open(os.path.join(RESULTS_PATH, "pluralizations.json")) as pluralizations_file:
         pluralizations = json.loads(pluralizations_file.read())
