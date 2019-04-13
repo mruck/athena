@@ -16,8 +16,9 @@ make frontend_deploy
 sleep 30
 
 echo "Hitting /FuzzTarget"
+IP_ADDR=104.154.144.253
 CONTAINERS=$(cat target_configs/discourse.json)
-TARGET_META=$(curl -d "$CONTAINERS" http://35.238.131.114:30080/FuzzTarget)
+TARGET_META=$(curl -d "$CONTAINERS" http://$IP_ADDR:30080/FuzzTarget)
 
 TARGET_ID=$(jq -r .TargetID <<< $TARGET_META)
 POD_NAME=$(jq -r .PodName <<< $TARGET_META)
@@ -64,5 +65,5 @@ echo "{}" | \
     jq -c '.' | tee -a $output
 
 echo "Looking up exceptions..."
-EXCEPTIONS=$(curl http://35.238.131.114:30080/Exceptions/$TARGET_ID)
+EXCEPTIONS=$(curl http://$IP_ADDR:30080/Exceptions/$TARGET_ID)
 echo "EXCEPTIONS: $EXCEPTIONS"
