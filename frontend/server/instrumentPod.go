@@ -62,7 +62,7 @@ func InjectAthenaContainer(pod *v1.Pod, target *Target) error {
 func buildRailsContainer() v1.Container {
 	image := os.Getenv("RAILS_IMAGE")
 	if image == "" {
-		image = "gcr.io/athena-fuzzer/rails:6f8a54aa0acd97a1c780"
+		image = "gcr.io/athena-fuzzer/rails:dafb06189a5efeaefc32"
 		fmt.Printf("No rails image provided.  Using default image %s\n", image)
 	}
 	return v1.Container{
@@ -152,6 +152,7 @@ func InstrumentRails(pod *v1.Pod, target *Target) {
 	// Tell our rails-fork where the target app lives
 	targetContainer := GetTargetContainer(pod.Spec.Containers)
 	targetContainer.Env = append(targetContainer.Env, v1.EnvVar{Name: "TARGET_APP_PATH", Value: *target.AppPath})
+	targetContainer.Env = append(targetContainer.Env, v1.EnvVar{Name: "RAILS_FORK", Value: "1"})
 }
 
 //MakeFuzzable makes a pod fuzzable by injecting the Athena container

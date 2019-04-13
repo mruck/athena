@@ -23,8 +23,18 @@
     {
       "name": "target",
       "image": "gcr.io/athena-fuzzer/discourse:8f1bc6525d",
+      "env": [
+        {
+          "name": "FUZZ_DB",
+          "value": "fuzz_db"
+        },
+        {
+          "name": "PORT",
+          "value": "8080"
+        }
+      ],
       "command": [
-        "./run_server.sh"
+        "bash", "-c", "createdb -p 5432 -h localhost -T template0 $FUZZ_DB && psql -p 5432 -h localhost -d $FUZZ_DB < /target/state/db.pgdump &&  redis-server --daemonize yes && TARGET_APP_PATH=`pwd` RAILS_ENV=development RAILS_MASTER=1 bundle exec bin/rails s -b 0.0.0.0 -p $PORT"
       ]
     }
   ]
