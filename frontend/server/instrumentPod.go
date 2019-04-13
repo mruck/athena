@@ -59,6 +59,21 @@ func InjectAthenaContainer(pod *v1.Pod, target *Target) error {
 	return nil
 }
 
+// InjectSideCar adds a copy of the athena container that just sleeps for debugging
+func InjectSideCar(pod *v1.Pod, target *Target) error {
+	// Get an Athena Container
+	targetID := pod.ObjectMeta.Labels["TargetID"]
+	athenaContainer, err := buildAthenaContainer(targetID, target)
+	if err != nil {
+		return err
+	}
+	athenaContainer.Name = "sidecar-athena"
+	athenaContainer.Command = []string{"/bin/bash"}
+	athenaContainer.Args = []string{"-c", "while true; do sleep 1000; done"}
+	pod.Spec.Containers = append(pod.Spec.Containers, *athenaContainer)
+	return nil
+}
+
 func buildRailsContainer() v1.Container {
 	image := os.Getenv("RAILS_IMAGE")
 	if image == "" {
@@ -166,5 +181,11 @@ func MakeFuzzable(pod *v1.Pod, target *Target) error {
 	pod.ObjectMeta.Labels = map[string]string{"fuzz_pod": "true", "TargetID": targetID, "name": name}
 
 	// Add the Athena Container to the uninstrumented pod
-	return InjectAthenaContainer(pod, target)
+	err := InjectAthenaContainer(pod, target)
+	if err != nil {
+		return err
+	}
+
+	// Add a side car for debugging
+	return InjectSideCar(pod, target)
 }
