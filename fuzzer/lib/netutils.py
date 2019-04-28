@@ -26,6 +26,8 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
 
 
 def log_curl_request(request, cookie_jar):
+    if not os.getenv("CURL_CMD"):
+        return
     cmd = []
     cmd += "curl -v"
     if request.get_method() == "GET":
