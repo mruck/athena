@@ -169,8 +169,7 @@ def fuzz(
     pg = postgres2.Postgres()
     state = fuzz_state.FuzzState(pg, FUZZ_DB)
 
-    if snapshot and restore_db:
-        clear_rails_connections(hostname=netutils.target_hostname(), port=PORT)
+    if snapshot:
         logger.info("Loading all state from %s" % snapshot)
         state.load(snapshot)
 
