@@ -1,0 +1,151 @@
+{
+  "apiVersion": "extensions/v1beta1",
+  "kind": "Deployment",
+  "metadata": {
+    "name": "discourse"
+  },
+  "spec": {
+    "replicas": 1,
+    "template": {
+      "metadata": {
+        "labels": {
+          "duo": "true"
+        }
+      },
+      "spec": {
+        "volumes": [
+          {
+            "name": "rails-fork",
+            "emptyDir": {}
+          },
+          {
+            "name": "results-dir",
+            "emptyDir": {}
+          }
+        ],
+        "initContainers": [
+          {
+            "name": "rails-fork",
+            "image": "gcr.io/athena-fuzzer/rails:dafb06189a5efeaefc32",
+            "resources": {},
+            "volumeMounts": [
+              {
+                "name": "rails-fork",
+                "mountPath": "/rails-fork"
+              }
+            ]
+          }
+        ],
+        "containers": [
+          {
+            "name": "my-postgres",
+            "image": "postgres:10.5",
+            "env": [
+              {
+                "name": "POSTGRES_USER",
+                "value": "root"
+              }
+            ],
+            "resources": {}
+          },
+          {
+            "name": "target",
+            "image": "gcr.io/athena-fuzzer/discourse:8f1bc6525d",
+            "command": [
+              "/bin/bash"
+            ],
+            "args": [
+              "-c",
+              "while true; do sleep 1000; done"
+            ],
+            "env": [
+              {
+                "name": "FUZZ_DB",
+                "value": "fuzz_db"
+              },
+              {
+                "name": "PORT",
+                "value": "8080"
+              },
+              {
+                "name": "RESULTS_PATH",
+                "value": "/tmp/results"
+              },
+              {
+                "name": "TARGET_APP_PATH",
+                "value": "/target"
+              },
+              {
+                "name": "RAILS_FORK",
+                "value": "1"
+              }
+            ],
+            "resources": {},
+            "volumeMounts": [
+              {
+                "name": "rails-fork",
+                "mountPath": "/rails-fork"
+              },
+              {
+                "name": "results-dir",
+                "mountPath": "/tmp/results"
+              }
+            ]
+          },
+          {
+            "name": "sidecar-athena",
+            "image": "gcr.io/athena-fuzzer/athena:ee777cce9de5797014a3",
+            "command": [
+              "/bin/bash"
+            ],
+            "args": [
+              "-c",
+              "while true; do sleep 1000; done"
+            ],
+            "env": [
+              {
+                "name": "TARGET_APP_PORT",
+                "value": "8080"
+              },
+              {
+                "name": "TARGET_DB_HOST",
+                "value": "localhost"
+              },
+              {
+                "name": "TARGET_DB_USER",
+                "value": "root"
+              },
+              {
+                "name": "TARGET_DB_PASSWORD",
+                "value": "mysecretpassword"
+              },
+              {
+                "name": "TARGET_DB_PORT",
+                "value": "5432"
+              },
+              {
+                "name": "TARGET_DB_NAME",
+                "value": "fuzz_db"
+              },
+              {
+                "name": "TARGET_ID",
+                "value": "discourse-target-85aa0ba2"
+              },
+              {
+                "name": "RESULTS_PATH",
+                "value": "/tmp/results"
+              }
+            ],
+            "resources": {},
+            "volumeMounts": [
+              {
+                "name": "results-dir",
+                "mountPath": "/tmp/results"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
