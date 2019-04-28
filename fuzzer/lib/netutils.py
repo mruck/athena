@@ -25,6 +25,25 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
         return None
 
 
+def log_curl_request(request, cookie_jar):
+    cmd = []
+    cmd += "curl -v"
+    if request.get_method() == "GET":
+        # No verb to add here
+        pass
+    headers = request.header_items()
+    for header_name, header_val in headers:
+        cmd += ' -H "%s: %s"' % (header_name, header_val)
+    url = " " + request.full_url
+    escaped_url = ""
+    for char in url:
+        if char == "&":
+            escaped_url += "\\"
+        escaped_url += char
+    cmd += escaped_url
+    print("".join(cmd))
+
+
 class Connection:
     def __init__(self, old_cookie_jar, timeout=None):
         self.cookie_jar = old_cookie_jar
@@ -106,6 +125,7 @@ class Connection:
             query_params=query_params,
         )
         self.cookie_jar.add_cookie_header(request)
+        log_curl_request(request, self.cookie_jar)
         try:
             response = urllib.request.urlopen(request, timeout=self.timeout)
         except socket.timeout:
