@@ -12,7 +12,7 @@ DEFAULT_ROUTE_EXCLUDES = [
     # Makes app RO
     "/admin/backups/readonly",
     # There's a bug in this route so don't hit
-    "/admin/site_settings/:id",
+    # "/admin/site_settings/:id",
     # This drops all db connections
     "/rails/info/clear_all_connections",
     # TODO: ignore log out?

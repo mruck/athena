@@ -95,6 +95,8 @@ def run(
 
     stats = fuzz_stats.FuzzStats()
 
+    # target_route = "put:/admin/site_settings/:id"
+
     last_route = None
     while True:
         route = mutator.next_route()
@@ -161,7 +163,6 @@ def fuzz(
     any_route=None,
     stop_after_har=False,
     stop_after_all_routes=False,
-    restore_db=False,
 ):
     random.seed(a=0)
     init_logger()
@@ -169,7 +170,7 @@ def fuzz(
     pg = postgres2.Postgres()
     state = fuzz_state.FuzzState(pg, FUZZ_DB)
 
-    if snapshot and restore_db:
+    if snapshot:
         clear_rails_connections(hostname=netutils.target_hostname(), port=PORT)
         logger.info("Loading all state from %s" % snapshot)
         state.load(snapshot)
