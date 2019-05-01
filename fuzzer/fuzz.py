@@ -13,7 +13,7 @@ import logging
 import os
 import random
 
-from fuzzer.database.db import init_pluralization, clear_rails_connections
+from fuzzer.database.db import init_pluralization
 import fuzzer.mutation.naive_mutator as naive_mutator
 import fuzzer.routes as routes_lib
 import fuzzer.lib.coverage as coverage
@@ -161,7 +161,6 @@ def fuzz(
     any_route=None,
     stop_after_har=False,
     stop_after_all_routes=False,
-    restore_db=False,
 ):
     random.seed(a=0)
     init_logger()
@@ -170,7 +169,6 @@ def fuzz(
     state = fuzz_state.FuzzState(pg, FUZZ_DB)
 
     if snapshot:
-        clear_rails_connections(port=PORT)
         logger.info("Loading all state from %s" % snapshot)
         state.load(snapshot)
 

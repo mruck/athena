@@ -7,6 +7,9 @@ import pickle
 import random
 import shutil
 
+from fuzzer.database.db import clear_rails_connections
+import fuzzer.lib.util as util
+
 
 class FuzzState(object):
     def __init__(self, postgres, db_name):
@@ -43,8 +46,12 @@ class FuzzState(object):
         random.setstate(pickle.load(fh))
         fh.close()
 
-        db_fname = FuzzState.db_file(src)
-        self.postgres.load_snapshot(self.db_name, db_fname)
+        # There was a snapshot provided but we already loaded db so don't do it again,
+        # just use the other state
+        if not os.getenv("SKIP_DB_LOAD"):
+            db_fname = FuzzState.db_file(src)
+            clear_rails_connections(port=util.target_app_port())
+            self.postgres.load_snapshot(self.db_name, db_fname)
         return self
 
     def delete(self, path):
