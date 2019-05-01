@@ -170,6 +170,7 @@ def fuzz(
     state = fuzz_state.FuzzState(pg, FUZZ_DB)
 
     if snapshot:
+        clear_rails_connections(port=PORT)
         logger.info("Loading all state from %s" % snapshot)
         state.load(snapshot)
 
