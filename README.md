@@ -37,3 +37,6 @@ a custom image with this set up, but that value can't be set at container start 
 so I need to do something more complicated which is why I'm deferring it.  If I
 set the conf file after postgres start up, connect to any db via psql then run
 ` SELECT pg_reload_conf(); `.
+Note: rails does db caching, not sure if that will hurt us because it won't make new
+queries.  To toggle off, see:
+https://stackoverflow.com/questions/3599875/disable-sql-cache-temporary-in-rails
