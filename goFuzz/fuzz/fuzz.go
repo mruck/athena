@@ -1,0 +1,4 @@
+package fuzz
+
+func Launch() {
+}
