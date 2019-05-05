@@ -18,3 +18,14 @@ type HTTPState struct {
 func GetHTTPState() *HTTPState {
 	return nil
 }
+
+// Corpus contains Go formated requests to use as initial corpus
+type Corpus struct {
+	Requests []Request
+}
+
+// GetCorpus parses Har file, formating relevant info like url, headers, params,
+// etc and formating into a list of requests
+func GetCorpus() *Corpus {
+	return nil
+}

@@ -7,6 +7,6 @@ type HTTPClient struct {
 }
 
 // New initializes a HTTPClient using the state provided
-func New(state preprocess.HTTPState) *HTTPClient {
+func New(state *preprocess.HTTPState) *HTTPClient {
 	return nil
 }
