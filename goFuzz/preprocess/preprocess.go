@@ -1,12 +1,22 @@
 package preprocess
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/pkg/errors"
 )
 
 func newReq(req request) (*http.Request, error) {
+	// Update query string
+	if req.Method == "GET" {
+		fmt.Println("unhandled")
+	} else {
+		// Update body
+		// TODO: create io.reader
+		req.PostData.Text
+
+	}
 	newReq, err := http.NewRequest(req.Method, req.URL, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "")
@@ -15,8 +25,6 @@ func newReq(req request) (*http.Request, error) {
 	for _, header := range req.Headers {
 		newReq.Header.Add(header.Name, header.Value)
 	}
-	// Update body
-	// Update query string
 	return newReq, nil
 }
 
