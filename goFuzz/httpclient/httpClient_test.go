@@ -20,24 +20,21 @@ func TestConnect(t *testing.T) {
 
 	requests := []*http.Request{request}
 
-	client, err := New(requests)
+	_, err = New(requests)
 	require.NoError(t, err)
-	fmt.Println(client)
 }
 
 func TestCookieManagement(t *testing.T) {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		cookie := &http.Cookie{Name: "TestCookieName", Value: "TestCookieValue", MaxAge: 3600}
 		if req.URL.Path == "/getCookie" {
-			fmt.Printf("setting cookie\n")
-			http.SetCookie(w, cookie)
 			// Respond with new cookie
+			http.SetCookie(w, cookie)
 			return
 		}
 		// Check cookie
 		newCookie, err := req.Cookie(cookie.Name)
 		require.NoError(t, err)
-		fmt.Printf("%v %v\n", newCookie.Value, cookie.Value)
 		require.Equal(t, newCookie.Value, cookie.Value)
 	})
 	ts := httptest.NewServer(handler)
@@ -53,7 +50,6 @@ func TestCookieManagement(t *testing.T) {
 
 	requests := []*http.Request{request1, request2}
 
-	client, err := New(requests)
+	_, err = New(requests)
 	require.NoError(t, err)
-	fmt.Println(client)
 }

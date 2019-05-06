@@ -1,7 +1,8 @@
 package fuzz
 
 import (
-	"github.com/mruck/athena/goFuzz/httpclient"
+	"net/http"
+
 	"github.com/mruck/athena/goFuzz/preprocess"
 )
 
@@ -14,7 +15,7 @@ func start() {
 }
 
 // Launch fuzzer
-func Launch(corpus *preprocess.Corpus, client *httpclient.HTTPClient) {
+func Launch(corpus *preprocess.Corpus, client *http.Client) {
 	start()
 	//fuzz stats for benchmarking?
 }

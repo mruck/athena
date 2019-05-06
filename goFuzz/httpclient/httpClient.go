@@ -6,37 +6,38 @@ import (
 	"net/http/cookiejar"
 )
 
-// HTTPClient contains a connection
-type HTTPClient struct {
-	Client *http.Client
-}
-
-// New initializes a HTTPClient using the state provided
-func New(requests []*http.Request) (*HTTPClient, error) {
-	jar, err := cookiejar.New(nil)
-	if err != nil {
-		return nil, err
-	}
-
-	client := &http.Client{
-		Jar: jar,
-	}
+func prerunHook(client *http.Client, requests []*http.Request) error {
 	for _, request := range requests {
 		resp, err := client.Do(request)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		if resp.StatusCode != 200 {
 			err = fmt.Errorf("status code: %v", resp.StatusCode)
-			return nil, err
-		}
-		// Read cookies
-		cookies := resp.Cookies()
-		for _, cookie := range cookies {
-			fmt.Printf("cookie: %v\n", cookie.String())
+			return err
 		}
 	}
-	httpclient := &HTTPClient{Client: client}
-	return httpclient, nil
+	return nil
+
+}
+
+// newClient allocates an http client with a cookie jar
+func newClient() (*http.Client, error) {
+	jar, err := cookiejar.New(nil)
+	if err != nil {
+		return nil, err
+	}
+	return &http.Client{Jar: jar}, nil
+}
+
+// New initializes a HTTPClient using the state provided
+func New(requests []*http.Request) (*http.Client, error) {
+	client, err := newClient()
+	if err != nil {
+		return nil, err
+	}
+	// Allocate http client
+	err = prerunHook(client, requests)
+	return client, err
 }
