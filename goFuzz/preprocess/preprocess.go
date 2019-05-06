@@ -1,23 +1,20 @@
 package preprocess
 
 import (
-	"fmt"
+	"io"
 	"net/http"
+	"strings"
 
 	"github.com/pkg/errors"
 )
 
 func newReq(req request) (*http.Request, error) {
-	// Update query string
-	if req.Method == "GET" {
-		fmt.Println("unhandled")
-	} else {
-		// Update body
-		// TODO: create io.reader
-		req.PostData.Text
-
+	body := io.Reader(nil)
+	// This isn't a GET request, check for a body
+	if req.Method != "GET" {
+		body = strings.NewReader(req.PostData.Text)
 	}
-	newReq, err := http.NewRequest(req.Method, req.URL, nil)
+	newReq, err := http.NewRequest(req.Method, req.URL, body)
 	if err != nil {
 		return nil, errors.Wrap(err, "")
 	}
