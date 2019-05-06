@@ -1,27 +1,18 @@
 package preprocess
 
-// Request contains data for sending a Go request
-type Request struct {
-	URL     string
-	Headers string
-}
+import (
+	"net/http"
+)
 
-// HTTPState contains metadata for connecting to a target
-type HTTPState struct {
-	Host     string
-	Port     int
-	Requests []Request
-}
-
-// GetHTTPState parses a har file with login information and returns
+// GetLogin parses a har file with login information and returns
 // a series of GO requests to replicate that behavior
-func GetHTTPState() *HTTPState {
+func GetLogin() []*http.Request {
 	return nil
 }
 
 // Corpus contains Go formated requests to use as initial corpus
 type Corpus struct {
-	Requests []Request
+	Requests []http.Request
 }
 
 // GetCorpus parses Har file, formating relevant info like url, headers, params,

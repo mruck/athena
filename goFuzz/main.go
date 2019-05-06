@@ -8,8 +8,8 @@ import (
 
 func main() {
 	// Retrieve HTTP state for logging in
-	httpstate := preprocess.GetHTTPState()
-	client := httpclient.New(httpstate)
+	login := preprocess.GetLogin()
+	client := httpclient.New(login)
 	// Parse initial corpus
 	corpus := preprocess.GetCorpus()
 	fuzz.Launch(corpus, client)
