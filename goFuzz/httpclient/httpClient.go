@@ -12,14 +12,12 @@ func prerunHook(client *http.Client, requests []*http.Request) error {
 		if err != nil {
 			return err
 		}
-
-		if resp.StatusCode != 200 {
-			err = fmt.Errorf("status code: %v", resp.StatusCode)
-			return err
-		}
+		//		if resp.StatusCode != 200 {
+		//			err = fmt.Errorf("status code: %v", resp.StatusCode)
+		//			return err
+		//		}
 	}
 	return nil
-
 }
 
 // newClient allocates an http client with a cookie jar
