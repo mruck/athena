@@ -1,16 +1,14 @@
 package preprocess
 
 import (
-	"fmt"
 	"testing"
 
+	"github.com/mruck/athena/goFuzz/util"
 	"github.com/stretchr/testify/require"
 )
 
-func TestHarToRequest(t *testing.T) {
+func TestUnmarshalHar(t *testing.T) {
 	har, err := unmarshalHar("test/login_har.json")
 	require.NoError(t, err)
-	requests, err := harToRequest(har)
-	require.NoError(t, err)
-	fmt.Println(requests)
+	util.PrettyPrint(har)
 }
