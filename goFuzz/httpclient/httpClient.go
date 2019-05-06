@@ -12,6 +12,7 @@ func prerunHook(client *http.Client, requests []*http.Request) error {
 		if err != nil {
 			return err
 		}
+		fmt.Println(resp)
 		//		if resp.StatusCode != 200 {
 		//			err = fmt.Errorf("status code: %v", resp.StatusCode)
 		//			return err

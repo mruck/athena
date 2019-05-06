@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/mruck/athena/goFuzz/fuzz"
@@ -11,11 +10,13 @@ import (
 
 func main() {
 	// Retrieve HTTP state for logging in
-	login := preprocess.GetLogin()
+	login, err := preprocess.GetLogin()
+	if err != nil {
+		log.Fatalf("%+v", err)
+	}
 	client, err := httpclient.New(login)
 	if err != nil {
-		err = fmt.Errorf("failed to create http client: %v", err)
-		log.Fatal(err)
+		log.Fatalf("%+v", err)
 	}
 	// Parse initial corpus
 	corpus := preprocess.GetCorpus()

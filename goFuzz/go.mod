@@ -26,6 +26,7 @@ require (
 	github.com/nicksnyder/go-i18n v1.10.0 // indirect
 	github.com/pelletier/go-toml v1.4.0 // indirect
 	github.com/peterh/liner v1.1.0 // indirect
+	github.com/pkg/errors v0.8.1
 	github.com/pkg/profile v1.3.0 // indirect
 	github.com/rogpeppe/godef v1.1.1 // indirect
 	github.com/russross/blackfriday v2.0.0+incompatible // indirect
