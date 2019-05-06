@@ -6,17 +6,31 @@ import (
 	"github.com/pkg/errors"
 )
 
+func newReq(req request) (*http.Request, error) {
+	newReq, err := http.NewRequest(req.Method, req.URL, nil)
+	if err != nil {
+		return nil, errors.Wrap(err, "")
+	}
+	// Update headers
+	for _, header := range req.Headers {
+		newReq.Header.Add(header.Name, header.Value)
+	}
+	// Update body
+	// Update query string
+	return newReq, nil
+}
+
 // harToRequest converts a har struct to a []http.Request
 func harToRequest(har *Har) ([]*http.Request, error) {
 	entries := har.Log.Entries
 	requests := make([]*http.Request, len(entries))
 	for i, entry := range entries {
-		req := entry.Request
-		newReq, err := http.NewRequest(req.Method, req.URL, nil)
+		// Allocate new request
+		req, err := newReq(entry.Request)
 		if err != nil {
-			return nil, errors.Wrap(err, "")
+			return nil, err
 		}
-		requests[i] = newReq
+		requests[i] = req
 	}
 	return requests, nil
 }
