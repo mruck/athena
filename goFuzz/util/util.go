@@ -17,7 +17,14 @@ func PrettyPrint(data interface{}) {
 	fmt.Println(string(jsonified))
 }
 
-// PatchHostPort replaces the host and port in an http.request
-func PatchHostPort(request *http.Request, host string, port string) {
+// PatchRequestHostPort replaces the host and port in an http.request
+func PatchRequestHostPort(request *http.Request, host string, port string) {
 	request.URL.Host = host + ":" + port
+}
+
+// PatchRequestsHostPort replaces the host and port in a list of requests
+func PatchRequestsHostPort(requests []*http.Request, host string, port string) {
+	for _, req := range requests {
+		PatchRequestHostPort(req, host, port)
+	}
 }
