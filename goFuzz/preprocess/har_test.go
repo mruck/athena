@@ -11,6 +11,6 @@ func TestUnmarshalHar(t *testing.T) {
 	require.NoError(t, err)
 	// Pick something random to check for equality
 	request0 := har.Log.Entries[0].Request
-	require.Equal(t, request0.URL, "http://localhost:50121/login")
+	require.Equal(t, "http://localhost:50121/session/csrf?_=1548444062137", request0.URL)
 	//util.PrettyPrint(har)
 }

@@ -10,13 +10,13 @@ import (
 	"github.com/mruck/athena/goFuzz/util"
 )
 
-// TODO: this should be in the shared mount.  Not sure a way around hard
-// coding this
-const harPath = "tests/login_har.json"
-const host = "localhost"
-const port = "8080"
+// TODO: this should be in the shared mount.
+// Add to target img?
+const harPath = "preprocess/test/login_har.json"
 
 func main() {
+	port := util.MustGetTargetAppPort()
+	host := util.MustGetTargetAppHost()
 	// Retrieve HTTP state for logging in
 	login, err := preprocess.GetLogin(harPath)
 	if err != nil {
