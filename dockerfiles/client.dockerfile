@@ -1,4 +1,4 @@
-from debian:buster
+from golang:1.12
 
 RUN apt-get update && apt-get install -y bpython3 \
     jq \
@@ -8,18 +8,10 @@ RUN apt-get update && apt-get install -y bpython3 \
     sudo \
     watch \
     vim
-RUN pip3 install psycopg2 requests
-RUN pip3 install --upgrade virtualenv
 
 RUN mkdir /client
 WORKDIR /client
 
-ADD ./pip-reqs.txt pip-reqs.txt
-ADD ./Makefile Makefile
-ENV VENV_LOCATION=/venv
-RUN make venv
+ADD goFuzz /client
 
-ADD . /client
-
-WORKDIR /client/fuzzer
-ENTRYPOINT ./run_client.sh
+WORKDIR /client
