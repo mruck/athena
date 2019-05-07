@@ -2,452 +2,32 @@
   "log": {
     "entries": [
       {
-        "request": {
-          "method": "POST",
-          "url": "http://localhost:50121/login",
-          "httpVersion": "HTTP/1.1",
-          "headers": [
-            {
-              "name": "Host",
-              "value": "localhost:50121"
-            },
-            {
-              "name": "Connection",
-              "value": "keep-alive"
-            },
-            {
-              "name": "Content-Length",
-              "value": "92"
-            },
-            {
-              "name": "Cache-Control",
-              "value": "max-age=0"
-            },
-            {
-              "name": "Origin",
-              "value": "http://localhost:50121"
-            },
-            {
-              "name": "Upgrade-Insecure-Requests",
-              "value": "1"
-            },
-            {
-              "name": "Content-Type",
-              "value": "application/x-www-form-urlencoded"
-            },
-            {
-              "name": "User-Agent",
-              "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36"
-            },
-            {
-              "name": "Accept",
-              "value": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"
-            },
-            {
-              "name": "Referer",
-              "value": "http://localhost:50121/"
-            },
-            {
-              "name": "Accept-Encoding",
-              "value": "gzip, deflate, br"
-            },
-            {
-              "name": "Accept-Language",
-              "value": "en-US,en;q=0.9"
-            },
-            {
-              "name": "Cookie",
-              "value": "__profilin=p%3Dt; _t=44947d8f95ced2fd76d6851bd068fc0b; _forum_session=QUp1WVpMK0tIajNLNmd5M2RpVFh3dXoxMUZSRFl2YTdobjFrRytLZGprSVJRZ3p4U0plV0N0TnlCN0NvU3g3NkNZdXhrMFJxZDNqTFpwdFYzbXRxSW9QQmlnZXhwVHhPaHZGZ0JFL3M4RDhCZWR4ckpDQldyWWRqbmJkNDRpclhsTzdEL1Arcy9seHNDRHJ2d09CTVo0QTJYSlR2L1hDVUdMNDQ5NzBSZTZISXR4VUF2UzFFMWtOaGtyaUFlY2E4LS1xcncyVU0ycWtVREhlc0VEcUFTSEVnPT0%3D--dbbc6dbad31cdef531caaf60505e8b114e2851b0"
-            }
-          ],
-          "queryString": [],
-          "cookies": [
-            {
-              "name": "__profilin",
-              "value": "p%3Dt",
-              "expires": null,
-              "httpOnly": false,
-              "secure": false
-            },
-            {
-              "name": "_t",
-              "value": "44947d8f95ced2fd76d6851bd068fc0b",
-              "expires": null,
-              "httpOnly": false,
-              "secure": false
-            },
-            {
-              "name": "_forum_session",
-              "value": "QUp1WVpMK0tIajNLNmd5M2RpVFh3dXoxMUZSRFl2YTdobjFrRytLZGprSVJRZ3p4U0plV0N0TnlCN0NvU3g3NkNZdXhrMFJxZDNqTFpwdFYzbXRxSW9QQmlnZXhwVHhPaHZGZ0JFL3M4RDhCZWR4ckpDQldyWWRqbmJkNDRpclhsTzdEL1Arcy9seHNDRHJ2d09CTVo0QTJYSlR2L1hDVUdMNDQ5NzBSZTZISXR4VUF2UzFFMWtOaGtyaUFlY2E4LS1xcncyVU0ycWtVREhlc0VEcUFTSEVnPT0%3D--dbbc6dbad31cdef531caaf60505e8b114e2851b0",
-              "expires": null,
-              "httpOnly": false,
-              "secure": false
-            }
-          ],
-          "headersSize": 974,
-          "bodySize": 0,
-          "postData": {
-            "mimeType": "application/x-www-form-urlencoded",
-            "text": "username=admin%40gmail.com&password=adminpassword&redirect=http%3A%2F%2Flocalhost%3A50121%2F",
-            "params": [
-              {
-                "name": "username",
-                "value": "admin%40gmail.com"
-              },
-              {
-                "name": "password",
-                "value": "adminpassword"
-              },
-              {
-                "name": "redirect",
-                "value": "http%3A%2F%2Flocalhost%3A50121%2F"
-              }
-            ]
-          }
-        },
-        "response": {
-          "status": 302,
-          "statusText": "Found",
-          "httpVersion": "HTTP/1.1",
-          "headers": [
-            {
-              "name": "X-Frame-Options",
-              "value": "SAMEORIGIN"
-            },
-            {
-              "name": "X-XSS-Protection",
-              "value": "1; mode=block"
-            },
-            {
-              "name": "X-Content-Type-Options",
-              "value": "nosniff"
-            },
-            {
-              "name": "X-Download-Options",
-              "value": "noopen"
-            },
-            {
-              "name": "X-Permitted-Cross-Domain-Policies",
-              "value": "none"
-            },
-            {
-              "name": "Referrer-Policy",
-              "value": "strict-origin-when-cross-origin"
-            },
-            {
-              "name": "X-Discourse-Username",
-              "value": "gmail"
-            },
-            {
-              "name": "X-Discourse-Route",
-              "value": "static/enter"
-            },
-            {
-              "name": "Location",
-              "value": "http://localhost:50121/"
-            },
-            {
-              "name": "Content-Type",
-              "value": "text/html; charset=utf-8"
-            },
-            {
-              "name": "Cache-Control",
-              "value": "no-cache, no-store"
-            },
-            {
-              "name": "X-Request-Id",
-              "value": "a634cb16-9b8f-431a-91cb-9b1f6c90282d"
-            },
-            {
-              "name": "Set-Cookie",
-              "value": "__profilin=p%3Dt; path=/"
-            },
-            {
-              "name": "Transfer-Encoding",
-              "value": "chunked"
-            }
-          ],
-          "cookies": [
-            {
-              "name": "__profilin",
-              "value": "p%3Dt",
-              "path": "/",
-              "expires": null,
-              "httpOnly": false,
-              "secure": false
-            }
-          ],
-          "content": {
-            "size": 0,
-            "mimeType": "text/html",
-            "compression": 0
-          },
-          "redirectURL": "http://localhost:50121/",
-          "headersSize": 526,
-          "bodySize": 0,
-          "_transferSize": 526
-        },
-        "cache": {},
-        "timings": {
-          "blocked": 0.68300000106683,
-          "dns": -1,
-          "ssl": -1,
-          "connect": -1,
-          "send": 0.033999999999999975,
-          "wait": 361.96199999695784,
-          "receive": 0.7470000055036508,
-          "_blocked_queueing": 0.43300000106683
-        },
-        "serverIPAddress": "[::1]",
-        "_initiator": {
-          "type": "script",
-          "stack": {
-            "callFrames": [
-              {
-                "functionName": "trigger",
-                "scriptId": "43417",
-                "url": "jquery",
-                "lineNumber": 8288,
-                "columnNumber": 17
-              },
-              {
-                "functionName": "",
-                "scriptId": "43417",
-                "url": "jquery",
-                "lineNumber": 8327,
-                "columnNumber": 16
-              },
-              {
-                "functionName": "each",
-                "scriptId": "43417",
-                "url": "jquery",
-                "lineNumber": 354,
-                "columnNumber": 18
-              },
-              {
-                "functionName": "each",
-                "scriptId": "43417",
-                "url": "jquery",
-                "lineNumber": 189,
-                "columnNumber": 16
-              },
-              {
-                "functionName": "trigger",
-                "scriptId": "43417",
-                "url": "jquery",
-                "lineNumber": 8326,
-                "columnNumber": 14
-              },
-              {
-                "functionName": "jQuery.fn.(anonymous function)",
-                "scriptId": "43417",
-                "url": "jquery",
-                "lineNumber": 10212,
-                "columnNumber": 8
-              },
-              {
-                "functionName": "",
-                "scriptId": "43807",
-                "url": "discourse/controllers/login",
-                "lineNumber": 175,
-                "columnNumber": 33
-              },
-              {
-                "functionName": "tryCatch",
-                "scriptId": "43418",
-                "url": "ember",
-                "lineNumber": 50179,
-                "columnNumber": 13
-              },
-              {
-                "functionName": "invokeCallback",
-                "scriptId": "43418",
-                "url": "ember",
-                "lineNumber": 50194,
-                "columnNumber": 14
-              },
-              {
-                "functionName": "publish",
-                "scriptId": "43418",
-                "url": "ember",
-                "lineNumber": 50162,
-                "columnNumber": 8
-              },
-              {
-                "functionName": "",
-                "scriptId": "43418",
-                "url": "ember",
-                "lineNumber": 40841,
-                "columnNumber": 15
-              },
-              {
-                "functionName": "invokeWithOnError",
-                "scriptId": "43418",
-                "url": "ember",
-                "lineNumber": 2196,
-                "columnNumber": 15
-              },
-              {
-                "functionName": "flush",
-                "scriptId": "43418",
-                "url": "ember",
-                "lineNumber": 2255,
-                "columnNumber": 8
-              },
-              {
-                "functionName": "flush",
-                "scriptId": "43418",
-                "url": "ember",
-                "lineNumber": 2379,
-                "columnNumber": 14
-              },
-              {
-                "functionName": "end",
-                "scriptId": "43418",
-                "url": "ember",
-                "lineNumber": 2449,
-                "columnNumber": 22
-              },
-              {
-                "functionName": "run",
-                "scriptId": "43418",
-                "url": "ember",
-                "lineNumber": 2563,
-                "columnNumber": 15
-              },
-              {
-                "functionName": "run",
-                "scriptId": "43418",
-                "url": "ember",
-                "lineNumber": 24450,
-                "columnNumber": 26
-              },
-              {
-                "functionName": "args.success",
-                "scriptId": "43621",
-                "url": "discourse/lib/ajax",
-                "lineNumber": 104,
-                "columnNumber": 14
-              },
-              {
-                "functionName": "fire",
-                "scriptId": "43417",
-                "url": "jquery",
-                "lineNumber": 3268,
-                "columnNumber": 30
-              },
-              {
-                "functionName": "fireWith",
-                "scriptId": "43417",
-                "url": "jquery",
-                "lineNumber": 3398,
-                "columnNumber": 6
-              },
-              {
-                "functionName": "done",
-                "scriptId": "43417",
-                "url": "jquery",
-                "lineNumber": 9305,
-                "columnNumber": 13
-              },
-              {
-                "functionName": "",
-                "scriptId": "43417",
-                "url": "jquery",
-                "lineNumber": 9548,
-                "columnNumber": 8
-              }
-            ],
-            "parent": {
-              "description": "load",
-              "callFrames": [
-                {
-                  "functionName": "send",
-                  "scriptId": "43417",
-                  "url": "jquery",
-                  "lineNumber": 9567,
-                  "columnNumber": 15
-                },
-                {
-                  "functionName": "ajax",
-                  "scriptId": "43417",
-                  "url": "jquery",
-                  "lineNumber": 9206,
-                  "columnNumber": 14
-                },
-                {
-                  "functionName": "performAjax",
-                  "scriptId": "43621",
-                  "url": "discourse/lib/ajax",
-                  "lineNumber": 143,
-                  "columnNumber": 18
-                },
-                {
-                  "functionName": "",
-                  "scriptId": "43621",
-                  "url": "discourse/lib/ajax",
-                  "lineNumber": 156,
-                  "columnNumber": 10
-                },
-                {
-                  "functionName": "fire",
-                  "scriptId": "43417",
-                  "url": "jquery",
-                  "lineNumber": 3268,
-                  "columnNumber": 30
-                },
-                {
-                  "functionName": "fireWith",
-                  "scriptId": "43417",
-                  "url": "jquery",
-                  "lineNumber": 3398,
-                  "columnNumber": 6
-                },
-                {
-                  "functionName": "done",
-                  "scriptId": "43417",
-                  "url": "jquery",
-                  "lineNumber": 9305,
-                  "columnNumber": 13
-                },
-                {
-                  "functionName": "",
-                  "scriptId": "43417",
-                  "url": "jquery",
-                  "lineNumber": 9548,
-                  "columnNumber": 8
-                }
-              ]
-            }
-          }
-        },
-        "_priority": "VeryHigh",
-        "connection": "289601",
-        "pageref": "page_12"
-      },
-      {
-        "startedDateTime": "2019-01-25T19:21:16.325Z",
-        "time": 994.3320000020321,
+        "startedDateTime": "2019-01-25T19:21:14.493Z",
+        "time": 279.3600000004517,
         "request": {
           "method": "GET",
-          "url": "http://localhost:50121/",
+          "url": "http://localhost:50121/session/csrf?_=1548444062137",
           "httpVersion": "HTTP/1.1",
           "headers": [
+            {
+              "name": "Cookie",
+              "value": "__profilin=p%3Dt"
+            },
+            {
+              "name": "Accept-Encoding",
+              "value": "gzip, deflate, br"
+            },
+            {
+              "name": "X-CSRF-Token",
+              "value": "undefined"
+            },
             {
               "name": "Host",
               "value": "localhost:50121"
             },
             {
-              "name": "Connection",
-              "value": "keep-alive"
-            },
-            {
-              "name": "Cache-Control",
-              "value": "max-age=0"
-            },
-            {
-              "name": "Upgrade-Insecure-Requests",
-              "value": "1"
+              "name": "Accept-Language",
+              "value": "en-US,en;q=0.9"
             },
             {
               "name": "User-Agent",
@@ -455,26 +35,27 @@
             },
             {
               "name": "Accept",
-              "value": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"
+              "value": "*/*"
             },
             {
               "name": "Referer",
               "value": "http://localhost:50121/"
             },
             {
-              "name": "Accept-Encoding",
-              "value": "gzip, deflate, br"
+              "name": "X-Requested-With",
+              "value": "XMLHttpRequest"
             },
             {
-              "name": "Accept-Language",
-              "value": "en-US,en;q=0.9"
-            },
-            {
-              "name": "Cookie",
-              "value": "__profilin=p%3Dt; _t=44947d8f95ced2fd76d6851bd068fc0b; _forum_session=QUp1WVpMK0tIajNLNmd5M2RpVFh3dXoxMUZSRFl2YTdobjFrRytLZGprSVJRZ3p4U0plV0N0TnlCN0NvU3g3NkNZdXhrMFJxZDNqTFpwdFYzbXRxSW9QQmlnZXhwVHhPaHZGZ0JFL3M4RDhCZWR4ckpDQldyWWRqbmJkNDRpclhsTzdEL1Arcy9seHNDRHJ2d09CTVo0QTJYSlR2L1hDVUdMNDQ5NzBSZTZISXR4VUF2UzFFMWtOaGtyaUFlY2E4LS1xcncyVU0ycWtVREhlc0VEcUFTSEVnPT0%3D--dbbc6dbad31cdef531caaf60505e8b114e2851b0"
+              "name": "Connection",
+              "value": "keep-alive"
             }
           ],
-          "queryString": [],
+          "queryString": [
+            {
+              "name": "_",
+              "value": "1548444062137"
+            }
+          ],
           "cookies": [
             {
               "name": "__profilin",
@@ -482,23 +63,9 @@
               "expires": null,
               "httpOnly": false,
               "secure": false
-            },
-            {
-              "name": "_t",
-              "value": "44947d8f95ced2fd76d6851bd068fc0b",
-              "expires": null,
-              "httpOnly": false,
-              "secure": false
-            },
-            {
-              "name": "_forum_session",
-              "value": "QUp1WVpMK0tIajNLNmd5M2RpVFh3dXoxMUZSRFl2YTdobjFrRytLZGprSVJRZ3p4U0plV0N0TnlCN0NvU3g3NkNZdXhrMFJxZDNqTFpwdFYzbXRxSW9QQmlnZXhwVHhPaHZGZ0JFL3M4RDhCZWR4ckpDQldyWWRqbmJkNDRpclhsTzdEL1Arcy9seHNDRHJ2d09CTVo0QTJYSlR2L1hDVUdMNDQ5NzBSZTZISXR4VUF2UzFFMWtOaGtyaUFlY2E4LS1xcncyVU0ycWtVREhlc0VEcUFTSEVnPT0%3D--dbbc6dbad31cdef531caaf60505e8b114e2851b0",
-              "expires": null,
-              "httpOnly": false,
-              "secure": false
             }
           ],
-          "headersSize": 867,
+          "headersSize": 426,
           "bodySize": 0
         },
         "response": {
@@ -507,74 +74,70 @@
           "httpVersion": "HTTP/1.1",
           "headers": [
             {
-              "name": "X-Frame-Options",
-              "value": "SAMEORIGIN"
-            },
-            {
-              "name": "X-XSS-Protection",
-              "value": "1; mode=block"
-            },
-            {
-              "name": "X-Content-Type-Options",
-              "value": "nosniff"
-            },
-            {
-              "name": "X-Download-Options",
-              "value": "noopen"
+              "name": "Referrer-Policy",
+              "value": "strict-origin-when-cross-origin"
             },
             {
               "name": "X-Permitted-Cross-Domain-Policies",
               "value": "none"
             },
             {
-              "name": "Referrer-Policy",
-              "value": "strict-origin-when-cross-origin"
+              "name": "X-Download-Options",
+              "value": "noopen"
             },
             {
-              "name": "X-Discourse-Username",
-              "value": "gmail"
+              "name": "X-Frame-Options",
+              "value": "SAMEORIGIN"
             },
             {
-              "name": "X-Discourse-Route",
-              "value": "list/latest"
+              "name": "X-MiniProfiler-Ids",
+              "value": "[\"mi0dh1zirx1aq27nkpp7\",\"zapiuwxhv4qzn5z6i134\"]"
             },
             {
               "name": "Content-Type",
-              "value": "text/html; charset=utf-8"
-            },
-            {
-              "name": "Cache-Control",
-              "value": "no-store, must-revalidate, private, max-age=0"
-            },
-            {
-              "name": "Set-Cookie",
-              "value": "_forum_session=dDRQSVFBV0dNSW14aEt4UmtLSVk5cWxpakwyN3FVYjV1MDBnbm5BSUtWQTRodzJUQ1ZYMXh5MkorQ2syUUUxODNGOTFtaytBTkE2UjB3VDRBNnNJdFljMXo1ckdTaEZJTy9MQ0ltQjF0aTlnZWhHVTdjNlExaWZ4cThqNmN1S0kvclVORmRGbHVaMkgzWUdCK3dIMEY1YTZIazlyOTB2SmJlNzF0UnY1VkJpdlNMdGo5OSt4bUhDVC9LM042alZNLS1UL3g4SUxLaDVhaUxvOXZGQWpNWFVBPT0%3D--58ee63555f1cfba6ab5d2af889ac1e6ef437c433; path=/; HttpOnly; SameSite=Lax"
-            },
-            {
-              "name": "Set-Cookie",
-              "value": "__profilin=p%3Dt; path=/"
-            },
-            {
-              "name": "X-Request-Id",
-              "value": "09cfe9c8-66dc-4971-a4d5-18f1e471e8e7"
+              "value": "application/json; charset=utf-8"
             },
             {
               "name": "X-MiniProfiler-Original-Cache-Control",
               "value": "no-cache, no-store"
             },
             {
-              "name": "X-MiniProfiler-Ids",
-              "value": "[\"1xdz3ebk4vp3zi3gi5t1\",\"7l8n5kbzdkmif431gah5\"]"
+              "name": "Cache-Control",
+              "value": "no-store, must-revalidate, private, max-age=0"
             },
             {
-              "name": "Content-Length",
-              "value": "50142"
+              "name": "X-Discourse-Route",
+              "value": "session/csrf"
+            },
+            {
+              "name": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "name": "Set-Cookie",
+              "value": "_forum_session=OGNuNktJeERJSDlLT29pL0lGeUM1d1I3VEZCLy9yZWw2WCt0UTVmbEJ4SFhFamZBTU4zRWxZU21zWHJ1dmdvTGdSZ2dyM1F3aWx6WXhQUFNoT2ZxZThlakxWT1RUd05xbFhvWWROTzBob3hSb09SZHd4YThjRnpNRTM0bmU0TXZkeUVVWDJsMHVlNnFrODBXaFM2MGNEK2FmalNBRzdjYkluNmFVK1gvV0tsVDN1ejZIeWozbElBQ21OM0JNeU0wLS05M1VmOEN5K2dCdmV4RlMzMkpBWWVnPT0%3D--361799b03a06c09350470a52bac09563b6c4a13c; path=/; HttpOnly; SameSite=Lax"
+            },
+            {
+              "name": "Set-Cookie",
+              "value": "__profilin=p%3Dt; path=/"
+            },
+            {
+              "name": "Transfer-Encoding",
+              "value": "chunked"
+            },
+            {
+              "name": "X-XSS-Protection",
+              "value": "1; mode=block"
+            },
+            {
+              "name": "X-Request-Id",
+              "value": "6e1ea8bd-d80a-4352-a216-6f5720e0e83e"
             }
           ],
           "cookies": [
             {
               "name": "_forum_session",
-              "value": "dDRQSVFBV0dNSW14aEt4UmtLSVk5cWxpakwyN3FVYjV1MDBnbm5BSUtWQTRodzJUQ1ZYMXh5MkorQ2syUUUxODNGOTFtaytBTkE2UjB3VDRBNnNJdFljMXo1ckdTaEZJTy9MQ0ltQjF0aTlnZWhHVTdjNlExaWZ4cThqNmN1S0kvclVORmRGbHVaMkgzWUdCK3dIMEY1YTZIazlyOTB2SmJlNzF0UnY1VkJpdlNMdGo5OSt4bUhDVC9LM042alZNLS1UL3g4SUxLaDVhaUxvOXZGQWpNWFVBPT0%3D--58ee63555f1cfba6ab5d2af889ac1e6ef437c433",
+              "value": "OGNuNktJeERJSDlLT29pL0lGeUM1d1I3VEZCLy9yZWw2WCt0UTVmbEJ4SFhFamZBTU4zRWxZU21zWHJ1dmdvTGdSZ2dyM1F3aWx6WXhQUFNoT2ZxZThlakxWT1RUd05xbFhvWWROTzBob3hSb09SZHd4YThjRnpNRTM0bmU0TXZkeUVVWDJsMHVlNnFrODBXaFM2MGNEK2FmalNBRzdjYkluNmFVK1gvV0tsVDN1ejZIeWozbElBQ21OM0JNeU0wLS05M1VmOEN5K2dCdmV4RlMzMkpBWWVnPT0%3D--361799b03a06c09350470a52bac09563b6c4a13c",
               "path": "/",
               "expires": null,
               "httpOnly": true,
@@ -591,25 +154,25 @@
             }
           ],
           "content": {
-            "size": 50142,
-            "mimeType": "text/html",
-            "compression": 0
+            "size": 99,
+            "mimeType": "application/json",
+            "compression": -11
           },
           "redirectURL": "",
-          "headersSize": 1034,
-          "bodySize": 50142,
-          "_transferSize": 51176
+          "headersSize": 1018,
+          "bodySize": 110,
+          "_transferSize": 1128
         },
         "cache": {},
         "timings": {
-          "blocked": 0.8419999949936755,
+          "blocked": 0.706999998186715,
           "dns": -1,
           "ssl": -1,
           "connect": -1,
-          "send": 0.026000000000000023,
-          "wait": 990.57300000331,
-          "receive": 2.89100000372855,
-          "_blocked_queueing": 0.5869999949936755
+          "send": 0.03700000000000003,
+          "wait": 278.1880000028908,
+          "receive": 0.42799999937415123,
+          "_blocked_queueing": 0.40299999818671495
         },
         "serverIPAddress": "[::1]",
         "_initiator": {
@@ -617,382 +180,192 @@
           "stack": {
             "callFrames": [
               {
-                "functionName": "trigger",
+                "functionName": "send",
                 "scriptId": "43417",
                 "url": "jquery",
-                "lineNumber": 8288,
-                "columnNumber": 17
+                "lineNumber": 9600,
+                "columnNumber": 9
               },
               {
-                "functionName": "",
+                "functionName": "ajax",
                 "scriptId": "43417",
                 "url": "jquery",
-                "lineNumber": 8327,
-                "columnNumber": 16
-              },
-              {
-                "functionName": "each",
-                "scriptId": "43417",
-                "url": "jquery",
-                "lineNumber": 354,
-                "columnNumber": 18
-              },
-              {
-                "functionName": "each",
-                "scriptId": "43417",
-                "url": "jquery",
-                "lineNumber": 189,
-                "columnNumber": 16
-              },
-              {
-                "functionName": "trigger",
-                "scriptId": "43417",
-                "url": "jquery",
-                "lineNumber": 8326,
+                "lineNumber": 9206,
                 "columnNumber": 14
               },
               {
-                "functionName": "jQuery.fn.(anonymous function)",
-                "scriptId": "43417",
-                "url": "jquery",
-                "lineNumber": 10212,
-                "columnNumber": 8
-              },
-              {
                 "functionName": "",
-                "scriptId": "43807",
-                "url": "discourse/controllers/login",
-                "lineNumber": 175,
-                "columnNumber": 33
-              },
-              {
-                "functionName": "tryCatch",
-                "scriptId": "43418",
-                "url": "ember",
-                "lineNumber": 50179,
-                "columnNumber": 13
-              },
-              {
-                "functionName": "invokeCallback",
-                "scriptId": "43418",
-                "url": "ember",
-                "lineNumber": 50194,
-                "columnNumber": 14
-              },
-              {
-                "functionName": "publish",
-                "scriptId": "43418",
-                "url": "ember",
-                "lineNumber": 50162,
-                "columnNumber": 8
-              },
-              {
-                "functionName": "",
-                "scriptId": "43418",
-                "url": "ember",
-                "lineNumber": 40841,
-                "columnNumber": 15
-              },
-              {
-                "functionName": "invokeWithOnError",
-                "scriptId": "43418",
-                "url": "ember",
-                "lineNumber": 2196,
-                "columnNumber": 15
-              },
-              {
-                "functionName": "flush",
-                "scriptId": "43418",
-                "url": "ember",
-                "lineNumber": 2255,
-                "columnNumber": 8
-              },
-              {
-                "functionName": "flush",
-                "scriptId": "43418",
-                "url": "ember",
-                "lineNumber": 2379,
-                "columnNumber": 14
-              },
-              {
-                "functionName": "end",
-                "scriptId": "43418",
-                "url": "ember",
-                "lineNumber": 2449,
-                "columnNumber": 22
-              },
-              {
-                "functionName": "run",
-                "scriptId": "43418",
-                "url": "ember",
-                "lineNumber": 2563,
-                "columnNumber": 15
-              },
-              {
-                "functionName": "run",
-                "scriptId": "43418",
-                "url": "ember",
-                "lineNumber": 24450,
-                "columnNumber": 26
-              },
-              {
-                "functionName": "args.success",
                 "scriptId": "43621",
                 "url": "discourse/lib/ajax",
-                "lineNumber": 104,
-                "columnNumber": 14
+                "lineNumber": 152,
+                "columnNumber": 20
               },
               {
-                "functionName": "fire",
-                "scriptId": "43417",
-                "url": "jquery",
-                "lineNumber": 3268,
-                "columnNumber": 30
-              },
-              {
-                "functionName": "fireWith",
-                "scriptId": "43417",
-                "url": "jquery",
-                "lineNumber": 3398,
+                "functionName": "initializePromise",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 50229,
                 "columnNumber": 6
               },
               {
-                "functionName": "done",
-                "scriptId": "43417",
-                "url": "jquery",
-                "lineNumber": 9305,
+                "functionName": "Promise",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 50717,
+                "columnNumber": 32
+              },
+              {
+                "functionName": "ajax",
+                "scriptId": "43621",
+                "url": "discourse/lib/ajax",
+                "lineNumber": 151,
+                "columnNumber": 16
+              },
+              {
+                "functionName": "login",
+                "scriptId": "43807",
+                "url": "discourse/controllers/login",
+                "lineNumber": 112,
+                "columnNumber": 23
+              },
+              {
+                "functionName": "send",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 34219,
+                "columnNumber": 52
+              },
+              {
+                "functionName": "triggerAction",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 37939,
+                "columnNumber": 40
+              },
+              {
+                "functionName": "sendAction",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 43101,
                 "columnNumber": 13
               },
               {
+                "functionName": "click",
+                "scriptId": "43923",
+                "url": "discourse/components/d-button",
+                "lineNumber": 66,
+                "columnNumber": 11
+              },
+              {
+                "functionName": "trigger",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 44814,
+                "columnNumber": 22
+              },
+              {
+                "functionName": "superWrapper",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 42833,
+                "columnNumber": 21
+              },
+              {
+                "functionName": "run",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 2557,
+                "columnNumber": 22
+              },
+              {
+                "functionName": "join",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 2594,
+                "columnNumber": 22
+              },
+              {
+                "functionName": "run.join",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 24492,
+                "columnNumber": 27
+              },
+              {
                 "functionName": "",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 44944,
+                "columnNumber": 33
+              },
+              {
+                "functionName": "flaggedInstrument",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 20588,
+                "columnNumber": 13
+              },
+              {
+                "functionName": "handleEvent",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 44943,
+                "columnNumber": 27
+              },
+              {
+                "functionName": "exports.default._emberMetal.Mixin.create._Mixin$create.handleEvent",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 43842,
+                "columnNumber": 30
+              },
+              {
+                "functionName": "_bubbleEvent",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 44400,
+                "columnNumber": 18
+              },
+              {
+                "functionName": "",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 44330,
+                "columnNumber": 24
+              },
+              {
+                "functionName": "dispatch",
                 "scriptId": "43417",
                 "url": "jquery",
-                "lineNumber": 9548,
-                "columnNumber": 8
+                "lineNumber": 5183,
+                "columnNumber": 26
+              },
+              {
+                "functionName": "elemData.handle",
+                "scriptId": "43417",
+                "url": "jquery",
+                "lineNumber": 4991,
+                "columnNumber": 27
               }
-            ],
-            "parent": {
-              "description": "load",
-              "callFrames": [
-                {
-                  "functionName": "send",
-                  "scriptId": "43417",
-                  "url": "jquery",
-                  "lineNumber": 9567,
-                  "columnNumber": 15
-                },
-                {
-                  "functionName": "ajax",
-                  "scriptId": "43417",
-                  "url": "jquery",
-                  "lineNumber": 9206,
-                  "columnNumber": 14
-                },
-                {
-                  "functionName": "performAjax",
-                  "scriptId": "43621",
-                  "url": "discourse/lib/ajax",
-                  "lineNumber": 143,
-                  "columnNumber": 18
-                },
-                {
-                  "functionName": "",
-                  "scriptId": "43621",
-                  "url": "discourse/lib/ajax",
-                  "lineNumber": 156,
-                  "columnNumber": 10
-                },
-                {
-                  "functionName": "fire",
-                  "scriptId": "43417",
-                  "url": "jquery",
-                  "lineNumber": 3268,
-                  "columnNumber": 30
-                },
-                {
-                  "functionName": "fireWith",
-                  "scriptId": "43417",
-                  "url": "jquery",
-                  "lineNumber": 3398,
-                  "columnNumber": 6
-                },
-                {
-                  "functionName": "done",
-                  "scriptId": "43417",
-                  "url": "jquery",
-                  "lineNumber": 9305,
-                  "columnNumber": 13
-                },
-                {
-                  "functionName": "",
-                  "scriptId": "43417",
-                  "url": "jquery",
-                  "lineNumber": 9548,
-                  "columnNumber": 8
-                }
-              ]
-            }
+            ]
           }
         },
-        "_priority": "VeryHigh",
-        "connection": "289601",
-        "pageref": "page_12"
-      },
-      {
-        "startedDateTime": "2019-01-25T19:20:56.147Z",
-        "time": 1893.7369999961397,
-        "request": {
-          "method": "GET",
-          "url": "http://localhost:50121/",
-          "httpVersion": "HTTP/1.1",
-          "headers": [
-            {
-              "name": "Host",
-              "value": "localhost:50121"
-            },
-            {
-              "name": "Connection",
-              "value": "keep-alive"
-            },
-            {
-              "name": "Cache-Control",
-              "value": "max-age=0"
-            },
-            {
-              "name": "Upgrade-Insecure-Requests",
-              "value": "1"
-            },
-            {
-              "name": "User-Agent",
-              "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36"
-            },
-            {
-              "name": "Accept",
-              "value": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"
-            },
-            {
-              "name": "Accept-Encoding",
-              "value": "gzip, deflate, br"
-            },
-            {
-              "name": "Accept-Language",
-              "value": "en-US,en;q=0.9"
-            }
-          ],
-          "queryString": [],
-          "cookies": [],
-          "headersSize": 417,
-          "bodySize": 0
-        },
-        "response": {
-          "status": 200,
-          "statusText": "OK",
-          "httpVersion": "HTTP/1.1",
-          "headers": [
-            {
-              "name": "X-Frame-Options",
-              "value": "SAMEORIGIN"
-            },
-            {
-              "name": "X-XSS-Protection",
-              "value": "1; mode=block"
-            },
-            {
-              "name": "X-Content-Type-Options",
-              "value": "nosniff"
-            },
-            {
-              "name": "X-Download-Options",
-              "value": "noopen"
-            },
-            {
-              "name": "X-Permitted-Cross-Domain-Policies",
-              "value": "none"
-            },
-            {
-              "name": "Referrer-Policy",
-              "value": "strict-origin-when-cross-origin"
-            },
-            {
-              "name": "X-Discourse-Route",
-              "value": "list/latest"
-            },
-            {
-              "name": "Content-Type",
-              "value": "text/html; charset=utf-8"
-            },
-            {
-              "name": "Cache-Control",
-              "value": "no-store, must-revalidate, private, max-age=0"
-            },
-            {
-              "name": "X-Request-Id",
-              "value": "2b98668a-2eae-4471-b7b0-04ea6657ab19"
-            },
-            {
-              "name": "X-MiniProfiler-Original-Cache-Control",
-              "value": "no-cache, no-store"
-            },
-            {
-              "name": "X-MiniProfiler-Ids",
-              "value": "[\"denaflq3x84ocusfi1n3\",\"zapiuwxhv4qzn5z6i134\"]"
-            },
-            {
-              "name": "Set-Cookie",
-              "value": "__profilin=p%3Dt; path=/"
-            },
-            {
-              "name": "Content-Length",
-              "value": "35171"
-            }
-          ],
-          "cookies": [
-            {
-              "name": "__profilin",
-              "value": "p%3Dt",
-              "path": "/",
-              "expires": null,
-              "httpOnly": false,
-              "secure": false
-            }
-          ],
-          "content": {
-            "size": 35171,
-            "mimeType": "text/html",
-            "compression": 0
-          },
-          "redirectURL": "",
-          "headersSize": 608,
-          "bodySize": 35171,
-          "_transferSize": 35779
-        },
-        "cache": {},
-        "timings": {
-          "blocked": 0.7729999992023222,
-          "dns": 0.007000000000000006,
-          "ssl": -1,
-          "connect": 0.19200000000000006,
-          "send": 0.09299999999999997,
-          "wait": 1890.500999996848,
-          "receive": 2.171000000089407,
-          "_blocked_queueing": 0.4059999992023222
-        },
-        "serverIPAddress": "[::1]",
-        "_initiator": {
-          "type": "other"
-        },
-        "_priority": "VeryHigh",
-        "connection": "289563",
+        "_priority": "High",
+        "connection": "289616",
         "pageref": "page_11"
       },
       {
-        "startedDateTime": "2019-01-25T19:20:55.355Z",
-        "time": 2686.715000000413,
+        "startedDateTime": "2019-01-25T19:21:14.774Z",
+        "time": 1180.5919999969774,
         "request": {
           "method": "POST",
-          "url": "http://localhost:50121/message-bus/7d4556085723405b84d33048e988a5cb/poll",
+          "url": "http://localhost:50121/session",
           "httpVersion": "HTTP/1.1",
           "headers": [
+            {
+              "name": "Cookie",
+              "value": "__profilin=p%3Dt; _forum_session=OGNuNktJeERJSDlLT29pL0lGeUM1d1I3VEZCLy9yZWw2WCt0UTVmbEJ4SFhFamZBTU4zRWxZU21zWHJ1dmdvTGdSZ2dyM1F3aWx6WXhQUFNoT2ZxZThlakxWT1RUd05xbFhvWWROTzBob3hSb09SZHd4YThjRnpNRTM0bmU0TXZkeUVVWDJsMHVlNnFrODBXaFM2MGNEK2FmalNBRzdjYkluNmFVK1gvV0tsVDN1ejZIeWozbElBQ21OM0JNeU0wLS05M1VmOEN5K2dCdmV4RlMzMkpBWWVnPT0%3D--361799b03a06c09350470a52bac09563b6c4a13c"
+            },
             {
               "name": "Origin",
               "value": "http://localhost:50121"
@@ -1003,7 +376,7 @@
             },
             {
               "name": "X-CSRF-Token",
-              "value": "7seIecJf49tGKxcQFzYESNmTB1UqZ1juWA7VnCRlBJS7+1vIZxdYnHpBoX0RqlvQG/t7RRWcXTCtPhuHlQ3VZQ=="
+              "value": "HYzyrNAhfK1NwETP+mShUKUyWM4b4rO8Xq5lGPD6PHejN4YrG7F72+GRC9QX54mdqC7FT7fxMuT+swcxS3jF6A=="
             },
             {
               "name": "Host",
@@ -1026,12 +399,8 @@
               "value": "application/x-www-form-urlencoded; charset=UTF-8"
             },
             {
-              "name": "X-SILENCE-LOGGER",
-              "value": "true"
-            },
-            {
               "name": "Accept",
-              "value": "text/plain, */*; q=0.01"
+              "value": "*/*"
             },
             {
               "name": "Referer",
@@ -1047,92 +416,43 @@
             },
             {
               "name": "Content-Length",
-              "value": "354"
+              "value": "69"
             }
           ],
           "queryString": [],
-          "cookies": [],
-          "headersSize": 687,
+          "cookies": [
+            {
+              "name": "__profilin",
+              "value": "p%3Dt",
+              "expires": null,
+              "httpOnly": false,
+              "secure": false
+            },
+            {
+              "name": "_forum_session",
+              "value": "OGNuNktJeERJSDlLT29pL0lGeUM1d1I3VEZCLy9yZWw2WCt0UTVmbEJ4SFhFamZBTU4zRWxZU21zWHJ1dmdvTGdSZ2dyM1F3aWx6WXhQUFNoT2ZxZThlakxWT1RUd05xbFhvWWROTzBob3hSb09SZHd4YThjRnpNRTM0bmU0TXZkeUVVWDJsMHVlNnFrODBXaFM2MGNEK2FmalNBRzdjYkluNmFVK1gvV0tsVDN1ejZIeWozbElBQ21OM0JNeU0wLS05M1VmOEN5K2dCdmV4RlMzMkpBWWVnPT0%3D--361799b03a06c09350470a52bac09563b6c4a13c",
+              "expires": null,
+              "httpOnly": false,
+              "secure": false
+            }
+          ],
+          "headersSize": 979,
           "bodySize": 0,
           "postData": {
             "mimeType": "application/x-www-form-urlencoded; charset=UTF-8",
-            "text": "%2Fnew=0&%2Flatest=0&%2Funread%2F2=0&%2Fdelete=0&%2Frecover=0&%2Fglobal%2Fasset-version=1&%2Fsite%2Fbanner=0&%2Ffile-change=0&%2Flogout=0&%2Fsite%2Fread-only=0&%2Fflagged_counts=0&%2Fqueue_counts=0&%2Fnotification%2F2=0&%2Fcategories=0&%2Fclient_settings=2&%2Frefresh_client=0&%2Fnotification-alert%2F2=0&%2Fnew_user_narrative%2Ftutorial_search=0&__seq=6",
+            "text": "login=admin%40gmail.com&password=adminpassword&second_factor_method=1",
             "params": [
               {
-                "name": "%2Fnew",
-                "value": "0"
+                "name": "login",
+                "value": "admin%40gmail.com"
               },
               {
-                "name": "%2Flatest",
-                "value": "0"
+                "name": "password",
+                "value": "adminpassword"
               },
               {
-                "name": "%2Funread%2F2",
-                "value": "0"
-              },
-              {
-                "name": "%2Fdelete",
-                "value": "0"
-              },
-              {
-                "name": "%2Frecover",
-                "value": "0"
-              },
-              {
-                "name": "%2Fglobal%2Fasset-version",
+                "name": "second_factor_method",
                 "value": "1"
-              },
-              {
-                "name": "%2Fsite%2Fbanner",
-                "value": "0"
-              },
-              {
-                "name": "%2Ffile-change",
-                "value": "0"
-              },
-              {
-                "name": "%2Flogout",
-                "value": "0"
-              },
-              {
-                "name": "%2Fsite%2Fread-only",
-                "value": "0"
-              },
-              {
-                "name": "%2Fflagged_counts",
-                "value": "0"
-              },
-              {
-                "name": "%2Fqueue_counts",
-                "value": "0"
-              },
-              {
-                "name": "%2Fnotification%2F2",
-                "value": "0"
-              },
-              {
-                "name": "%2Fcategories",
-                "value": "0"
-              },
-              {
-                "name": "%2Fclient_settings",
-                "value": "2"
-              },
-              {
-                "name": "%2Frefresh_client",
-                "value": "0"
-              },
-              {
-                "name": "%2Fnotification-alert%2F2",
-                "value": "0"
-              },
-              {
-                "name": "%2Fnew_user_narrative%2Ftutorial_search",
-                "value": "0"
-              },
-              {
-                "name": "__seq",
-                "value": "6"
               }
             ]
           }
@@ -1143,68 +463,118 @@
           "httpVersion": "HTTP/1.1",
           "headers": [
             {
-              "name": "Pragma",
-              "value": "no-cache"
+              "name": "Referrer-Policy",
+              "value": "strict-origin-when-cross-origin"
+            },
+            {
+              "name": "X-Permitted-Cross-Domain-Policies",
+              "value": "none"
+            },
+            {
+              "name": "X-Download-Options",
+              "value": "noopen"
+            },
+            {
+              "name": "X-Frame-Options",
+              "value": "SAMEORIGIN"
+            },
+            {
+              "name": "X-MiniProfiler-Ids",
+              "value": "[\"q8qejemh4tlv4qnyvjed\",\"zapiuwxhv4qzn5z6i134\"]"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "name": "X-MiniProfiler-Original-Cache-Control",
+              "value": "no-cache, no-store"
+            },
+            {
+              "name": "Cache-Control",
+              "value": "no-store, must-revalidate, private, max-age=0"
+            },
+            {
+              "name": "X-Discourse-Route",
+              "value": "session/create"
             },
             {
               "name": "X-Content-Type-Options",
               "value": "nosniff"
             },
             {
+              "name": "Set-Cookie",
+              "value": "_t=44947d8f95ced2fd76d6851bd068fc0b; path=/; expires=Tue, 26 Mar 2019 19:21:15 -0000; HttpOnly; SameSite=Lax"
+            },
+            {
+              "name": "Set-Cookie",
+              "value": "_forum_session=QUp1WVpMK0tIajNLNmd5M2RpVFh3dXoxMUZSRFl2YTdobjFrRytLZGprSVJRZ3p4U0plV0N0TnlCN0NvU3g3NkNZdXhrMFJxZDNqTFpwdFYzbXRxSW9QQmlnZXhwVHhPaHZGZ0JFL3M4RDhCZWR4ckpDQldyWWRqbmJkNDRpclhsTzdEL1Arcy9seHNDRHJ2d09CTVo0QTJYSlR2L1hDVUdMNDQ5NzBSZTZISXR4VUF2UzFFMWtOaGtyaUFlY2E4LS1xcncyVU0ycWtVREhlc0VEcUFTSEVnPT0%3D--dbbc6dbad31cdef531caaf60505e8b114e2851b0; path=/; HttpOnly; SameSite=Lax"
+            },
+            {
+              "name": "Set-Cookie",
+              "value": "__profilin=p%3Dt; path=/"
+            },
+            {
               "name": "Transfer-Encoding",
               "value": "chunked"
             },
             {
-              "name": "Access-Control-Allow-Methods",
-              "value": "GET, POST"
+              "name": "X-XSS-Protection",
+              "value": "1; mode=block"
             },
             {
-              "name": "Content-Type",
-              "value": "text/plain; charset=utf-8"
-            },
-            {
-              "name": "Access-Control-Allow-Origin",
-              "value": "http://localhost"
-            },
-            {
-              "name": "Cache-Control",
-              "value": "must-revalidate, private, max-age=0"
-            },
-            {
-              "name": "Connection",
-              "value": "close"
-            },
-            {
-              "name": "Access-Control-Allow-Headers",
-              "value": "X-SILENCE-LOGGER, X-Shared-Session-Key, Dont-Chunk, Discourse-Visible"
-            },
-            {
-              "name": "Expires",
-              "value": "0"
+              "name": "X-Request-Id",
+              "value": "e81189c1-59b1-4a75-ab37-d9d2cd6a6d9c"
             }
           ],
-          "cookies": [],
+          "cookies": [
+            {
+              "name": "_t",
+              "value": "44947d8f95ced2fd76d6851bd068fc0b",
+              "path": "/",
+              "expires": "2019-03-26T19:21:15.000Z",
+              "httpOnly": true,
+              "secure": false,
+              "sameSite": "Lax"
+            },
+            {
+              "name": "_forum_session",
+              "value": "QUp1WVpMK0tIajNLNmd5M2RpVFh3dXoxMUZSRFl2YTdobjFrRytLZGprSVJRZ3p4U0plV0N0TnlCN0NvU3g3NkNZdXhrMFJxZDNqTFpwdFYzbXRxSW9QQmlnZXhwVHhPaHZGZ0JFL3M4RDhCZWR4ckpDQldyWWRqbmJkNDRpclhsTzdEL1Arcy9seHNDRHJ2d09CTVo0QTJYSlR2L1hDVUdMNDQ5NzBSZTZISXR4VUF2UzFFMWtOaGtyaUFlY2E4LS1xcncyVU0ycWtVREhlc0VEcUFTSEVnPT0%3D--dbbc6dbad31cdef531caaf60505e8b114e2851b0",
+              "path": "/",
+              "expires": null,
+              "httpOnly": true,
+              "secure": false,
+              "sameSite": "Lax"
+            },
+            {
+              "name": "__profilin",
+              "value": "p%3Dt",
+              "path": "/",
+              "expires": null,
+              "httpOnly": false,
+              "secure": false
+            }
+          ],
           "content": {
-            "size": 346,
-            "mimeType": "text/plain",
-            "compression": -7
+            "size": 3149,
+            "mimeType": "application/json",
+            "compression": -12
           },
           "redirectURL": "",
-          "headersSize": 411,
-          "bodySize": 353,
-          "_transferSize": 764,
-          "_error": "net::ERR_ABORTED"
+          "headersSize": 1142,
+          "bodySize": 3161,
+          "_transferSize": 4303
         },
         "cache": {},
         "timings": {
-          "blocked": 0.9900000022747554,
-          "dns": 0.009000000000000008,
+          "blocked": 0.5859999969941564,
+          "dns": -1,
           "ssl": -1,
-          "connect": 0.237,
-          "send": 0.138,
-          "wait": 38.34400000194786,
-          "receive": 2646.9969999961904,
-          "_blocked_queueing": 0.6300000022747554
+          "connect": -1,
+          "send": 0.033999999999999975,
+          "wait": 1179.2829999995627,
+          "receive": 0.6890000004204921,
+          "_blocked_queueing": 0.3349999969941564
         },
         "serverIPAddress": "[::1]",
         "_initiator": {
@@ -1213,777 +583,239 @@
             "callFrames": [
               {
                 "functionName": "send",
-                "scriptId": "41265",
+                "scriptId": "43417",
                 "url": "jquery",
                 "lineNumber": 9600,
                 "columnNumber": 9
               },
               {
                 "functionName": "ajax",
-                "scriptId": "41265",
+                "scriptId": "43417",
                 "url": "jquery",
                 "lineNumber": 9206,
                 "columnNumber": 14
               },
               {
-                "functionName": "ajax",
-                "scriptId": "42740",
-                "url": "discourse/initializers/message-bus",
-                "lineNumber": 18,
-                "columnNumber": 13
-              },
-              {
-                "functionName": "messageBus.ajax",
-                "scriptId": "42740",
-                "url": "discourse/initializers/message-bus",
-                "lineNumber": 71,
-                "columnNumber": 17
-              },
-              {
-                "functionName": "longPoller",
-                "scriptId": "41280",
-                "url": "message-bus",
-                "lineNumber": 224,
-                "columnNumber": 17
-              },
-              {
-                "functionName": "poll",
-                "scriptId": "41280",
-                "url": "message-bus",
-                "lineNumber": 406,
-                "columnNumber": 24
+                "functionName": "performAjax",
+                "scriptId": "43621",
+                "url": "discourse/lib/ajax",
+                "lineNumber": 143,
+                "columnNumber": 18
               },
               {
                 "functionName": "",
-                "scriptId": "41280",
-                "url": "message-bus",
-                "lineNumber": 313,
-                "columnNumber": 12
+                "scriptId": "43621",
+                "url": "discourse/lib/ajax",
+                "lineNumber": 156,
+                "columnNumber": 10
+              },
+              {
+                "functionName": "fire",
+                "scriptId": "43417",
+                "url": "jquery",
+                "lineNumber": 3268,
+                "columnNumber": 30
+              },
+              {
+                "functionName": "fireWith",
+                "scriptId": "43417",
+                "url": "jquery",
+                "lineNumber": 3398,
+                "columnNumber": 6
+              },
+              {
+                "functionName": "done",
+                "scriptId": "43417",
+                "url": "jquery",
+                "lineNumber": 9305,
+                "columnNumber": 13
+              },
+              {
+                "functionName": "",
+                "scriptId": "43417",
+                "url": "jquery",
+                "lineNumber": 9548,
+                "columnNumber": 8
               }
             ],
             "parent": {
-              "description": "setTimeout",
+              "description": "load",
               "callFrames": [
                 {
-                  "functionName": "complete",
-                  "scriptId": "41280",
-                  "url": "message-bus",
-                  "lineNumber": 311,
-                  "columnNumber": 24
-                },
-                {
-                  "functionName": "opts.complete",
-                  "scriptId": "42740",
-                  "url": "discourse/initializers/message-bus",
-                  "lineNumber": 12,
-                  "columnNumber": 8
-                },
-                {
-                  "functionName": "fire",
-                  "scriptId": "41265",
+                  "functionName": "send",
+                  "scriptId": "43417",
                   "url": "jquery",
-                  "lineNumber": 3268,
-                  "columnNumber": 30
+                  "lineNumber": 9567,
+                  "columnNumber": 15
                 },
                 {
-                  "functionName": "fireWith",
-                  "scriptId": "41265",
+                  "functionName": "ajax",
+                  "scriptId": "43417",
                   "url": "jquery",
-                  "lineNumber": 3398,
-                  "columnNumber": 6
-                },
-                {
-                  "functionName": "done",
-                  "scriptId": "41265",
-                  "url": "jquery",
-                  "lineNumber": 9320,
-                  "columnNumber": 20
+                  "lineNumber": 9206,
+                  "columnNumber": 14
                 },
                 {
                   "functionName": "",
-                  "scriptId": "41265",
+                  "scriptId": "43621",
+                  "url": "discourse/lib/ajax",
+                  "lineNumber": 152,
+                  "columnNumber": 20
+                },
+                {
+                  "functionName": "initializePromise",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 50229,
+                  "columnNumber": 6
+                },
+                {
+                  "functionName": "Promise",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 50717,
+                  "columnNumber": 32
+                },
+                {
+                  "functionName": "ajax",
+                  "scriptId": "43621",
+                  "url": "discourse/lib/ajax",
+                  "lineNumber": 151,
+                  "columnNumber": 16
+                },
+                {
+                  "functionName": "login",
+                  "scriptId": "43807",
+                  "url": "discourse/controllers/login",
+                  "lineNumber": 112,
+                  "columnNumber": 23
+                },
+                {
+                  "functionName": "send",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 34219,
+                  "columnNumber": 52
+                },
+                {
+                  "functionName": "triggerAction",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 37939,
+                  "columnNumber": 40
+                },
+                {
+                  "functionName": "sendAction",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 43101,
+                  "columnNumber": 13
+                },
+                {
+                  "functionName": "click",
+                  "scriptId": "43923",
+                  "url": "discourse/components/d-button",
+                  "lineNumber": 66,
+                  "columnNumber": 11
+                },
+                {
+                  "functionName": "trigger",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 44814,
+                  "columnNumber": 22
+                },
+                {
+                  "functionName": "superWrapper",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 42833,
+                  "columnNumber": 21
+                },
+                {
+                  "functionName": "run",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 2557,
+                  "columnNumber": 22
+                },
+                {
+                  "functionName": "join",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 2594,
+                  "columnNumber": 22
+                },
+                {
+                  "functionName": "run.join",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 24492,
+                  "columnNumber": 27
+                },
+                {
+                  "functionName": "",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 44944,
+                  "columnNumber": 33
+                },
+                {
+                  "functionName": "flaggedInstrument",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 20588,
+                  "columnNumber": 13
+                },
+                {
+                  "functionName": "handleEvent",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 44943,
+                  "columnNumber": 27
+                },
+                {
+                  "functionName": "exports.default._emberMetal.Mixin.create._Mixin$create.handleEvent",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 43842,
+                  "columnNumber": 30
+                },
+                {
+                  "functionName": "_bubbleEvent",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 44400,
+                  "columnNumber": 18
+                },
+                {
+                  "functionName": "",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 44330,
+                  "columnNumber": 24
+                },
+                {
+                  "functionName": "dispatch",
+                  "scriptId": "43417",
                   "url": "jquery",
-                  "lineNumber": 9540,
-                  "columnNumber": 9
+                  "lineNumber": 5183,
+                  "columnNumber": 26
+                },
+                {
+                  "functionName": "elemData.handle",
+                  "scriptId": "43417",
+                  "url": "jquery",
+                  "lineNumber": 4991,
+                  "columnNumber": 27
                 }
-              ],
-              "parent": {
-                "description": "error",
-                "callFrames": [
-                  {
-                    "functionName": "send",
-                    "scriptId": "41265",
-                    "url": "jquery",
-                    "lineNumber": 9568,
-                    "columnNumber": 32
-                  },
-                  {
-                    "functionName": "ajax",
-                    "scriptId": "41265",
-                    "url": "jquery",
-                    "lineNumber": 9206,
-                    "columnNumber": 14
-                  },
-                  {
-                    "functionName": "ajax",
-                    "scriptId": "42740",
-                    "url": "discourse/initializers/message-bus",
-                    "lineNumber": 18,
-                    "columnNumber": 13
-                  },
-                  {
-                    "functionName": "messageBus.ajax",
-                    "scriptId": "42740",
-                    "url": "discourse/initializers/message-bus",
-                    "lineNumber": 71,
-                    "columnNumber": 17
-                  },
-                  {
-                    "functionName": "longPoller",
-                    "scriptId": "41280",
-                    "url": "message-bus",
-                    "lineNumber": 224,
-                    "columnNumber": 17
-                  },
-                  {
-                    "functionName": "poll",
-                    "scriptId": "41280",
-                    "url": "message-bus",
-                    "lineNumber": 406,
-                    "columnNumber": 24
-                  },
-                  {
-                    "functionName": "",
-                    "scriptId": "41280",
-                    "url": "message-bus",
-                    "lineNumber": 313,
-                    "columnNumber": 12
-                  }
-                ],
-                "parent": {
-                  "description": "setTimeout",
-                  "callFrames": [
-                    {
-                      "functionName": "complete",
-                      "scriptId": "41280",
-                      "url": "message-bus",
-                      "lineNumber": 311,
-                      "columnNumber": 24
-                    },
-                    {
-                      "functionName": "opts.complete",
-                      "scriptId": "42740",
-                      "url": "discourse/initializers/message-bus",
-                      "lineNumber": 12,
-                      "columnNumber": 8
-                    },
-                    {
-                      "functionName": "fire",
-                      "scriptId": "41265",
-                      "url": "jquery",
-                      "lineNumber": 3268,
-                      "columnNumber": 30
-                    },
-                    {
-                      "functionName": "fireWith",
-                      "scriptId": "41265",
-                      "url": "jquery",
-                      "lineNumber": 3398,
-                      "columnNumber": 6
-                    },
-                    {
-                      "functionName": "done",
-                      "scriptId": "41265",
-                      "url": "jquery",
-                      "lineNumber": 9320,
-                      "columnNumber": 20
-                    },
-                    {
-                      "functionName": "",
-                      "scriptId": "41265",
-                      "url": "jquery",
-                      "lineNumber": 9540,
-                      "columnNumber": 9
-                    }
-                  ],
-                  "parent": {
-                    "description": "error",
-                    "callFrames": [
-                      {
-                        "functionName": "send",
-                        "scriptId": "41265",
-                        "url": "jquery",
-                        "lineNumber": 9568,
-                        "columnNumber": 32
-                      },
-                      {
-                        "functionName": "ajax",
-                        "scriptId": "41265",
-                        "url": "jquery",
-                        "lineNumber": 9206,
-                        "columnNumber": 14
-                      },
-                      {
-                        "functionName": "ajax",
-                        "scriptId": "42740",
-                        "url": "discourse/initializers/message-bus",
-                        "lineNumber": 18,
-                        "columnNumber": 13
-                      },
-                      {
-                        "functionName": "messageBus.ajax",
-                        "scriptId": "42740",
-                        "url": "discourse/initializers/message-bus",
-                        "lineNumber": 71,
-                        "columnNumber": 17
-                      },
-                      {
-                        "functionName": "longPoller",
-                        "scriptId": "41280",
-                        "url": "message-bus",
-                        "lineNumber": 224,
-                        "columnNumber": 17
-                      },
-                      {
-                        "functionName": "poll",
-                        "scriptId": "41280",
-                        "url": "message-bus",
-                        "lineNumber": 406,
-                        "columnNumber": 24
-                      },
-                      {
-                        "functionName": "",
-                        "scriptId": "41280",
-                        "url": "message-bus",
-                        "lineNumber": 313,
-                        "columnNumber": 12
-                      }
-                    ],
-                    "parent": {
-                      "description": "setTimeout",
-                      "callFrames": [
-                        {
-                          "functionName": "complete",
-                          "scriptId": "41280",
-                          "url": "message-bus",
-                          "lineNumber": 311,
-                          "columnNumber": 24
-                        },
-                        {
-                          "functionName": "opts.complete",
-                          "scriptId": "42740",
-                          "url": "discourse/initializers/message-bus",
-                          "lineNumber": 12,
-                          "columnNumber": 8
-                        },
-                        {
-                          "functionName": "fire",
-                          "scriptId": "41265",
-                          "url": "jquery",
-                          "lineNumber": 3268,
-                          "columnNumber": 30
-                        },
-                        {
-                          "functionName": "fireWith",
-                          "scriptId": "41265",
-                          "url": "jquery",
-                          "lineNumber": 3398,
-                          "columnNumber": 6
-                        },
-                        {
-                          "functionName": "done",
-                          "scriptId": "41265",
-                          "url": "jquery",
-                          "lineNumber": 9320,
-                          "columnNumber": 20
-                        },
-                        {
-                          "functionName": "",
-                          "scriptId": "41265",
-                          "url": "jquery",
-                          "lineNumber": 9540,
-                          "columnNumber": 9
-                        }
-                      ],
-                      "parent": {
-                        "description": "error",
-                        "callFrames": [
-                          {
-                            "functionName": "send",
-                            "scriptId": "41265",
-                            "url": "jquery",
-                            "lineNumber": 9568,
-                            "columnNumber": 32
-                          },
-                          {
-                            "functionName": "ajax",
-                            "scriptId": "41265",
-                            "url": "jquery",
-                            "lineNumber": 9206,
-                            "columnNumber": 14
-                          },
-                          {
-                            "functionName": "ajax",
-                            "scriptId": "42740",
-                            "url": "discourse/initializers/message-bus",
-                            "lineNumber": 18,
-                            "columnNumber": 13
-                          },
-                          {
-                            "functionName": "messageBus.ajax",
-                            "scriptId": "42740",
-                            "url": "discourse/initializers/message-bus",
-                            "lineNumber": 71,
-                            "columnNumber": 17
-                          },
-                          {
-                            "functionName": "longPoller",
-                            "scriptId": "41280",
-                            "url": "message-bus",
-                            "lineNumber": 224,
-                            "columnNumber": 17
-                          },
-                          {
-                            "functionName": "poll",
-                            "scriptId": "41280",
-                            "url": "message-bus",
-                            "lineNumber": 406,
-                            "columnNumber": 24
-                          },
-                          {
-                            "functionName": "",
-                            "scriptId": "41280",
-                            "url": "message-bus",
-                            "lineNumber": 313,
-                            "columnNumber": 12
-                          }
-                        ],
-                        "parent": {
-                          "description": "setTimeout",
-                          "callFrames": [
-                            {
-                              "functionName": "complete",
-                              "scriptId": "41280",
-                              "url": "message-bus",
-                              "lineNumber": 311,
-                              "columnNumber": 24
-                            },
-                            {
-                              "functionName": "opts.complete",
-                              "scriptId": "42740",
-                              "url": "discourse/initializers/message-bus",
-                              "lineNumber": 12,
-                              "columnNumber": 8
-                            },
-                            {
-                              "functionName": "fire",
-                              "scriptId": "41265",
-                              "url": "jquery",
-                              "lineNumber": 3268,
-                              "columnNumber": 30
-                            },
-                            {
-                              "functionName": "fireWith",
-                              "scriptId": "41265",
-                              "url": "jquery",
-                              "lineNumber": 3398,
-                              "columnNumber": 6
-                            },
-                            {
-                              "functionName": "done",
-                              "scriptId": "41265",
-                              "url": "jquery",
-                              "lineNumber": 9320,
-                              "columnNumber": 20
-                            },
-                            {
-                              "functionName": "",
-                              "scriptId": "41265",
-                              "url": "jquery",
-                              "lineNumber": 9540,
-                              "columnNumber": 9
-                            }
-                          ],
-                          "parent": {
-                            "description": "error",
-                            "callFrames": [
-                              {
-                                "functionName": "send",
-                                "scriptId": "41265",
-                                "url": "jquery",
-                                "lineNumber": 9568,
-                                "columnNumber": 32
-                              },
-                              {
-                                "functionName": "ajax",
-                                "scriptId": "41265",
-                                "url": "jquery",
-                                "lineNumber": 9206,
-                                "columnNumber": 14
-                              },
-                              {
-                                "functionName": "ajax",
-                                "scriptId": "42740",
-                                "url": "discourse/initializers/message-bus",
-                                "lineNumber": 18,
-                                "columnNumber": 13
-                              },
-                              {
-                                "functionName": "messageBus.ajax",
-                                "scriptId": "42740",
-                                "url": "discourse/initializers/message-bus",
-                                "lineNumber": 71,
-                                "columnNumber": 17
-                              },
-                              {
-                                "functionName": "longPoller",
-                                "scriptId": "41280",
-                                "url": "message-bus",
-                                "lineNumber": 224,
-                                "columnNumber": 17
-                              },
-                              {
-                                "functionName": "poll",
-                                "scriptId": "41280",
-                                "url": "message-bus",
-                                "lineNumber": 406,
-                                "columnNumber": 24
-                              },
-                              {
-                                "functionName": "",
-                                "scriptId": "41280",
-                                "url": "message-bus",
-                                "lineNumber": 313,
-                                "columnNumber": 12
-                              }
-                            ],
-                            "parent": {
-                              "description": "setTimeout",
-                              "callFrames": [
-                                {
-                                  "functionName": "complete",
-                                  "scriptId": "41280",
-                                  "url": "message-bus",
-                                  "lineNumber": 311,
-                                  "columnNumber": 24
-                                },
-                                {
-                                  "functionName": "opts.complete",
-                                  "scriptId": "42740",
-                                  "url": "discourse/initializers/message-bus",
-                                  "lineNumber": 12,
-                                  "columnNumber": 8
-                                },
-                                {
-                                  "functionName": "fire",
-                                  "scriptId": "41265",
-                                  "url": "jquery",
-                                  "lineNumber": 3268,
-                                  "columnNumber": 30
-                                },
-                                {
-                                  "functionName": "fireWith",
-                                  "scriptId": "41265",
-                                  "url": "jquery",
-                                  "lineNumber": 3398,
-                                  "columnNumber": 6
-                                },
-                                {
-                                  "functionName": "done",
-                                  "scriptId": "41265",
-                                  "url": "jquery",
-                                  "lineNumber": 9320,
-                                  "columnNumber": 20
-                                },
-                                {
-                                  "functionName": "",
-                                  "scriptId": "41265",
-                                  "url": "jquery",
-                                  "lineNumber": 9540,
-                                  "columnNumber": 9
-                                }
-                              ],
-                              "parent": {
-                                "description": "error",
-                                "callFrames": [
-                                  {
-                                    "functionName": "send",
-                                    "scriptId": "41265",
-                                    "url": "jquery",
-                                    "lineNumber": 9568,
-                                    "columnNumber": 32
-                                  },
-                                  {
-                                    "functionName": "ajax",
-                                    "scriptId": "41265",
-                                    "url": "jquery",
-                                    "lineNumber": 9206,
-                                    "columnNumber": 14
-                                  },
-                                  {
-                                    "functionName": "ajax",
-                                    "scriptId": "42740",
-                                    "url": "discourse/initializers/message-bus",
-                                    "lineNumber": 18,
-                                    "columnNumber": 13
-                                  },
-                                  {
-                                    "functionName": "messageBus.ajax",
-                                    "scriptId": "42740",
-                                    "url": "discourse/initializers/message-bus",
-                                    "lineNumber": 71,
-                                    "columnNumber": 17
-                                  },
-                                  {
-                                    "functionName": "longPoller",
-                                    "scriptId": "41280",
-                                    "url": "message-bus",
-                                    "lineNumber": 224,
-                                    "columnNumber": 17
-                                  },
-                                  {
-                                    "functionName": "poll",
-                                    "scriptId": "41280",
-                                    "url": "message-bus",
-                                    "lineNumber": 406,
-                                    "columnNumber": 24
-                                  },
-                                  {
-                                    "functionName": "start",
-                                    "scriptId": "41280",
-                                    "url": "message-bus",
-                                    "lineNumber": 426,
-                                    "columnNumber": 6
-                                  },
-                                  {
-                                    "functionName": "",
-                                    "scriptId": "42740",
-                                    "url": "discourse/initializers/message-bus",
-                                    "lineNumber": 47,
-                                    "columnNumber": 21
-                                  }
-                                ],
-                                "parent": {
-                                  "description": "setInterval",
-                                  "callFrames": [
-                                    {
-                                      "functionName": "initialize",
-                                      "scriptId": "42740",
-                                      "url": "discourse/initializers/message-bus",
-                                      "lineNumber": 44,
-                                      "columnNumber": 21
-                                    },
-                                    {
-                                      "functionName": "init.initialize",
-                                      "scriptId": "41461",
-                                      "url": "discourse",
-                                      "lineNumber": 155,
-                                      "columnNumber": 26
-                                    },
-                                    {
-                                      "functionName": "",
-                                      "scriptId": "41266",
-                                      "url": "ember",
-                                      "lineNumber": 6717,
-                                      "columnNumber": 20
-                                    },
-                                    {
-                                      "functionName": "Vertices.each",
-                                      "scriptId": "41266",
-                                      "url": "ember",
-                                      "lineNumber": 4774,
-                                      "columnNumber": 12
-                                    },
-                                    {
-                                      "functionName": "Vertices.topsort",
-                                      "scriptId": "41266",
-                                      "url": "ember",
-                                      "lineNumber": 4741,
-                                      "columnNumber": 13
-                                    },
-                                    {
-                                      "functionName": "DAG.topsort",
-                                      "scriptId": "41266",
-                                      "url": "ember",
-                                      "lineNumber": 4686,
-                                      "columnNumber": 23
-                                    },
-                                    {
-                                      "functionName": "_runInitializer",
-                                      "scriptId": "41266",
-                                      "url": "ember",
-                                      "lineNumber": 6732,
-                                      "columnNumber": 12
-                                    },
-                                    {
-                                      "functionName": "runInstanceInitializers",
-                                      "scriptId": "41266",
-                                      "url": "ember",
-                                      "lineNumber": 6715,
-                                      "columnNumber": 11
-                                    },
-                                    {
-                                      "functionName": "_bootSync",
-                                      "scriptId": "41266",
-                                      "url": "ember",
-                                      "lineNumber": 4992,
-                                      "columnNumber": 23
-                                    },
-                                    {
-                                      "functionName": "didBecomeReady",
-                                      "scriptId": "41266",
-                                      "url": "ember",
-                                      "lineNumber": 6008,
-                                      "columnNumber": 19
-                                    },
-                                    {
-                                      "functionName": "invokeWithOnError",
-                                      "scriptId": "41266",
-                                      "url": "ember",
-                                      "lineNumber": 2196,
-                                      "columnNumber": 15
-                                    },
-                                    {
-                                      "functionName": "flush",
-                                      "scriptId": "41266",
-                                      "url": "ember",
-                                      "lineNumber": 2255,
-                                      "columnNumber": 8
-                                    },
-                                    {
-                                      "functionName": "flush",
-                                      "scriptId": "41266",
-                                      "url": "ember",
-                                      "lineNumber": 2379,
-                                      "columnNumber": 14
-                                    },
-                                    {
-                                      "functionName": "end",
-                                      "scriptId": "41266",
-                                      "url": "ember",
-                                      "lineNumber": 2449,
-                                      "columnNumber": 22
-                                    },
-                                    {
-                                      "functionName": "run",
-                                      "scriptId": "41266",
-                                      "url": "ember",
-                                      "lineNumber": 2563,
-                                      "columnNumber": 15
-                                    },
-                                    {
-                                      "functionName": "join",
-                                      "scriptId": "41266",
-                                      "url": "ember",
-                                      "lineNumber": 2594,
-                                      "columnNumber": 22
-                                    },
-                                    {
-                                      "functionName": "run.join",
-                                      "scriptId": "41266",
-                                      "url": "ember",
-                                      "lineNumber": 24492,
-                                      "columnNumber": 27
-                                    },
-                                    {
-                                      "functionName": "",
-                                      "scriptId": "41266",
-                                      "url": "ember",
-                                      "lineNumber": 24555,
-                                      "columnNumber": 22
-                                    },
-                                    {
-                                      "functionName": "mightThrow",
-                                      "scriptId": "41265",
-                                      "url": "jquery",
-                                      "lineNumber": 3534,
-                                      "columnNumber": 28
-                                    },
-                                    {
-                                      "functionName": "process",
-                                      "scriptId": "41265",
-                                      "url": "jquery",
-                                      "lineNumber": 3602,
-                                      "columnNumber": 11
-                                    }
-                                  ],
-                                  "parent": {
-                                    "description": "setTimeout",
-                                    "callFrames": [
-                                      {
-                                        "functionName": "",
-                                        "scriptId": "41265",
-                                        "url": "jquery",
-                                        "lineNumber": 3640,
-                                        "columnNumber": 15
-                                      },
-                                      {
-                                        "functionName": "fire",
-                                        "scriptId": "41265",
-                                        "url": "jquery",
-                                        "lineNumber": 3268,
-                                        "columnNumber": 30
-                                      },
-                                      {
-                                        "functionName": "fireWith",
-                                        "scriptId": "41265",
-                                        "url": "jquery",
-                                        "lineNumber": 3398,
-                                        "columnNumber": 6
-                                      },
-                                      {
-                                        "functionName": "fire",
-                                        "scriptId": "41265",
-                                        "url": "jquery",
-                                        "lineNumber": 3406,
-                                        "columnNumber": 9
-                                      },
-                                      {
-                                        "functionName": "fire",
-                                        "scriptId": "41265",
-                                        "url": "jquery",
-                                        "lineNumber": 3268,
-                                        "columnNumber": 30
-                                      },
-                                      {
-                                        "functionName": "fireWith",
-                                        "scriptId": "41265",
-                                        "url": "jquery",
-                                        "lineNumber": 3398,
-                                        "columnNumber": 6
-                                      },
-                                      {
-                                        "functionName": "ready",
-                                        "scriptId": "41265",
-                                        "url": "jquery",
-                                        "lineNumber": 3878,
-                                        "columnNumber": 12
-                                      },
-                                      {
-                                        "functionName": "completed",
-                                        "scriptId": "41265",
-                                        "url": "jquery",
-                                        "lineNumber": 3888,
-                                        "columnNumber": 8
-                                      }
-                                    ]
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
+              ]
             }
           }
         },
         "_priority": "High",
-        "connection": "289550",
-        "pageref": "page_10"
+        "connection": "289616",
+        "pageref": "page_11"
       }
     ]
   }
