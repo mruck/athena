@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"net/http"
 	"testing"
 
 	"github.com/mruck/athena/goFuzz/httpclient"
@@ -19,9 +19,13 @@ func TestLogin(t *testing.T) {
 	login, err := preprocess.GetLogin(harPath)
 	require.NoError(t, err)
 	util.PatchRequestsHostPort(login, host, port)
-	fmt.Printf("%v\n", login[0].URL)
 	// Create a client that logs in
 	client, err := httpclient.New(login)
 	require.NoError(t, err)
 	require.NotNil(t, client)
+	req, err := http.NewRequest("GET", "http://localhost:8080/admin", nil)
+	require.NoError(t, err)
+	resp, err := client.Do(req)
+	require.NoError(t, err)
+	require.Equal(t, 200, resp.StatusCode)
 }

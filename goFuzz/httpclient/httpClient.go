@@ -1,6 +1,7 @@
 package httpclient
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/cookiejar"
 
@@ -13,6 +14,7 @@ func prerunHook(client *http.Client, requests []*http.Request) error {
 		if err != nil {
 			return errors.Wrap(err, "")
 		}
+		fmt.Printf("status code: %v\n", resp.StatusCode)
 		if resp.StatusCode == 403 {
 			return errors.Wrap(err, "")
 		}
