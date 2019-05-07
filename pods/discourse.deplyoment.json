@@ -50,7 +50,7 @@
           },
           {
             "name": "target",
-            "image": "gcr.io/athena-fuzzer/discourse:8f1bc6525d",
+            "image": "gcr.io/athena-fuzzer/discourse:pgfix2",
             "command": [
               "/bin/bash"
             ],
@@ -94,7 +94,7 @@
           },
           {
             "name": "sidecar-athena",
-            "image": "gcr.io/athena-fuzzer/athena:ee777cce9de5797014a3",
+            "image": "gcr.io/athena-fuzzer/athena:1d423db50c02d97a8371",
             "command": [
               "/bin/bash"
             ],
