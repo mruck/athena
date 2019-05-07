@@ -8,7 +8,10 @@ import (
 	"github.com/pkg/errors"
 )
 
-const maxAttempts = 10
+const maxAttempts = 60
+
+// Try every 2 seconds
+const interval = 2
 const healthCheckRoute = "/rails/info/pluralization"
 
 // HealthCheck checks if a hard coded rails fork endpoint is up
@@ -28,7 +31,7 @@ func HealthCheck(url string) (bool, error) {
 		if resp.StatusCode == 200 {
 			return true, nil
 		}
-		time.Sleep(time.Second * 1)
+		time.Sleep(time.Second * interval)
 	}
 
 	// We never got a heartbeat
