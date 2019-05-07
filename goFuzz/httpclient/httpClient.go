@@ -1,6 +1,7 @@
 package httpclient
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/cookiejar"
 	"time"
@@ -23,12 +24,15 @@ func HealthCheck(url string) (bool, error) {
 		return false, errors.Wrap(err, "")
 	}
 	for i := 0; i < maxAttempts; i++ {
+		fmt.Printf("Polling %v\n", url)
 		resp, err := client.Do(request)
 		if err != nil {
 			return false, errors.Wrap(err, "")
 		}
 		// Target app is up
-		if resp.StatusCode == 200 {
+		// TODO: the 404 status code is wonky.  Change rails fork endpoint to
+		// return 200
+		if resp.StatusCode == 404 {
 			return true, nil
 		}
 		time.Sleep(time.Second * interval)
