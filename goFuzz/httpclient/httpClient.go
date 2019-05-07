@@ -3,9 +3,37 @@ package httpclient
 import (
 	"net/http"
 	"net/http/cookiejar"
+	"time"
 
 	"github.com/pkg/errors"
 )
+
+const maxAttempts = 10
+const healthCheckRoute = "/rails/info/pluralization"
+
+// HealthCheck checks if a hard coded rails fork endpoint is up
+func HealthCheck(url string) (bool, error) {
+	client := &http.Client{}
+	url += healthCheckRoute
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return false, errors.Wrap(err, "")
+	}
+	for i := 0; i < maxAttempts; i++ {
+		resp, err := client.Do(request)
+		if err != nil {
+			return false, errors.Wrap(err, "")
+		}
+		// Target app is up
+		if resp.StatusCode == 200 {
+			return true, nil
+		}
+		time.Sleep(time.Second * 1)
+	}
+
+	// We never got a heartbeat
+	return false, nil
+}
 
 func prerunHook(client *http.Client, requests []*http.Request) error {
 	for _, request := range requests {

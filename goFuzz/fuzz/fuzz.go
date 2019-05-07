@@ -2,12 +2,9 @@ package fuzz
 
 import (
 	"net/http"
-
-	"github.com/mruck/athena/goFuzz/preprocess"
 )
 
 func start() {
-	// snapshotting?
 	// init logger
 	// health check target
 	// dump pluralizations
@@ -15,7 +12,7 @@ func start() {
 }
 
 // Launch fuzzer
-func Launch(corpus *preprocess.Corpus, client *http.Client) {
+func Launch(corpus []*http.Request, client *http.Client) {
 	start()
 	//fuzz stats for benchmarking?
 }

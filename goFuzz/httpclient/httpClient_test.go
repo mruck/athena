@@ -53,3 +53,19 @@ func TestCookieManagement(t *testing.T) {
 	_, err = New(requests)
 	require.NoError(t, err)
 }
+
+func TestHealthCheck(t *testing.T) {
+	handler := http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		if req.URL.Path == healthCheckRoute {
+			return
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		_, err := w.Write([]byte("500 - Something bad happened!"))
+		require.NoError(t, err)
+	})
+	ts := httptest.NewServer(handler)
+	defer ts.Close()
+	alive, err := HealthCheck(ts.URL)
+	require.NoError(t, err)
+	require.Equal(t, true, alive)
+}

@@ -16,13 +16,8 @@ func GetLogin(harPath string) ([]*http.Request, error) {
 	return har.toRequests()
 }
 
-// Corpus contains Go formated requests to use as initial corpus
-type Corpus struct {
-	Requests []http.Request
-}
-
 // GetCorpus parses Har file, formating relevant info like url, headers, params,
-// etc and formating into a list of requests
-func GetCorpus() *Corpus {
+// etc and formating into a list of http.requests
+func GetCorpus() []*http.Request {
 	return nil
 }

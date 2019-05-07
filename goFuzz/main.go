@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/mruck/athena/goFuzz/fuzz"
@@ -22,6 +23,16 @@ func main() {
 		log.Fatalf("%+v", err)
 	}
 	util.PatchRequestsHostPort(login, host, port)
+	// Health check
+	url := fmt.Sprintf("http://%v:%v", host, port)
+	alive, err := httpclient.HealthCheck(url)
+	if err != nil {
+		log.Fatalf("%+v", err)
+	}
+	if !alive {
+		log.Fatal("Target app not alive")
+	}
+	// Login to target app
 	client, err := httpclient.New(login)
 	if err != nil {
 		log.Fatalf("%+v", err)
