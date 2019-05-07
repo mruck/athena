@@ -2,7 +2,12 @@ package preprocess
 
 import (
 	"encoding/json"
+	"io"
 	"io/ioutil"
+	"net/http"
+	"strings"
+
+	"github.com/pkg/errors"
 )
 
 type header struct {
@@ -39,6 +44,24 @@ type request struct {
 	PostData    postData
 }
 
+// toHTTPRequest converts a har request to a http.Request
+func (req *request) toHTTPRequest() (*http.Request, error) {
+	body := io.Reader(nil)
+	// This isn't a GET request, check for a body
+	if req.Method != "GET" {
+		body = strings.NewReader(req.PostData.Text)
+	}
+	newReq, err := http.NewRequest(req.Method, req.URL, body)
+	if err != nil {
+		return nil, errors.Wrap(err, "")
+	}
+	// Update headers
+	for _, header := range req.Headers {
+		newReq.Header.Add(header.Name, header.Value)
+	}
+	return newReq, nil
+}
+
 // Response key in har
 type response struct {
 	Status int
@@ -58,6 +81,21 @@ type log struct {
 // Har json representation
 type Har struct {
 	Log log
+}
+
+// toRequest converts a har struct to a list of http.Requests
+func (har *Har) toRequests() ([]*http.Request, error) {
+	entries := har.Log.Entries
+	requests := make([]*http.Request, len(entries))
+	for i, entry := range entries {
+		// Convert each Har request to http.Request
+		req, err := entry.Request.toHTTPRequest()
+		if err != nil {
+			return nil, err
+		}
+		requests[i] = req
+	}
+	return requests, nil
 }
 
 // unmarshalHar() takes in a har file and returns a Har struct

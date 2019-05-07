@@ -1,7 +1,6 @@
 package preprocess
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -10,7 +9,9 @@ import (
 func TestHarToRequest(t *testing.T) {
 	har, err := unmarshalHar("test/login_har.json")
 	require.NoError(t, err)
-	requests, err := harToRequest(har)
+	requests, err := har.toRequests()
 	require.NoError(t, err)
-	fmt.Println(requests)
+	require.NotNil(t, requests)
+	// TODO: check headers?
+	// TODO: check body?
 }
