@@ -23,6 +23,7 @@ func TestLogin(t *testing.T) {
 	client, err := httpclient.New(login)
 	require.NoError(t, err)
 	require.NotNil(t, client)
+	// Ping a route that we have access to only if we are logged in
 	req, err := http.NewRequest("GET", "http://localhost:8080/admin", nil)
 	require.NoError(t, err)
 	resp, err := client.Do(req)
