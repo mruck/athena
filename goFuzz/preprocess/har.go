@@ -49,24 +49,6 @@ type request struct {
 	PostData    postData
 }
 
-// toHTTPRequest converts a har request to a http.Request
-func (req *request) toHTTPRequest() (*http.Request, error) {
-	body := io.Reader(nil)
-	// This isn't a GET request, check for a body
-	if req.Method != "GET" {
-		body = strings.NewReader(req.PostData.Text)
-	}
-	newReq, err := http.NewRequest(req.Method, req.URL, body)
-	if err != nil {
-		return nil, errors.Wrap(err, "")
-	}
-	// Update headers
-	for _, header := range req.Headers {
-		newReq.Header.Add(header.Name, header.Value)
-	}
-	return newReq, nil
-}
-
 // Response key in har
 type response struct {
 	Status int
@@ -86,6 +68,24 @@ type log struct {
 // Har json representation
 type Har struct {
 	Log log
+}
+
+// toHTTPRequest converts a har request to a http.Request
+func (req *request) toHTTPRequest() (*http.Request, error) {
+	body := io.Reader(nil)
+	// This isn't a GET request, check for a body
+	if req.Method != "GET" {
+		body = strings.NewReader(req.PostData.Text)
+	}
+	newReq, err := http.NewRequest(req.Method, req.URL, body)
+	if err != nil {
+		return nil, errors.Wrap(err, "")
+	}
+	// Update headers
+	for _, header := range req.Headers {
+		newReq.Header.Add(header.Name, header.Value)
+	}
+	return newReq, nil
 }
 
 // toRequest converts a har struct to a list of http.Requests
@@ -110,9 +110,5 @@ func unmarshalHar(harPath string) (*Har, error) {
 		return nil, err
 	}
 	har := &Har{}
-	err = json.Unmarshal(data, har)
-	if err != nil {
-		return nil, err
-	}
-	return har, nil
+	return har, json.Unmarshal(data, har)
 }

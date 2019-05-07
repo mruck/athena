@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/url"
 
 	"github.com/mruck/athena/goFuzz/fuzz"
 	"github.com/mruck/athena/goFuzz/httpclient"
@@ -13,6 +14,12 @@ import (
 // TODO: this should be in the shared mount.
 // Add to target img?
 const harPath = "preprocess/test/login_har.json"
+
+func must(check bool, format string, args ...interface{}) {
+	if !check {
+		log.Fatalf(format, args...)
+	}
+}
 
 func main() {
 	port := util.MustGetTargetAppPort()
@@ -26,19 +33,23 @@ func main() {
 		log.Fatalf("%+v", err)
 	}
 	util.PatchRequestsHostPort(login, host, port)
+
+	// Parse the URL first.
+	url, err := url.Parse(fmt.Sprintf("http://%s:%s", host, port))
+	must(err == nil, "%+v", err)
+
+	// Get a new client.
+	client, err := httpclient.New(url)
+	must(err == nil, "%+v", err)
+
 	// Health check
-	url := fmt.Sprintf("http://%v:%v", host, port)
-	alive, err := httpclient.HealthCheck(url)
-	if err != nil {
-		log.Fatalf("%+v", err)
-	}
-	if !alive {
-		log.Fatal("Target app not alive")
-	}
-	// Login to target app
-	client, err := httpclient.New(login)
-	if err != nil {
-		log.Fatalf("%+v", err)
-	}
+	alive, err := client.HealthCheck()
+	must(err == nil, "%+v", err)
+	must(alive, "target app not alive")
+
+	// Send login har.
+	err = client.DoAll(login)
+	must(err == nil, "%+v", err)
+
 	fuzz.Launch(corpus, client)
 }

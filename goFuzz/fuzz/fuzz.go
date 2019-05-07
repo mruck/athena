@@ -2,6 +2,8 @@ package fuzz
 
 import (
 	"net/http"
+
+	"github.com/mruck/athena/goFuzz/httpclient"
 )
 
 func start() {
@@ -12,7 +14,7 @@ func start() {
 }
 
 // Launch fuzzer
-func Launch(corpus []*http.Request, client *http.Client) {
+func Launch(corpus []*http.Request, client *httpclient.Client) {
 	start()
 	//fuzz stats for benchmarking?
 }
