@@ -17,6 +17,9 @@ const harPath = "preprocess/test/login_har.json"
 func main() {
 	port := util.MustGetTargetAppPort()
 	host := util.MustGetTargetAppHost()
+	// Parse initial corpus
+	corpus := preprocess.GetCorpus()
+	// TODO: Patch host/port in corpus
 	// Retrieve HTTP state for logging in
 	login, err := preprocess.GetLogin(harPath)
 	if err != nil {
@@ -37,8 +40,5 @@ func main() {
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}
-	// Parse initial corpus
-	corpus := preprocess.GetCorpus()
 	fuzz.Launch(corpus, client)
-
 }
