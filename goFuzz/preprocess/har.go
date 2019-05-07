@@ -34,12 +34,17 @@ type postData struct {
 	Params   []param
 }
 
+type query struct {
+	Name  string
+	Value string
+}
+
 // Request key in har
 type request struct {
 	Method      string
 	URL         string
 	Headers     []header
-	QueryString []string
+	QueryString []query
 	Cookies     []cookie
 	PostData    postData
 }
