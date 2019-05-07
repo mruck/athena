@@ -4,19 +4,20 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/cookiejar"
+
+	"github.com/pkg/errors"
 )
 
 func prerunHook(client *http.Client, requests []*http.Request) error {
 	for _, request := range requests {
+		fmt.Printf("Sending request to %v\n", request.URL)
 		resp, err := client.Do(request)
 		if err != nil {
-			return err
+			return errors.Wrap(err, "")
 		}
-		fmt.Println(resp)
-		//		if resp.StatusCode != 200 {
-		//			err = fmt.Errorf("status code: %v", resp.StatusCode)
-		//			return err
-		//		}
+		if resp.StatusCode == 403 {
+			return errors.Wrap(err, "")
+		}
 	}
 	return nil
 }
