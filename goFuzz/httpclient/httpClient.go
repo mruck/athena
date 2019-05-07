@@ -1,7 +1,6 @@
 package httpclient
 
 import (
-	"fmt"
 	"net/http"
 	"net/http/cookiejar"
 
@@ -10,7 +9,6 @@ import (
 
 func prerunHook(client *http.Client, requests []*http.Request) error {
 	for _, request := range requests {
-		fmt.Printf("Sending request to %v\n", request.URL)
 		resp, err := client.Do(request)
 		if err != nil {
 			return errors.Wrap(err, "")
