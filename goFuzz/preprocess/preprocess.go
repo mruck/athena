@@ -6,13 +6,9 @@ import (
 	"github.com/pkg/errors"
 )
 
-// TODO: this should be in the shared mount.  Not sure a way around hard
-// coding this
-const harPath = "tests/login_har.json"
-
 // GetLogin parses a har file with login information and returns
 // a series of GO requests to replicate that behavior
-func GetLogin() ([]*http.Request, error) {
+func GetLogin(harPath string) ([]*http.Request, error) {
 	har, err := unmarshalHar(harPath)
 	if err != nil {
 		return nil, errors.Wrap(err, "")

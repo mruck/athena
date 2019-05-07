@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 )
 
 // PrettyPrint a struct
@@ -14,4 +15,9 @@ func PrettyPrint(data interface{}) {
 		log.Fatal(err)
 	}
 	fmt.Println(string(jsonified))
+}
+
+// PatchHostPort replaces the host and port in an http.request
+func PatchHostPort(request *http.Request, host string, port string) {
+	request.URL.Host = host + ":" + port
 }

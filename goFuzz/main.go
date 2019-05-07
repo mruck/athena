@@ -8,9 +8,13 @@ import (
 	"github.com/mruck/athena/goFuzz/preprocess"
 )
 
+// TODO: this should be in the shared mount.  Not sure a way around hard
+// coding this
+const harPath = "tests/login_har.json"
+
 func main() {
 	// Retrieve HTTP state for logging in
-	login, err := preprocess.GetLogin()
+	login, err := preprocess.GetLogin(harPath)
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}
