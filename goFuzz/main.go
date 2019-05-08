@@ -32,7 +32,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}
-	util.PatchRequestsHostPort(login, host, port)
 
 	// Parse the URL first.
 	url, err := url.Parse(fmt.Sprintf("http://%s:%s", host, port))
