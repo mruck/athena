@@ -1,11 +1,13 @@
 package route
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 
-	"github.com/mruck/athena/goFuzz/util"
 	"github.com/pkg/errors"
 )
 
@@ -31,31 +33,51 @@ func (jsonified *JSONRoute) toRoute() *Route {
 		DynamicSegments: jsonified.Segments}
 }
 
-// RoutesPath is a path to routes dumped by Rails
+// RoutesPath is a path to a file of routes dumped by rails.
+// The file contains a list of new line separated JSONRoute
+// objects.
 // TODO: get this info from rails by sending a request
-const RoutesPath = "tests/routes.json"
+const RoutesPath = "/tmp/results/routes.json"
 
 // LoadRoutes reads routes from shared mount and loads them into memory
 func LoadRoutes() []*Route {
-	// Unmarshal into a JSON struct
-	JSONRoutes := []JSONRoute{}
-	util.MustUnmarshalFile(RoutesPath, JSONRoutes)
+	// Parse new line separated routes file
+	data, err := ioutil.ReadFile(RoutesPath)
+	if err != nil {
+		err := errors.Wrap(err, "")
+		log.Fatalf("%+v\n", err)
+	}
+	routeStrings := strings.Split(string(data), "\n")
+	// The file ends with a blank new line so trim
+	// TODO: clean this up from the rails side
+	routeStrings = routeStrings[:len(routeStrings)-1]
 
-	// Convert the list of JSONRoute structs to a list of Route objects
-	routes := make([]*Route, len(JSONRoutes))
-	for _, JSONroute := range JSONRoutes {
-		routes = append(routes, JSONroute.toRoute())
+	// Unmarshal into a JSON struct
+	JSONroutes := make([]*JSONRoute, len(routeStrings))
+	for i, routeString := range routeStrings {
+		route := JSONRoute{}
+		if err := json.Unmarshal([]byte(routeString), &route); err != nil {
+			err = errors.Wrap(err, "")
+			log.Fatalf("%+v\n", err)
+		}
+		JSONroutes[i] = &route
+	}
+
+	// Initialize the universal route data structure
+	// TODO: is it necessary to have the JSON metadata struct above?
+	routes := make([]*Route, len(JSONroutes))
+	for i, JSONRoute := range JSONroutes {
+		routes[i] = JSONRoute.toRoute()
 	}
 	return routes
 }
 
 // ToHTTPRequest converts a route to an http.Request
-func (route *Route) ToHTTPRequest() *http.Request {
+func (route *Route) ToHTTPRequest() (*http.Request, error) {
 	url := fmt.Sprintf("http://overwriteMe.com%s", route.Path)
 	req, err := http.NewRequest(url, route.Method, nil)
 	if err != nil {
-		err = errors.Wrap(err, "")
-		log.Fatalf("%+v\n", err)
+		return nil, errors.Wrap(err, "")
 	}
-	return req
+	return req, nil
 }

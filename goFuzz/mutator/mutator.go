@@ -1,6 +1,7 @@
 package mutator
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/mruck/athena/goFuzz/route"
@@ -39,8 +40,12 @@ func (mutator *Mutator) Mutate() *route.Route {
 // Next picks the route, mutates the parameters, and formats it as a request
 func (mutator *Mutator) Next() *http.Request {
 	route := mutator.Mutate()
-	request := route.ToHTTPRequest()
-	return request
+	req, err := route.ToHTTPRequest()
+	if err != nil {
+		// TODO: this route failed. Log to a file and mutate again
+		log.Fatalf("%+v\n", err)
+	}
+	return req
 }
 
 // UpdateCoverage parses the response and updates source code, parameter and

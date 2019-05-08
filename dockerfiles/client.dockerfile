@@ -9,9 +9,9 @@ RUN apt-get update && apt-get install -y bpython3 \
     watch \
     vim
 
-RUN mkdir /client
-WORKDIR /client
+RUN mkdir /fuzz
+WORKDIR /fuzz
 
-ADD goFuzz/* /client/
+ADD goFuzz/ /fuzz
 
-WORKDIR /client
+WORKDIR /fuzz
