@@ -41,6 +41,10 @@ func (mutator *Mutator) Mutate() *route.Route {
 // Next picks the route, mutates the parameters, and formats it as a request
 func (mutator *Mutator) Next() *http.Request {
 	route := mutator.Mutate()
+	// We are done
+	if route == nil {
+		return nil
+	}
 	req, err := route.ToHTTPRequest()
 	if err != nil {
 		// TODO: this route failed. Log to a file and mutate again

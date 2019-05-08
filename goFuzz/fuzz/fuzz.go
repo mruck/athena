@@ -25,7 +25,7 @@ func Fuzz(corpus []*http.Request, client *httpclient.Client) {
 		}
 
 		// Send it.
-		fmt.Printf("Hiting %v %v\n", request.Method, request.URL)
+		fmt.Printf("%v %v\n", request.Method, request.URL)
 		resp, err := client.Do(request)
 		if err != nil {
 			err := errors.Wrap(err, "")
@@ -33,6 +33,5 @@ func Fuzz(corpus []*http.Request, client *httpclient.Client) {
 		}
 		// Collect our deltas
 		mutator.UpdateCoverage(resp)
-
 	}
 }

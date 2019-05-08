@@ -54,3 +54,16 @@ func MustUnmarshalFile(filepath string, dst interface{}) {
 		log.Fatalf("%+v\n", err)
 	}
 }
+
+// PanicIfErr panics and logs a verbose error if err is not nil.
+func PanicIfErr(err error) {
+	if err != nil {
+		err = errors.Wrap(err, "")
+		log.Fatalf("%+v\n", err)
+	}
+}
+
+// Verbose makes an error verbose.
+func Verbose(err error) error {
+	return errors.Wrap(err, "")
+}
