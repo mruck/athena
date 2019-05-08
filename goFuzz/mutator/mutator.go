@@ -25,11 +25,12 @@ func New(corpus []*http.Request, routes []*route.Route) *Mutator {
 	// TODO: use the corpus to seed the mutator.  It will probs also change
 	// the type of mutation alg we pick?
 	seedMutator(corpus)
-	return &Mutator{Routes: routes, routeIndex: 0}
+	return &Mutator{Routes: routes, routeIndex: -1}
 }
 
 // Mutate pick the next route and mutates the parameters
 func (mutator *Mutator) Mutate() *route.Route {
+	mutator.routeIndex++
 	// We've exhausted all routes
 	if mutator.routeIndex >= len(mutator.Routes) {
 		return nil

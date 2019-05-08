@@ -50,7 +50,7 @@
           },
           {
             "name": "target",
-            "image": "gcr.io/athena-fuzzer/discourse:pgfix2",
+            "image": "gcr.io/athena-fuzzer/discourse:pgfix3",
             "command": [
               "/bin/bash"
             ],

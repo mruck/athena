@@ -75,7 +75,7 @@ func LoadRoutes() []*Route {
 // ToHTTPRequest converts a route to an http.Request
 func (route *Route) ToHTTPRequest() (*http.Request, error) {
 	url := fmt.Sprintf("http://overwriteMe.com%s", route.Path)
-	req, err := http.NewRequest(url, route.Method, nil)
+	req, err := http.NewRequest(route.Method, url, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "")
 	}

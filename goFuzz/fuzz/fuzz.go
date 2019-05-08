@@ -31,8 +31,8 @@ func Fuzz(corpus []*http.Request, client *httpclient.Client) {
 			err := errors.Wrap(err, "")
 			log.Fatalf("%+v\n", err)
 		}
-
 		// Collect our deltas
 		mutator.UpdateCoverage(resp)
+
 	}
 }
