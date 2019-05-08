@@ -1,9 +1,12 @@
 package route
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/mruck/athena/goFuzz/util"
+	"github.com/pkg/errors"
 )
 
 // Route object contains metadata about a route
@@ -48,5 +51,11 @@ func LoadRoutes() []*Route {
 
 // ToHTTPRequest converts a route to an http.Request
 func (route *Route) ToHTTPRequest() *http.Request {
-	return nil
+	url := fmt.Sprintf("http://overwriteMe.com%s", route.Path)
+	req, err := http.NewRequest(url, route.Method, nil)
+	if err != nil {
+		err = errors.Wrap(err, "")
+		log.Fatalf("%+v\n", err)
+	}
+	return req
 }

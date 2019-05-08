@@ -12,7 +12,8 @@ type Mutate interface {
 
 // Mutator contains state for mutating
 type Mutator struct {
-	Routes []*route.Route
+	Routes     []*route.Route
+	routeIndex int
 }
 
 func seedMutator(corpus []*http.Request) {
@@ -23,12 +24,16 @@ func New(corpus []*http.Request, routes []*route.Route) *Mutator {
 	// TODO: use the corpus to seed the mutator.  It will probs also change
 	// the type of mutation alg we pick?
 	seedMutator(corpus)
-	return &Mutator{Routes: routes}
+	return &Mutator{Routes: routes, routeIndex: 0}
 }
 
 // Mutate pick the next route and mutates the parameters
 func (mutator *Mutator) Mutate() *route.Route {
-	return nil
+	// We've exhausted all routes
+	if mutator.routeIndex >= len(mutator.Routes) {
+		return nil
+	}
+	return mutator.Routes[mutator.routeIndex]
 }
 
 // Next picks the route, mutates the parameters, and formats it as a request

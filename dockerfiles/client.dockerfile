@@ -12,6 +12,6 @@ RUN apt-get update && apt-get install -y bpython3 \
 RUN mkdir /client
 WORKDIR /client
 
-ADD goFuzz/* /client
+ADD goFuzz/* /client/
 
 WORKDIR /client

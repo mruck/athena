@@ -9,8 +9,9 @@ rails:
 	GIT_SHA=$(GIT_SHA) $(MAKE) -C ../rails-fork rails
 
 # Bump images in debug deployment
-debug-deployment: fuzzer-client discourse-server
-	jq '.spec.template.spec.containers[1].image = "gcr.io/athena-fuzzer/discourse:'$(GIT_SHA)'"' pods/debug.deployment.json | jq '.spec.template.spec.containers[2].image = "gcr.io/athena-fuzzer/athena:'$(GIT_SHA)'"' > /tmp/deployments/$(GIT_SHA)
+debug-deployment: fuzzer-client
+	mkdir /tmp/deployments || true
+	jq '.spec.template.spec.containers[2].image = "gcr.io/athena-fuzzer/athena:'$(GIT_SHA)'"' pods/discourse.deployment.json > /tmp/deployments/$(GIT_SHA)
 	kubectl apply -f /tmp/deployments/$(GIT_SHA)
 
 postgres-stop:

@@ -1,6 +1,7 @@
 package fuzz
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -18,8 +19,13 @@ func Fuzz(corpus []*http.Request, client *httpclient.Client) {
 	for {
 		// Get next request
 		request := mutator.Next()
+		// No routes left to explore
+		if request == nil {
+			break
+		}
 
 		// Send it.
+		fmt.Printf("Hiting %v %v\n", request.Method, request.URL)
 		resp, err := client.Do(request)
 		if err != nil {
 			err := errors.Wrap(err, "")
