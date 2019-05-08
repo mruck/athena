@@ -11,7 +11,7 @@ type Route struct {
 	Path            string
 	Method          string
 	QueryParams     string
-	DynamicSegments string
+	DynamicSegments []string
 	BodyParams      string
 }
 
@@ -22,16 +22,28 @@ type JSONRoute struct {
 	Segments []string
 }
 
+// toRoute converts a JSONRoute object to a Route object
+func (jsonified *JSONRoute) toRoute() *Route {
+	return &Route{Path: jsonified.Path, Method: jsonified.Verb,
+		DynamicSegments: jsonified.Segments}
+}
+
 // RoutesPath is a path to routes dumped by Rails
 // TODO: get this info from rails by sending a request
 const RoutesPath = "tests/routes.json"
 
 // LoadRoutes reads routes from shared mount and loads them into memory
 func LoadRoutes() []*Route {
+	// Unmarshal into a JSON struct
 	JSONRoutes := []JSONRoute{}
 	util.MustUnmarshalFile(RoutesPath, JSONRoutes)
 
-	return nil
+	// Convert the list of JSONRoute structs to a list of Route objects
+	routes := make([]*Route, len(JSONRoutes))
+	for _, JSONroute := range JSONRoutes {
+		routes = append(routes, JSONroute.toRoute())
+	}
+	return routes
 }
 
 // ToHTTPRequest converts a route to an http.Request
