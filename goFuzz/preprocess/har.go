@@ -1,12 +1,11 @@
 package preprocess
 
 import (
-	"encoding/json"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"strings"
 
+	"github.com/mruck/athena/goFuzz/util"
 	"github.com/pkg/errors"
 )
 
@@ -104,11 +103,8 @@ func (har *Har) toRequests() ([]*http.Request, error) {
 }
 
 // unmarshalHar() takes in a har file and returns a Har struct
-func unmarshalHar(harPath string) (*Har, error) {
-	data, err := ioutil.ReadFile(harPath)
-	if err != nil {
-		return nil, err
-	}
+func unmarshalHar(harPath string) *Har {
 	har := &Har{}
-	return har, json.Unmarshal(data, har)
+	util.MustUnmarshalFile(harPath, har)
+	return har
 }

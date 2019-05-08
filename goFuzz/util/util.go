@@ -3,9 +3,11 @@ package util
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
+
+	"github.com/pkg/errors"
 )
 
 // PrettyPrint a struct
@@ -36,4 +38,19 @@ func MustGetTargetAppHost() string {
 		return "localhost"
 	}
 	return host
+}
+
+// MustUnmarshalFile reads a file and unmarshal it to the given
+// destination, panicking on error
+func MustUnmarshalFile(filepath string, dst interface{}) {
+	data, err := ioutil.ReadFile(filepath)
+	if err != nil {
+		err = errors.Wrap(err, "")
+		log.Fatalf("%+v\n", err)
+	}
+	err = json.Unmarshal(data, dst)
+	if err != nil {
+		err = errors.Wrap(err, "")
+		log.Fatalf("%+v\n", err)
+	}
 }
