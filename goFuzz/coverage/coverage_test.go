@@ -31,9 +31,9 @@ func copyFile(dst string, src string) error {
 
 }
 
-//func TestReadCoverage1(t *testing.T) {
-//	readCoverageInner(t, "coverage1.json", "coverage2.json")
-//}
+func TestReadCoverage1(t *testing.T) {
+	readCoverageInner(t, "coverage1.json", "coverage2.json")
+}
 
 func TestReadCoverage2(t *testing.T) {
 	readCoverageInner(t, "dummy1.json", "dummy2.json")

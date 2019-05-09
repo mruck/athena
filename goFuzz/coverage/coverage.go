@@ -58,10 +58,9 @@ func (coverage *Coverage) updateMap(newCoverage map[string][]int) map[string][]i
 			}
 			oldLineCount[i] += newLineCount[i]
 		}
+
 		deltaMap[newFilename] = deltaLineCount
 	}
-	fmt.Printf("\n\n\nDelta map:\n")
-	fmt.Printf("%v\n", deltaMap)
 	return deltaMap
 }
 
@@ -127,10 +126,8 @@ func (coverage *Coverage) Update() error {
 	// Update coverage map
 	deltaMap := coverage.updateMap(newCov)
 	// Calculate the increase in coverage from the most recent request
-	fmt.Println("delta:")
 	coverage.Delta = calculateCoveragePercentage(deltaMap)
 	// Calculate the increase in coverage cumulatively
-	fmt.Println("cumulative:")
 	coverage.Cumulative = calculateCoveragePercentage(coverage.Map)
 	return nil
 }
