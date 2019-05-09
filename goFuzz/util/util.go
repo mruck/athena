@@ -1,8 +1,10 @@
 package util
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -66,4 +68,17 @@ func PanicIfErr(err error) {
 // Verbose makes an error verbose.
 func Verbose(err error) error {
 	return errors.Wrap(err, "")
+}
+
+// ReadLines reads a file line by line
+func ReadLines(file io.Reader) ([]string, error) {
+	scanner := bufio.NewScanner(file)
+	var lines []string
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, errors.Wrap(err, "")
+	}
+	return lines, nil
 }

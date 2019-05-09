@@ -8,20 +8,19 @@ import (
 
 // Coverage contains metadata abouta  coverage object
 type Coverage struct {
-	Cumulative          float64
-	Delta               float64
-	CoverageFilePointer *os.File
+	Cumulative float64
+	Delta      float64
+	File       *os.File
 }
 
 // New returns a coverage object that reads from coveragePath
 func New(coveragePath string) *Coverage {
 	fp, err := os.Open(coveragePath)
 	util.PanicIfErr(err)
-	return &Coverage{Cumulative: 0, Delta: 0, CoverageFilePointer: fp}
+	return &Coverage{Cumulative: 0, Delta: 0, File: fp}
 }
 
 // ReadCoverage reads new coverage from the associated fp and updates the
 // cumulative and delta coverage values
 func (coverage *Coverage) ReadCoverage() {
-
 }
