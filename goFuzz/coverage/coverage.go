@@ -1,8 +1,6 @@
 package coverage
 
 import (
-	"fmt"
-
 	"github.com/mruck/athena/goFuzz/util"
 )
 
@@ -79,8 +77,6 @@ func calculateCoveragePercentage(coverage map[string][]int) float64 {
 			}
 		}
 	}
-	fmt.Printf("linesRun %v\n", linesRun)
-	fmt.Printf("runnableLines %v\n", runnableLines)
 	return float64(linesRun) / float64(runnableLines) * 100
 }
 
