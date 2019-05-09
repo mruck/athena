@@ -33,5 +33,7 @@ func Fuzz(corpus []*http.Request, client *httpclient.Client) {
 		}
 		// Collect our deltas
 		mutator.UpdateCoverage(resp)
+		fmt.Println("Breaking!!!!")
+		break
 	}
 }

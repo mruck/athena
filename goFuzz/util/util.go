@@ -42,7 +42,21 @@ func MustGetTargetAppHost() string {
 	return host
 }
 
-// MustUnmarshalFile reads a file and unmarshal it to the given
+// UnmarshalFile reads a file and unmarshal it to the given
+// destination, returning the error
+func UnmarshalFile(filepath string, dst interface{}) error {
+	data, err := ioutil.ReadFile(filepath)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	err = json.Unmarshal(data, dst)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
+}
+
+// MustUnmarshalFile reads a file and unmarshals it to the given
 // destination, panicking on error
 func MustUnmarshalFile(filepath string, dst interface{}) {
 	data, err := ioutil.ReadFile(filepath)
@@ -60,14 +74,9 @@ func MustUnmarshalFile(filepath string, dst interface{}) {
 // PanicIfErr panics and logs a verbose error if err is not nil.
 func PanicIfErr(err error) {
 	if err != nil {
-		err = errors.Wrap(err, "")
+		err = errors.WithStack(err)
 		log.Fatalf("%+v\n", err)
 	}
-}
-
-// Verbose makes an error verbose.
-func Verbose(err error) error {
-	return errors.Wrap(err, "")
 }
 
 // ReadLines reads a file line by line
