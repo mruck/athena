@@ -30,7 +30,7 @@ func Fuzz(corpus []*http.Request, client *httpclient.Client) {
 		util.Must(err == nil, "%+v", errors.WithStack(err))
 
 		// Collect our deltas
-		err = mutator.UpdateCoverage(resp)
+		err = mutator.UpdateState(resp)
 		util.Must(err == nil, "%+v", err)
 	}
 }
