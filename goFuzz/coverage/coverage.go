@@ -1,6 +1,8 @@
 package coverage
 
 import (
+	"fmt"
+
 	"github.com/mruck/athena/goFuzz/util"
 )
 
@@ -74,6 +76,8 @@ func calculateCoveragePercentage(coverage map[string][]int) float64 {
 			}
 		}
 	}
+	fmt.Printf("linesRun %v\n", linesRun)
+	fmt.Printf("runnableLines %v\n", runnableLines)
 	return float64(linesRun) / float64(runnableLines) * 100
 }
 
@@ -119,8 +123,10 @@ func (coverage *Coverage) Update() error {
 	// Update coverage map
 	deltaMap := coverage.updateMap(newCov)
 	// Calculate the increase in coverage from the most recent request
+	fmt.Println("delta:")
 	coverage.Delta = calculateCoveragePercentage(deltaMap)
 	// Calculate the increase in coverage cumulatively
+	fmt.Println("cumulative:")
 	coverage.Cumulative = calculateCoveragePercentage(coverage.Map)
 	return nil
 }
