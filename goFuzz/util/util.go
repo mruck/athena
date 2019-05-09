@@ -1,10 +1,8 @@
 package util
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -71,23 +69,9 @@ func MustUnmarshalFile(filepath string, dst interface{}) {
 	}
 }
 
-// PanicIfErr panics and logs a verbose error if err is not nil.
-func PanicIfErr(err error) {
-	if err != nil {
-		err = errors.WithStack(err)
-		log.Fatalf("%+v\n", err)
+// Must requires check to succeed otherwise panic
+func Must(check bool, format string, args ...interface{}) {
+	if !check {
+		log.Fatalf(format, args...)
 	}
-}
-
-// ReadLines reads a file line by line
-func ReadLines(file io.Reader) ([]string, error) {
-	scanner := bufio.NewScanner(file)
-	var lines []string
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	if err := scanner.Err(); err != nil {
-		return nil, errors.Wrap(err, "")
-	}
-	return lines, nil
 }

@@ -2,12 +2,12 @@ package fuzz
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/mruck/athena/goFuzz/httpclient"
 	"github.com/mruck/athena/goFuzz/mutator"
 	"github.com/mruck/athena/goFuzz/route"
+	"github.com/mruck/athena/goFuzz/util"
 	"github.com/pkg/errors"
 )
 
@@ -27,13 +27,10 @@ func Fuzz(corpus []*http.Request, client *httpclient.Client) {
 		// Send it.
 		fmt.Printf("%v %v\n", request.Method, request.URL)
 		resp, err := client.Do(request)
-		if err != nil {
-			err := errors.Wrap(err, "")
-			log.Fatalf("%+v\n", err)
-		}
+		util.Must(err == nil, "%+v", errors.WithStack(err))
+
 		// Collect our deltas
-		mutator.UpdateCoverage(resp)
-		fmt.Println("Breaking!!!!")
-		break
+		err = mutator.UpdateCoverage(resp)
+		util.Must(err == nil, "%+v", err)
 	}
 }

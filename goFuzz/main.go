@@ -15,12 +15,6 @@ import (
 // Add to target img?
 const harPath = "preprocess/test/login_har.json"
 
-func must(check bool, format string, args ...interface{}) {
-	if !check {
-		log.Fatalf(format, args...)
-	}
-}
-
 func main() {
 	port := util.MustGetTargetAppPort()
 	host := util.MustGetTargetAppHost()
@@ -35,20 +29,20 @@ func main() {
 
 	// Parse the URL first.
 	url, err := url.Parse(fmt.Sprintf("http://%s:%s", host, port))
-	must(err == nil, "%+v", err)
+	util.Must(err == nil, "%+v", err)
 
 	// Get a new client.
 	client, err := httpclient.New(url)
-	must(err == nil, "%+v", err)
+	util.Must(err == nil, "%+v", err)
 
 	// Health check
 	alive, err := client.HealthCheck()
-	must(err == nil, "%+v", err)
-	must(alive, "target app not alive")
+	util.Must(err == nil, "%+v", err)
+	util.Must(alive, "target app not alive")
 
 	// Send login har.
 	err = client.DoAll(login)
-	must(err == nil, "%+v", err)
+	util.Must(err == nil, "%+v", err)
 
 	fuzz.Fuzz(corpus, client)
 }

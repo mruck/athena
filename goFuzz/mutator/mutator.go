@@ -1,9 +1,11 @@
 package mutator
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/mruck/athena/goFuzz/coverage"
 	"github.com/mruck/athena/goFuzz/route"
 )
 
@@ -15,17 +17,20 @@ type Mutate interface {
 type Mutator struct {
 	Routes     []*route.Route
 	routeIndex int
+	Coverage   *coverage.Coverage
 }
 
 func seedMutator(corpus []*http.Request) {
 }
+
+const coveragePath = "/tmp/results/coverage.json"
 
 // New creates a new mutator
 func New(corpus []*http.Request, routes []*route.Route) *Mutator {
 	// TODO: use the corpus to seed the mutator.  It will probs also change
 	// the type of mutation alg we pick?
 	seedMutator(corpus)
-	return &Mutator{Routes: routes, routeIndex: -1}
+	return &Mutator{Routes: routes, routeIndex: -1, Coverage: coverage.New(coveragePath)}
 }
 
 // Mutate pick the next route and mutates the parameters
@@ -55,5 +60,12 @@ func (mutator *Mutator) Next() *http.Request {
 
 // UpdateCoverage parses the response and updates source code, parameter and
 // query coverage
-func (mutator *Mutator) UpdateCoverage(resp *http.Response) {
+func (mutator *Mutator) UpdateCoverage(resp *http.Response) error {
+	err := mutator.Coverage.ReadCoverage()
+	fmt.Printf("Delta: %v\n", mutator.Coverage.Delta)
+	fmt.Printf("Cumulative: %v\n", mutator.Coverage.Cumulative)
+	if err != nil {
+		return err
+	}
+	return nil
 }
