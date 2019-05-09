@@ -32,32 +32,36 @@ func (coverage *Coverage) updateMap(newCoverage map[string][]int) map[string][]i
 	deltaMap := make(map[string][]int)
 	for newFilename, newLineCount := range newCoverage {
 		// The filename is present. Update with new coverage
-		if oldLineCount, ok := coverage.Map[newFilename]; ok {
-			// Allocate an array for keeping track of delta line counts
-			deltaLineCount := make([]int, len(oldLineCount))
-			for i := range newLineCount {
-				// This is unreachable
-				if newLineCount[i] < 0 {
-					deltaLineCount[i] = -1
-					continue
-				}
-				// This is new coverage, add to the delta
-				if oldLineCount[i] == 0 && newLineCount[i] > 0 {
-					deltaLineCount[i] = newLineCount[i]
-
-				} else {
-					// Nothing new for this line
-					deltaLineCount[i] = 0
-
-				}
-				oldLineCount[i] += newLineCount[i]
-			}
-		} else {
+		oldLineCount, ok := coverage.Map[newFilename]
+		if !ok {
 			// This is the first time the file is hit
 			coverage.Map[newFilename] = newLineCount
 			deltaMap[newFilename] = newLineCount
+			continue
 		}
+
+		// Allocate an array for keeping track of delta line counts
+		deltaLineCount := make([]int, len(oldLineCount))
+		for i := range newLineCount {
+			// This is unreachable
+			if newLineCount[i] < 0 {
+				deltaLineCount[i] = -1
+				continue
+			}
+			// This is new coverage, add to the delta
+			if oldLineCount[i] == 0 && newLineCount[i] > 0 {
+				deltaLineCount[i] = newLineCount[i]
+			} else {
+				// Nothing new for this line
+				deltaLineCount[i] = 0
+
+			}
+			oldLineCount[i] += newLineCount[i]
+		}
+		deltaMap[newFilename] = deltaLineCount
 	}
+	fmt.Printf("\n\n\nDelta map:\n")
+	fmt.Printf("%v\n", deltaMap)
 	return deltaMap
 }
 

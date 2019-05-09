@@ -30,14 +30,23 @@ func copyFile(dst string, src string) error {
 	return out.Close()
 
 }
-func TestReadCoverage(t *testing.T) {
+
+//func TestReadCoverage1(t *testing.T) {
+//	readCoverageInner(t, "coverage1.json", "coverage2.json")
+//}
+
+func TestReadCoverage2(t *testing.T) {
+	readCoverageInner(t, "dummy1.json", "dummy2.json")
+}
+
+func readCoverageInner(t *testing.T, file1 string, file2 string) {
 	// Tmpfile for writing coverage to
 	tmp, err := ioutil.TempFile("/tmp", "cov-")
 	require.NoError(t, err)
 	//defer os.Remove(tmp.Name())
 
 	coverage := New(tmp.Name())
-	err = copyFile(tmp.Name(), "coverage1.json")
+	err = copyFile(tmp.Name(), file1)
 	require.NoError(t, err)
 
 	// Read the coverage
@@ -53,7 +62,7 @@ func TestReadCoverage(t *testing.T) {
 	fmt.Printf("Cumulative percentage: %v\n", coverage.Cumulative)
 
 	// Update coverage
-	err = copyFile(tmp.Name(), "coverage2.json")
+	err = copyFile(tmp.Name(), file2)
 	require.NoError(t, err)
 
 	// Read coverage again
