@@ -9,7 +9,7 @@ import (
 
 func TestReadCoverage(t *testing.T) {
 	coverage := New("coverage.json")
-	err := coverage.ReadCoverage()
+	err := coverage.Update()
 	require.NoError(t, err)
 	require.True(t, coverage.Delta > 0)
 	require.True(t, coverage.Cumulative > 0)

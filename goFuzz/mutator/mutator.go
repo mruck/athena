@@ -61,7 +61,7 @@ func (mutator *Mutator) Next() *http.Request {
 // UpdateCoverage parses the response and updates source code, parameter and
 // query coverage
 func (mutator *Mutator) UpdateCoverage(resp *http.Response) error {
-	err := mutator.Coverage.ReadCoverage()
+	err := mutator.Coverage.Update()
 	fmt.Printf("Delta: %v\n", mutator.Coverage.Delta)
 	fmt.Printf("Cumulative: %v\n", mutator.Coverage.Cumulative)
 	if err != nil {
