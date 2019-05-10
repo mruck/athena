@@ -1,21 +1,13 @@
 package param
 
-// Param keeps track of metadata surrounding a parameter
-type Param struct {
-	Name           string
-	Type           []string
-	Value          string
-	PreviousValues []string
-	NextValues     []string
-}
-
-// New returns a new param
-func New(name string) *Param {
-	return &Param{Name: name}
-}
-
-// Mutate a parameter
-func (param *Param) Mutate() {
-	// Check for database queries
-
+// State for mutating a parameter
+type State struct {
+	CurrentValue   interface{}
+	PreviousValues []interface{}
+	HarValues      []string
+	// Query to run to retrieve this value
+	Query string
+	// Table the value maps to (in case the query fails, just pop something from here)
+	Table  string
+	Column string
 }
