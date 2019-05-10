@@ -8,19 +8,22 @@ import (
 	"github.com/mruck/athena/goFuzz/fuzz"
 	"github.com/mruck/athena/goFuzz/httpclient"
 	"github.com/mruck/athena/goFuzz/preprocess"
+	"github.com/mruck/athena/goFuzz/route"
 	"github.com/mruck/athena/goFuzz/util"
 )
 
 // TODO: this should be in the shared mount.
 // Add to target img?
 const harPath = "preprocess/test/login_har.json"
+const swaggerPath = "swagger.json"
 
 func main() {
 	port := util.MustGetTargetAppPort()
 	host := util.MustGetTargetAppHost()
 
 	// Load swagger info
-	routes := route.LoadRoutes()
+	routes, err := route.LoadRoutes(swaggerPath)
+	util.Must(err == nil, "%+v", err)
 
 	// Parse initial corpus
 	corpus := preprocess.GetCorpus()
