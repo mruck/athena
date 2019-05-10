@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/mruck/athena/goFuzz/coverage"
 	"github.com/mruck/athena/goFuzz/route"
@@ -33,14 +34,39 @@ func New(corpus []*http.Request, routes []*route.Route) *Mutator {
 	return &Mutator{Routes: routes, routeIndex: -1, Coverage: coverage.New(coveragePath)}
 }
 
-// Mutate pick the next route and mutates the parameters
+func (mutator *Mutator) specialRoute() *route.Route {
+	routeEnvVar := os.Getenv("ROUTE")
+	if routeEnvVar == "" {
+		return nil
+	}
+	for _, route := range mutator.Routes {
+		if route.Path == routeEnvVar {
+			return route
+		}
+	}
+	log.Println("ROUTE env var set but didn't find")
+	return nil
+}
+
+// Mutate picks the next route and mutates the parameters
 func (mutator *Mutator) Mutate() *route.Route {
-	mutator.routeIndex++
+	// User specified route provided
+	if route := mutator.specialRoute(); route != nil {
+		return route
+	}
+
+	// We didn't get new coverage, next route
+	if mutator.Coverage.Delta == 0 {
+		mutator.routeIndex++
+	}
 	// We've exhausted all routes
 	if mutator.routeIndex >= len(mutator.Routes) {
 		return nil
 	}
-	return mutator.Routes[mutator.routeIndex]
+	route := mutator.Routes[mutator.routeIndex]
+	// Mutate each parameter
+	route.Mutate()
+	return route
 }
 
 // Next picks the route, mutates the parameters, and formats it as a request

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/mruck/athena/goFuzz/param"
 	"github.com/pkg/errors"
 )
 
@@ -15,9 +16,9 @@ import (
 type Route struct {
 	Path            string
 	Method          string
-	QueryParams     string
-	DynamicSegments []string
-	BodyParams      string
+	QueryParams     []*param.Param
+	DynamicSegments []*param.Param
+	BodyParams      []*param.Param
 }
 
 // JSONRoute is a Route object in JSON formm as dumped by rails
@@ -27,10 +28,25 @@ type JSONRoute struct {
 	Segments []string
 }
 
+// Mutate params on route
+func (route *Route) Mutate() {
+	//	if route.DynamicSegments != nil {
+	//		for _, param := range route.DynamicSegments {
+	//			param.Mutate()
+	//		}
+	//	}
+}
+
 // toRoute converts a JSONRoute object to a Route object
 func (jsonified *JSONRoute) toRoute() *Route {
+	segments := make([]*param.Param, len(jsonified.Segments))
+	for i, segment := range jsonified.Segments {
+		segments[i] = param.New(segment)
+	}
+
 	return &Route{Path: jsonified.Path, Method: jsonified.Verb,
-		DynamicSegments: jsonified.Segments}
+		QueryParams: nil, BodyParams: nil,
+		DynamicSegments: segments}
 }
 
 // RoutesPath is a path to a file of routes dumped by rails.
@@ -41,6 +57,7 @@ const RoutesPath = "/tmp/results/routes.json"
 
 // LoadRoutes reads routes from shared mount and loads them into memory
 func LoadRoutes() []*Route {
+	// TODO: ignore blacklisted route, ie RO route
 	// Parse new line separated routes file
 	data, err := ioutil.ReadFile(RoutesPath)
 	if err != nil {
@@ -49,7 +66,7 @@ func LoadRoutes() []*Route {
 	}
 	routeStrings := strings.Split(string(data), "\n")
 	// The file ends with a blank new line so trim
-	// TODO: clean this up from the rails side
+	// TODO: change rails to dump straight json so i can trivially load
 	routeStrings = routeStrings[:len(routeStrings)-1]
 
 	// Unmarshal into a JSON struct
