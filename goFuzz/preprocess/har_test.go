@@ -21,7 +21,6 @@ func TestCorpus(t *testing.T) {
 	routes := route.FromSwagger("../route/discourseSwagger.json")
 	corpus, err := har.InitializeRoutes(routes)
 	require.NoError(t, err)
-	fmt.Printf("Printing corpus\n")
 	for _, route := range corpus {
 		fmt.Printf("%v %v\n", route.Method, route.Path)
 	}

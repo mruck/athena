@@ -2,11 +2,13 @@ package route
 
 import (
 	"net/http"
+	"regexp"
 	"strings"
 
 	"github.com/go-openapi/spec"
 	"github.com/mruck/athena/goFuzz/param"
 	"github.com/mruck/athena/goFuzz/util"
+	"github.com/pkg/errors"
 )
 
 // SiblingMethod contains mutation state for sibling methods
@@ -22,10 +24,22 @@ type Route struct {
 	Path string
 	// field in Spec.Swagger.Path.Paths[Path].Get/Put/etc
 	Method string
+	// regexp is for matching path with a har request
+	Re *regexp.Regexp
 	// value for field in Spec.Swagger.Path.Path[Path].Get
 	Meta           *spec.Operation
 	State          *param.State
 	SiblingMethods *[]*SiblingMethod
+}
+
+// canonicalizePath creates a regexp for the path so it can be matched
+// against a har request
+func canonicalizePath(path string) (*regexp.Regexp, error) {
+	re := regexp.MustCompile(`/\{[^/]+\}`)
+	pathRegexp := re.ReplaceAllString(path, "/([^/]+)")
+	re, err := regexp.Compile(pathRegexp)
+	util.Must(err == nil, "%+v\n", errors.WithStack(err))
+	return re, err
 }
 
 // New initializes parameter state, stores it in the sibling method list,
@@ -33,12 +47,14 @@ type Route struct {
 func New(path string, method string, meta *spec.Operation, siblingMethods *[]*SiblingMethod) *Route {
 	// Initialize object to keep track of state
 	state := &param.State{}
+	re, err := canonicalizePath(path)
+	util.Must(err == nil, "%+v\n", err)
 	// Update the sibling meta data so it contains this methods
 	// mutation state
 	sibling := &SiblingMethod{Method: method, State: state}
 	*siblingMethods = append(*siblingMethods, sibling)
 	return &Route{Path: path, Method: method, Meta: meta,
-		State: state, SiblingMethods: siblingMethods}
+		State: state, SiblingMethods: siblingMethods, Re: re}
 }
 
 // FindRouteByPath searches for a route with matching path and method
