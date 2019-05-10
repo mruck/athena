@@ -10,8 +10,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-// PrettyPrint a struct
-func PrettyPrint(data interface{}) {
+// PrettyPrintStruct prints a struct
+func PrettyPrintStruct(data interface{}) {
 	jsonified, err := json.MarshalIndent(data, "", "    ")
 	if err != nil {
 		err = fmt.Errorf("failed to pretty print json: %v", err)
