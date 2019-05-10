@@ -64,8 +64,8 @@ func blacklisted(path string) bool {
 		strings.Contains(path, "logout")
 }
 
-// LoadRoutes from swagger file
-func LoadRoutes(path string) []*Route {
+// FromSwagger loads routes from swagger file
+func FromSwagger(path string) []*Route {
 	swagger := ReadSwagger(path)
 	// All routes
 	routes := []*Route{}

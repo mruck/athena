@@ -23,7 +23,7 @@ func main() {
 	host := util.MustGetTargetAppHost()
 
 	// Load swagger info
-	routes := route.LoadRoutes(swaggerPath)
+	routes := route.FromSwagger(swaggerPath)
 
 	// Parse initial corpus
 	corpus := preprocess.GetCorpus(routes, harCorpus)

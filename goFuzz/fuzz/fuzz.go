@@ -6,7 +6,6 @@ import (
 
 	"github.com/mruck/athena/goFuzz/httpclient"
 	"github.com/mruck/athena/goFuzz/mutator"
-	"github.com/mruck/athena/goFuzz/route"
 	"github.com/mruck/athena/goFuzz/util"
 	"github.com/pkg/errors"
 )
@@ -14,7 +13,6 @@ import (
 // Fuzz starts the fuzzer
 func Fuzz(corpus []*http.Request, client *httpclient.Client) {
 	// Parse routes
-	routes := route.LoadRoutes()
 	mutator := mutator.New(corpus, routes)
 	for {
 		// Get next request

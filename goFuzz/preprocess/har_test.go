@@ -17,7 +17,7 @@ func TestUnmarshalHar(t *testing.T) {
 
 func TestCorpus(t *testing.T) {
 	har := unmarshalHar("test/corpus_har.json")
-	routes := route.LoadRoutes("../route/discourseSwagger.json")
+	routes := route.FromSwagger("../route/discourseSwagger.json")
 	_, err := har.InitializeRoutes(routes)
 	require.NoError(t, err)
 }

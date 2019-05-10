@@ -20,8 +20,8 @@ func TestReadDiscourseSwagger(t *testing.T) {
 	//util.PrettyPrintStruct(swagger)
 }
 
-func TestLoadRoutes(t *testing.T) {
-	routes := LoadRoutes("dummySwagger.json")
+func TestFromSwagger(t *testing.T) {
+	routes := FromSwagger("dummySwagger.json")
 	// Check a random field
 	require.Equal(t, routes[0].Method, "GET")
 }
