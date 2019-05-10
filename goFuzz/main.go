@@ -14,22 +14,22 @@ import (
 
 // TODO: this should be in the shared mount.
 // Add to target img?
-const harPath = "preprocess/test/login_har.json"
-const swaggerPath = "swagger.json"
+const harLogin = "preprocess/test/login_har.json"
+const swaggerPath = "routes/discourseSwagger.json"
+const harCorpus = "preprocess/test/corpus_har.json"
 
 func main() {
 	port := util.MustGetTargetAppPort()
 	host := util.MustGetTargetAppHost()
 
 	// Load swagger info
-	routes, err := route.LoadRoutes(swaggerPath)
-	util.Must(err == nil, "%+v", err)
+	routes := route.LoadRoutes(swaggerPath)
 
 	// Parse initial corpus
-	corpus := preprocess.GetCorpus()
+	corpus := preprocess.GetCorpus(routes, harCorpus)
 
 	// Retrieve HTTP state for logging in
-	login, err := preprocess.GetLogin(harPath)
+	login, err := preprocess.GetLogin(harLogin)
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}

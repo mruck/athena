@@ -2,6 +2,7 @@ package route
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/go-openapi/spec"
 	"github.com/mruck/athena/goFuzz/param"
@@ -40,6 +41,16 @@ func New(path string, method string, meta *spec.Operation, siblingMethods *[]*Si
 		State: state, SiblingMethods: siblingMethods}
 }
 
+// FindRouteByPath searches for a route with matching path and method
+func FindRouteByPath(routes []*Route, path string, method string) *Route {
+	for _, route := range routes {
+		if route.Path == path && route.Method == method {
+			return route
+		}
+	}
+	return nil
+}
+
 // ReadSwagger file into memory
 func ReadSwagger(path string) *spec.Swagger {
 	swagger := &spec.Swagger{}
@@ -47,17 +58,27 @@ func ReadSwagger(path string) *spec.Swagger {
 	return swagger
 }
 
+// Check if a route is blacklisted
+func blacklisted(path string) bool {
+	return strings.Contains(path, "readonly") ||
+		strings.Contains(path, "logout")
+}
+
 // LoadRoutes from swagger file
-func LoadRoutes(path string) ([]*Route, error) {
+func LoadRoutes(path string) []*Route {
 	swagger := ReadSwagger(path)
 	// All routes
 	routes := []*Route{}
 	for path, operations := range swagger.Paths.Paths {
+		// This path is blacklisted
+		if ok := blacklisted(path); ok {
+			continue
+		}
+
 		// All methods on the same path should share an object pointing
 		// to parameter state
 		siblingMethods := &[]*SiblingMethod{}
 		if operations.Get != nil {
-			// Create a route
 			route := New(path, "GET", operations.Get, siblingMethods)
 			routes = append(routes, route)
 		}
@@ -87,7 +108,7 @@ func LoadRoutes(path string) ([]*Route, error) {
 		}
 	}
 
-	return routes, nil
+	return routes
 }
 
 // ToHTTPRequest converts a route to an http.Request

@@ -3,7 +3,6 @@ package route
 import (
 	"testing"
 
-	"github.com/mruck/athena/goFuzz/util"
 	"github.com/stretchr/testify/require"
 )
 
@@ -21,18 +20,8 @@ func TestReadDiscourseSwagger(t *testing.T) {
 	//util.PrettyPrintStruct(swagger)
 }
 
-type person struct {
-	Name string
-	Age  int
-}
-
-func TestConcatenate(t *testing.T) {
-	obj1 := &person{"bob1", 1}
-	obj2 := &person{"bob2", 2}
-	obj3 := &person{"bob3", 3}
-	obj4 := &person{"bob4", 4}
-	var list1 = []*person{obj1, obj2}
-	var list2 = []*person{obj3, obj4}
-	joined := append(list1, list2...)
-	util.PrettyPrintStruct(joined)
+func TestLoadRoutes(t *testing.T) {
+	routes := LoadRoutes("dummySwagger.json")
+	// Check a random field
+	require.Equal(t, routes[0].Method, "GET")
 }
