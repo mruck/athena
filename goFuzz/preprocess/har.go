@@ -3,6 +3,7 @@ package preprocess
 import (
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/mruck/athena/goFuzz/util"
@@ -100,6 +101,18 @@ func (har *Har) toRequests() ([]*http.Request, error) {
 		requests[i] = req
 	}
 	return requests, nil
+}
+
+// Canonicalize a har request, for example given
+// /t/9 with param id: 9 return /t/{id} so that we can
+// match against the swagger spec path
+func (req *request) canonicalizePath() (string, error) {
+	url, err := url.Parse(req.URL)
+	if err != nil {
+		// TODO: if we hit this case we should log it and continue
+		return nil, errors.WithStack(err)
+	}
+	return "", nil
 }
 
 // unmarshalHar() takes in a har file and returns a Har struct
