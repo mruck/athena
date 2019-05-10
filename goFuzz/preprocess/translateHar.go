@@ -2,9 +2,11 @@ package preprocess
 
 import (
 	"fmt"
+	"net/url"
 
 	"github.com/mruck/athena/goFuzz/route"
 	"github.com/mruck/athena/goFuzz/util"
+	"github.com/pkg/errors"
 )
 
 // initializeRoute takes a har entry and initializes the associated route object
@@ -17,14 +19,13 @@ func initializeRoute(route *route.Route, harEntry entry) {
 func (har *Har) InitializeRoutes(routes []*route.Route) ([]*route.Route, error) {
 	corpus := []*route.Route{}
 	for _, entry := range har.Log.Entries {
-		// Canonicalize har path
-		path, err := entry.Request.canonicalizePath()
-		// TODO: in the future, log this and continue
-		util.Must(err == nil, "%+v\n", err)
-		route := route.FindRouteByPath(routes, path, entry.Request.Method)
+		url, err := url.Parse(entry.Request.URL)
+		// TODO: eventually log this and move in on
+		util.Must(err == nil, "%+v\n", errors.WithStack(err))
+		route := route.FindRouteByPath(routes, url.Path, entry.Request.Method)
 		// We didn't find this route in the swagger spec
 		if route == nil {
-			fmt.Printf("Skipping: %v %v\n", entry.Request.Method, path)
+			fmt.Printf("Skipping: %v %v\n", entry.Request.Method, url.Path)
 			continue
 		}
 		// Initialize Har data inside route

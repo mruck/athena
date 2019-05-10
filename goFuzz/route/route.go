@@ -60,7 +60,7 @@ func New(path string, method string, meta *spec.Operation, siblingMethods *[]*Si
 // FindRouteByPath searches for a route with matching path and method
 func FindRouteByPath(routes []*Route, path string, method string) *Route {
 	for _, route := range routes {
-		if route.Path == path && route.Method == method {
+		if route.Method == method && route.Re.Match([]byte(path)) {
 			return route
 		}
 	}
