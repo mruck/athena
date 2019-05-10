@@ -18,16 +18,20 @@ const harPath = "preprocess/test/login_har.json"
 func main() {
 	port := util.MustGetTargetAppPort()
 	host := util.MustGetTargetAppHost()
+
+	// Load swagger info
+	//routes := route.LoadRoutes()
+
 	// Parse initial corpus
 	corpus := preprocess.GetCorpus()
-	// TODO: Patch host/port in corpus
+
 	// Retrieve HTTP state for logging in
 	login, err := preprocess.GetLogin(harPath)
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}
 
-	// Parse the URL first.
+	// Parse the URL
 	url, err := url.Parse(fmt.Sprintf("http://%s:%s", host, port))
 	util.Must(err == nil, "%+v", err)
 
@@ -40,7 +44,7 @@ func main() {
 	util.Must(err == nil, "%+v", err)
 	util.Must(alive, "target app not alive")
 
-	// Send login har.
+	// Login
 	err = client.DoAll(login)
 	util.Must(err == nil, "%+v", err)
 

@@ -13,3 +13,9 @@ func TestReadSwagger(t *testing.T) {
 	description := swagger.Paths.Paths["/categories.json"].Post.Description
 	require.Equal(t, "Create a new category", description)
 }
+
+// Just make sure we don't hit an unmarshaling error
+func TestReadDiscourseSwagger(t *testing.T) {
+	_ = ReadSwagger("discourseSwagger.json")
+	//util.PrettyPrintStruct(swagger)
+}
