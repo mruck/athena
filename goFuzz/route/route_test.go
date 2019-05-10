@@ -1,4 +1,4 @@
-package swagger
+package route
 
 import (
 	"testing"
