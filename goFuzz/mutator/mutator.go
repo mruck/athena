@@ -27,10 +27,8 @@ func seedMutator(corpus []*http.Request) {
 const coveragePath = "/tmp/results/coverage.json"
 
 // New creates a new mutator
-func New(corpus []*http.Request, routes []*route.Route) *Mutator {
-	// TODO: use the corpus to seed the mutator.  It will probs also change
-	// the type of mutation alg we pick?
-	seedMutator(corpus)
+func New(routes []*route.Route, corpus []*route.Route) *Mutator {
+	// TODO: do something with the corpus
 	return &Mutator{Routes: routes, routeIndex: -1, Coverage: coverage.New(coveragePath)}
 }
 
@@ -50,7 +48,7 @@ func (mutator *Mutator) specialRoute() *route.Route {
 
 // Mutate picks the next route and mutates the parameters
 func (mutator *Mutator) Mutate() *route.Route {
-	// User specified route provided
+	// User specified route
 	if route := mutator.specialRoute(); route != nil {
 		return route
 	}
@@ -58,10 +56,10 @@ func (mutator *Mutator) Mutate() *route.Route {
 	// We didn't get new coverage, next route
 	if mutator.Coverage.Delta == 0 {
 		mutator.routeIndex++
-	}
-	// We've exhausted all routes
-	if mutator.routeIndex >= len(mutator.Routes) {
-		return nil
+		// We've exhausted all routes
+		if mutator.routeIndex >= len(mutator.Routes) {
+			return nil
+		}
 	}
 	route := mutator.Routes[mutator.routeIndex]
 	// Mutate each parameter

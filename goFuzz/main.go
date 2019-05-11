@@ -51,5 +51,5 @@ func main() {
 	err = client.DoAll(login)
 	util.Must(err == nil, "%+v", err)
 
-	fuzz.Fuzz(corpus, client)
+	fuzz.Fuzz(client, routes, corpus)
 }

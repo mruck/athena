@@ -3,6 +3,8 @@ package route
 import (
 	"testing"
 
+	"github.com/go-openapi/spec"
+	"github.com/mruck/athena/goFuzz/util"
 	"github.com/stretchr/testify/require"
 )
 
@@ -48,4 +50,10 @@ func TestRegExp(t *testing.T) {
 		}
 		require.Equal(t, test.output, output.String())
 	}
+}
+
+func TestUnmarshalSwagger(t *testing.T) {
+	data := &spec.Schema{}
+	util.MustUnmarshalFile("test.swagger", data)
+	util.PrettyPrintStruct(data)
 }

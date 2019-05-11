@@ -35,8 +35,8 @@ func initializeRoute(route *route.Route, entry har.Entry) {
 	// Add the har entry
 	*route.Entries = append(*route.Entries, entry)
 	// initialize params
-	initializeBodyParams(entry.Request.PostData.Params, route.State)
-	// TODO: initalize query strings and path params
+	//initializeBodyParams(entry.Request.PostData.Params, route.State)
+	// TODO: initialize query strings and path params
 	//	util.PrettyPrintStruct(route.State)
 	//	fmt.Println("**********************************")
 	//	util.PrettyPrintStruct(entry.Request.PostData.Params)
