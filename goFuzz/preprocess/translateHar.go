@@ -16,7 +16,7 @@ func initializeBodyParams(harParams []har.Param, states []*param.State) {
 		// Find the param in the route
 		for _, state := range states {
 			// Found it
-			if state.Param.Name == harParam.Name {
+			if state.Name == harParam.Name {
 				*state.HarValues = append(*state.HarValues, harParam.Value)
 			}
 		}
