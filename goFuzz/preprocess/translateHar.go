@@ -4,25 +4,44 @@ import (
 	"net/url"
 
 	"github.com/mruck/athena/goFuzz/har"
+	"github.com/mruck/athena/goFuzz/param"
 	"github.com/mruck/athena/goFuzz/route"
 	"github.com/mruck/athena/goFuzz/util"
 	"github.com/pkg/errors"
 )
 
-// initializeRoute takes a har entry and initializes the associated route object
-func initializeRoute(route *route.Route, entry har.Entry) {
-	// Add the har entry
-	*route.Entries = append(*route.Entries, entry)
-	// Initialize each parameter in the har
-	for _, harParam := range entry.Request.PostData.Params {
+// Initialize each body parameter in the har
+func initializeBodyParams(harParams []har.Param, states []*param.State) {
+	for _, harParam := range harParams {
 		// Find the param in the route
-		for _, state := range route.State {
+		for _, state := range states {
 			// Found it
 			if state.Param.Name == harParam.Name {
 				*state.HarValues = append(*state.HarValues, harParam.Value)
 			}
 		}
 	}
+
+}
+
+// Add headers from har to route object, filtering out
+// stale ones like Cookies
+// TODO: implement me
+func initializeHeaders() {
+}
+
+// initializeRoute takes a har entry and initializes the associated route object
+func initializeRoute(route *route.Route, entry har.Entry) {
+	// Add the har entry
+	*route.Entries = append(*route.Entries, entry)
+	// initialize params
+	initializeBodyParams(entry.Request.PostData.Params, route.State)
+	// TODO: initalize query strings and path params
+	//	util.PrettyPrintStruct(route.State)
+	//	fmt.Println("**********************************")
+	//	util.PrettyPrintStruct(entry.Request.PostData.Params)
+	//	os.Exit(1)
+	initializeHeaders()
 }
 
 // InitializeRoutes initializes a list of routes given information
