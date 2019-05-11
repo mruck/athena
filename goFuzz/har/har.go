@@ -1,4 +1,4 @@
-package preprocess
+package har
 
 import (
 	"io"
@@ -37,7 +37,7 @@ type PostData struct {
 	Params   []Param
 }
 
-// QueryString field from har file
+// Query field from har file
 type Query struct {
 	Name  string
 	Value string
@@ -92,8 +92,8 @@ func (req *Request) toHTTPRequest() (*http.Request, error) {
 	return newReq, nil
 }
 
-// toRequest converts a har struct to a list of http.Requests
-func (har *Har) toRequests() ([]*http.Request, error) {
+// ToHTTPRequests converts a har struct to a list of http.Requests
+func (har *Har) ToHTTPRequests() ([]*http.Request, error) {
 	entries := har.Log.Entries
 	requests := make([]*http.Request, len(entries))
 	for i, entry := range entries {
@@ -107,8 +107,8 @@ func (har *Har) toRequests() ([]*http.Request, error) {
 	return requests, nil
 }
 
-// unmarshalHar() takes in a har file and returns a Har struct
-func unmarshalHar(harPath string) *Har {
+// UnmarshalHar takes in a har file and returns a Har struct
+func UnmarshalHar(harPath string) *Har {
 	har := &Har{}
 	util.MustUnmarshalFile(harPath, har)
 	return har

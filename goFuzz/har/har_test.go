@@ -1,4 +1,4 @@
-package preprocess
+package har
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 )
 
 func TestUnmarshalHar(t *testing.T) {
-	har := unmarshalHar("test/login_har.json")
+	har := UnmarshalHar("../tests/login_har.json")
 	// Pick something random to check for equality
 	request0 := har.Log.Entries[0].Request
 	require.Equal(t, "http://localhost:50121/session/csrf?_=1548444062137", request0.URL)

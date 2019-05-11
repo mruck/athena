@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/go-openapi/spec"
+	"github.com/mruck/athena/goFuzz/har"
 	"github.com/mruck/athena/goFuzz/param"
 	"github.com/mruck/athena/goFuzz/util"
 	"github.com/pkg/errors"
@@ -31,24 +32,33 @@ type Route struct {
 	// Mutation state for each parameter object
 	State          []*param.State
 	SiblingMethods *[]*SiblingMethod
+	// Har entries for this route
+	Entries *[]har.Entry
 }
 
 // New initializes parameter state, stores it in the sibling method list,
 // then allocates a route with this information
 func New(path string, method string, meta *spec.Operation, siblingMethods *[]*SiblingMethod) *Route {
 	// Initialize object to keep track of state for each param
-	state := []*param.State{}
+	state := param.InitializeParamState(meta.Parameters)
+
+	// Allocate an object to keep track of har entries for the route
+	entries := &[]har.Entry{}
+
 	// Create a regex for the path so we can match against Har requests
 	// i.e. /t/9 from the har should be matched against /t/{id}
 	re, err := canonicalizePath(path)
 	// TODO: should continue if this fails
 	util.Must(err == nil, "%+v\n", err)
+
+	// TODO: implement this!
 	// Update the sibling meta data so it contains this method's
 	// mutation state
-	sibling := &SiblingMethod{Method: method, State: &state}
-	*siblingMethods = append(*siblingMethods, sibling)
+	//sibling := &SiblingMethod{Method: method, State: &state}
+	//*siblingMethods = append(*siblingMethods, sibling)
+
 	return &Route{Path: path, Method: method, Meta: meta,
-		State: state, SiblingMethods: siblingMethods, Re: re}
+		State: state, Re: re, Entries: entries}
 }
 
 // canonicalizePath creates a regexp for the path so it can be matched
