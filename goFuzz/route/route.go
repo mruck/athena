@@ -15,7 +15,7 @@ import (
 // on the same path
 type SiblingMethod struct {
 	Method string
-	State  *param.State
+	State  *[]*param.State
 }
 
 // Route contains static information from a swagger, and dynamic mutation state
@@ -27,9 +27,28 @@ type Route struct {
 	// regexp is for matching path with a har request
 	Re *regexp.Regexp
 	// value for field in Spec.Swagger.Path.Path[Path].Get
-	Meta           *spec.Operation
-	State          *param.State
+	Meta *spec.Operation
+	// Mutation state for each parameter object
+	State          []*param.State
 	SiblingMethods *[]*SiblingMethod
+}
+
+// New initializes parameter state, stores it in the sibling method list,
+// then allocates a route with this information
+func New(path string, method string, meta *spec.Operation, siblingMethods *[]*SiblingMethod) *Route {
+	// Initialize object to keep track of state for each param
+	state := []*param.State{}
+	// Create a regex for the path so we can match against Har requests
+	// i.e. /t/9 from the har should be matched against /t/{id}
+	re, err := canonicalizePath(path)
+	// TODO: should continue if this fails
+	util.Must(err == nil, "%+v\n", err)
+	// Update the sibling meta data so it contains this method's
+	// mutation state
+	sibling := &SiblingMethod{Method: method, State: &state}
+	*siblingMethods = append(*siblingMethods, sibling)
+	return &Route{Path: path, Method: method, Meta: meta,
+		State: state, SiblingMethods: siblingMethods, Re: re}
 }
 
 // canonicalizePath creates a regexp for the path so it can be matched
@@ -40,21 +59,6 @@ func canonicalizePath(path string) (*regexp.Regexp, error) {
 	re, err := regexp.Compile(pathRegexp)
 	util.Must(err == nil, "%+v\n", errors.WithStack(err))
 	return re, err
-}
-
-// New initializes parameter state, stores it in the sibling method list,
-// then allocates a route with this information
-func New(path string, method string, meta *spec.Operation, siblingMethods *[]*SiblingMethod) *Route {
-	// Initialize object to keep track of state
-	state := &param.State{}
-	re, err := canonicalizePath(path)
-	util.Must(err == nil, "%+v\n", err)
-	// Update the sibling meta data so it contains this methods
-	// mutation state
-	sibling := &SiblingMethod{Method: method, State: state}
-	*siblingMethods = append(*siblingMethods, sibling)
-	return &Route{Path: path, Method: method, Meta: meta,
-		State: state, SiblingMethods: siblingMethods, Re: re}
 }
 
 // FindRouteByPath searches for a route with matching path and method

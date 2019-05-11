@@ -1,7 +1,6 @@
 package preprocess
 
 import (
-	"fmt"
 	"net/url"
 
 	"github.com/mruck/athena/goFuzz/route"
@@ -10,7 +9,8 @@ import (
 )
 
 // initializeRoute takes a har entry and initializes the associated route object
-func initializeRoute(route *route.Route, harEntry entry) {
+func initializeRoute(route *route.Route, entry Entry) {
+
 }
 
 // InitializeRoutes initializes a list of routes given information
@@ -25,7 +25,7 @@ func (har *Har) InitializeRoutes(routes []*route.Route) ([]*route.Route, error) 
 		route := route.FindRouteByPath(routes, url.Path, entry.Request.Method)
 		// We didn't find this route in the swagger spec
 		if route == nil {
-			fmt.Printf("Skipping: %v %v\n", entry.Request.Method, url.Path)
+			//fmt.Printf("Skipping: %v %v\n", entry.Request.Method, url.Path)
 			continue
 		}
 		// Initialize Har data inside route

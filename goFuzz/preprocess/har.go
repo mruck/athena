@@ -9,12 +9,14 @@ import (
 	"github.com/pkg/errors"
 )
 
-type header struct {
+// Header field from har file
+type Header struct {
 	Name  string
 	Value string
 }
 
-type cookie struct {
+// Cookie field from har file
+type Cookie struct {
 	Name     string
 	Value    string
 	Expires  string
@@ -22,55 +24,58 @@ type cookie struct {
 	Secure   bool
 }
 
-type param struct {
+// Param field from har file
+type Param struct {
 	Name  string
 	Value string
 }
 
-type postData struct {
+// PostData field from har file
+type PostData struct {
 	MimeType string
 	Text     string
-	Params   []param
+	Params   []Param
 }
 
-type query struct {
+// QueryString field from har file
+type Query struct {
 	Name  string
 	Value string
 }
 
-// Request key in har
-type request struct {
+// Request field in har
+type Request struct {
 	Method      string
 	URL         string
-	Headers     []header
-	QueryString []query
-	Cookies     []cookie
-	PostData    postData
+	Headers     []Header
+	QueryString []Query
+	Cookies     []Cookie
+	PostData    PostData
 }
 
-// Response key in har
-type response struct {
+// Response field in har
+type Response struct {
 	Status int
 }
 
 // Entry in har file
-type entry struct {
-	Request  request
-	Response response
+type Entry struct {
+	Request  Request
+	Response Response
 }
 
 // Log in har file
-type log struct {
-	Entries []entry
+type Log struct {
+	Entries []Entry
 }
 
 // Har json representation
 type Har struct {
-	Log log
+	Log Log
 }
 
 // toHTTPRequest converts a har request to a http.Request
-func (req *request) toHTTPRequest() (*http.Request, error) {
+func (req *Request) toHTTPRequest() (*http.Request, error) {
 	body := io.Reader(nil)
 	// This isn't a GET request, check for a body
 	if req.Method != "GET" {

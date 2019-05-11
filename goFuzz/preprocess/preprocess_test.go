@@ -1,7 +1,6 @@
 package preprocess
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/mruck/athena/goFuzz/route"
@@ -19,10 +18,10 @@ func TestHarToRequest(t *testing.T) {
 func TestCorpus(t *testing.T) {
 	har := unmarshalHar("test/corpus_har.json")
 	routes := route.FromSwagger("../route/discourseSwagger.json")
-	corpus, err := har.InitializeRoutes(routes)
+	_, err := har.InitializeRoutes(routes)
 	require.NoError(t, err)
-	for _, route := range corpus {
-		fmt.Printf("%v %v\n", route.Method, route.Path)
-	}
+	//	for _, route := range corpus {
+	//		fmt.Printf("%v %v\n", route.Method, route.Path)
+	//	}
 
 }
