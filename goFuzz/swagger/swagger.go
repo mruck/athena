@@ -1,44 +1,102 @@
 package swagger
 
 import (
+	"fmt"
+	"log"
+
+	"github.com/go-openapi/loads"
 	"github.com/go-openapi/spec"
+	"github.com/google/uuid"
 	"github.com/mruck/athena/goFuzz/util"
 )
 
-// Swagger embeds spec.Swagger so I can add custom operations
-type Swagger struct {
-	spec.Swagger
-}
-
 // ReadSwagger file into memory
-func ReadSwagger(path string) *Swagger {
-	swagger := &Swagger{}
+func ReadSwagger(path string) *spec.Swagger {
+	swagger := &spec.Swagger{}
 	util.MustUnmarshalFile(path, swagger)
 	return swagger
 }
 
-func (swagger *Swagger) findOperation(key string, method string) *spec.Operation {
+func findOperation(swagger *spec.Swagger, key string, method string) (*spec.Operation, error) {
 	for path, pathItem := range swagger.Paths.Paths {
 		if path == key {
-			if method == "GET" {
-				return pathItem.Get
+			if method == "get" {
+				return pathItem.Get, nil
 			}
-			if method == "Delete" {
-				return pathItem.Delete
+			if method == "delete" {
+				return pathItem.Delete, nil
+			}
+			if method == "post" {
+				return pathItem.Post, nil
 			}
 		}
 	}
-	return nil
+	err := fmt.Errorf("failed to find %v %v in swagger spec", method, key)
+	return nil, err
+}
+
+func GenerateEnum(schema spec.Schema) interface{} {
+	randIndex := len(schema.Enum) % int(uuid.New().ID())
+	return schema.Enum[randIndex]
+}
+
+func GenerateBySchema(schema spec.Schema) interface{} {
+	if schema.Enum != nil {
+		return GenerateEnum(schema)
+	}
+
+	util.PrettyPrintStruct(schema)
+	fmt.Printf("type: %v\n", schema.Type)
+	fmt.Printf("type: %v\n", schema.ExtraProps)
+	fmt.Printf("type: %#v\n", schema)
+	dataType := schema.Type[0]
+	if dataType == "object" {
+		obj := map[string]interface{}{}
+		for key, schema := range schema.Properties {
+			obj[key] = GenerateBySchema(schema)
+		}
+		return obj
+	}
+	//if dataType == "array" {
+	//	obj := []interface{}{}
+	//	obj[0] = mutateBySchema(schema.Items.Properties)
+	//	return obj
+	//}
+	return util.Rand(dataType)
+}
+
+func GenerateByParam(param *spec.Parameter) interface{} {
+	// No schema provided
+	if param.Schema == nil {
+		if param.Type == "object" || param.Type == "array" {
+			log.Fatal("Unhandled param type\n")
+		}
+		return util.Rand(param.Type)
+	}
+	return GenerateBySchema(*param.Schema)
 }
 
 // Generate random data for the api with the given path and method
-func (swagger *Swagger) Generate(path string, method string) interface{} {
-	operation := swagger.findOperation(path, method)
-	// recurse on our operation
-	return nil
+func Generate(spec string, path string, method string) (interface{}, error) {
+	swagger := ReadSwagger(spec)
+	op, err := findOperation(swagger, path, method)
+	if err != nil {
+		return nil, err
+	}
+	//util.PrettyPrintStruct(*op)
+	return GenerateByParam(&op.Parameters[0]), nil
 }
 
-// Generatge2 - a slimmer api?
-func Generate2(op *spec.Operation) interface{} {
-	return nil
+// Expand takes a spec, expands it, and writes it to dst
+func Expand(spec string, dst string) error {
+	doc, err := loads.Spec(spec)
+	if err != nil {
+		return err
+	}
+	newDoc, err := doc.Expanded()
+	if err != nil {
+		return err
+	}
+	swag := newDoc.Spec()
+	return util.MarshalToFile(swag, dst)
 }

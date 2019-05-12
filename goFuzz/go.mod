@@ -11,6 +11,7 @@ require (
 	github.com/fatih/gomodifytags v0.0.0-20180914191908-141225bf62b6 // indirect
 	github.com/fatih/motion v0.0.0-20180408211639-218875ebe238 // indirect
 	github.com/go-delve/delve v1.2.0 // indirect
+	github.com/go-openapi/loads v0.19.0
 	github.com/go-openapi/spec v0.19.0
 	github.com/google/shlex v0.0.0-20181106134648-c34317bd91bf // indirect
 	github.com/google/uuid v1.1.1

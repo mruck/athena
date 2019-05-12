@@ -2,8 +2,6 @@ package param
 
 import (
 	"github.com/go-openapi/spec"
-	"github.com/google/uuid"
-	"github.com/mruck/athena/goFuzz/util"
 )
 
 // State for mutating a parameter
@@ -38,38 +36,11 @@ func InitializeParamState(params []spec.Parameter) []*State {
 	return state
 }
 
-// TODO: keep track of what enums we've tried
-// Add enumIndex or look in previous values?
-func mutateEnum(schema spec.Schema) interface{} {
-	randIndex := len(schema.Enum) % int(uuid.New().ID())
-	return schema.Enum[randIndex]
-}
-
-func mutateBySchema(schema spec.Schema) interface{} {
-	if schema.Enum != nil {
-		return mutateEnum(schema)
-	}
-	dataType := schema.Type[0]
-	if dataType == "object" {
-		obj := map[string]interface{}{}
-		for key, schema := range schema.Properties {
-			obj[key] = mutateBySchema(schema)
-		}
-		return obj
-	}
-	//if dataType == "array" {
-	//	obj := []interface{}{}
-	//	obj[0] = mutateBySchema(schema.Items.Properties)
-	//	return obj
-	//}
-	return util.Rand(schema.Type)
-}
-
 // Mutate sets State.Next based on the information provided in
 // spec.Schema
 // TODO: how to handle random values for array type for path params, etc
 // Add a test for this
 // TODO: store previous value
 func (param *State) Mutate() {
-	param.Next = mutateBySchema(*param.Schema)
+	//param.Next = mutateBySchema(*param.Schema)
 }
