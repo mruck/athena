@@ -20,7 +20,8 @@ const PetStoreExpanded = "tests/petstore_expanded.json"
 //	util.PrettyPrintStruct(randObj)
 //}
 
-func TestGenerate(t *testing.T) {
+// TestPathParam tests a path parameter that has no schema
+func TestPathParam(t *testing.T) {
 	path := "/pet/{petId}"
 	method := "get"
 	obj, err := Generate(PetStoreExpanded, path, method)
@@ -28,6 +29,14 @@ func TestGenerate(t *testing.T) {
 	fmt.Printf("%v\n", obj)
 }
 
+// TestObj tests generating a random object
+func TestObj(t *testing.T) {
+	path := "/store/order"
+	method := "post"
+	obj, err := Generate(PetStoreExpanded, path, method)
+	require.NoError(t, err)
+	fmt.Printf("%v\n", obj)
+}
 func TestExpandSchema(t *testing.T) {
 	err := Expand(PetStore, PetStoreExpanded)
 	require.NoError(t, err)
