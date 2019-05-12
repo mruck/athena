@@ -48,7 +48,7 @@ func GenerateBySchema(schema spec.Schema) interface{} {
 		return GenerateEnum(schema)
 	}
 
-	util.PrettyPrintStruct(schema)
+	//util.PrettyPrintStruct(schema)
 	dataType := schema.Type[0]
 	if dataType == "object" {
 		obj := map[string]interface{}{}

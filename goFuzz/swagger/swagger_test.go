@@ -22,14 +22,15 @@ func TestPathParam(t *testing.T) {
 	require.True(t, ok)
 }
 
-//// TestObj tests generating a random object
-//func TestObj(t *testing.T) {
-//	path := "/store/order"
-//	method := "post"
-//	obj, err := Generate(PetStoreExpanded, path, method)
-//	require.NoError(t, err)
-//	fmt.Printf("%v\n", obj)
-//}
+// TestObj tests generating a random object for body parameters
+func TestObj(t *testing.T) {
+	path := "/store/order"
+	method := "post"
+	obj, err := Generate(PetStoreExpanded, path, method)
+	require.NoError(t, err)
+	_, ok := obj["body"]
+	require.True(t, ok)
+}
 
 // TestExpandedSchema makes refs are getting expanded properly
 func TestExpandSchema(t *testing.T) {
