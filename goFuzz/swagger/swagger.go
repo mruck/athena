@@ -35,20 +35,20 @@ func findOperation(swagger *spec.Swagger, key string, method string) (*spec.Oper
 	return nil, err
 }
 
+// GenerateEnum returns a valid enum for the given schema
 func GenerateEnum(schema spec.Schema) interface{} {
 	randIndex := int(uuid.New().ID()) % len(schema.Enum)
 	return schema.Enum[randIndex]
 }
 
+// GenerateBySchema takes a schema and generates random data
+// recursively
 func GenerateBySchema(schema spec.Schema) interface{} {
 	if schema.Enum != nil {
 		return GenerateEnum(schema)
 	}
 
 	util.PrettyPrintStruct(schema)
-	fmt.Printf("type: %v\n", schema.Type)
-	//fmt.Printf("type: %v\n", schema.ExtraProps)
-	//fmt.Printf("type: %#v\n", schema)
 	dataType := schema.Type[0]
 	if dataType == "object" {
 		obj := map[string]interface{}{}
@@ -65,6 +65,8 @@ func GenerateBySchema(schema spec.Schema) interface{} {
 	return util.Rand(dataType)
 }
 
+// GenerateByParam takes a parameter and generates a random value
+// according to param.Type
 func GenerateByParam(param *spec.Parameter) interface{} {
 	// No schema provided
 	if param.Schema == nil {
@@ -77,14 +79,17 @@ func GenerateByParam(param *spec.Parameter) interface{} {
 }
 
 // Generate random data for the api with the given path and method
-func Generate(spec string, path string, method string) (interface{}, error) {
+func Generate(spec string, path string, method string) (map[string]interface{}, error) {
 	swagger := ReadSwagger(spec)
 	op, err := findOperation(swagger, path, method)
 	if err != nil {
 		return nil, err
 	}
 	//util.PrettyPrintStruct(*op)
-	return GenerateByParam(&op.Parameters[0]), nil
+	obj := GenerateByParam(&op.Parameters[0])
+	final := map[string]interface{}{}
+	final[op.Parameters[0].Name] = obj
+	return final, nil
 }
 
 // Expand takes a spec, expands it, and writes it to dst
