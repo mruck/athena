@@ -36,7 +36,7 @@ func findOperation(swagger *spec.Swagger, key string, method string) (*spec.Oper
 }
 
 func GenerateEnum(schema spec.Schema) interface{} {
-	randIndex := len(schema.Enum) % int(uuid.New().ID())
+	randIndex := int(uuid.New().ID()) % len(schema.Enum)
 	return schema.Enum[randIndex]
 }
 
@@ -47,8 +47,8 @@ func GenerateBySchema(schema spec.Schema) interface{} {
 
 	util.PrettyPrintStruct(schema)
 	fmt.Printf("type: %v\n", schema.Type)
-	fmt.Printf("type: %v\n", schema.ExtraProps)
-	fmt.Printf("type: %#v\n", schema)
+	//fmt.Printf("type: %v\n", schema.ExtraProps)
+	//fmt.Printf("type: %#v\n", schema)
 	dataType := schema.Type[0]
 	if dataType == "object" {
 		obj := map[string]interface{}{}
