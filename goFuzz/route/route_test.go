@@ -9,7 +9,7 @@ import (
 )
 
 func TestReadSwagger(t *testing.T) {
-	swagger := ReadSwagger("dummySwagger.json")
+	swagger := ReadSwagger("../tests/dummySwagger.json")
 	//util.PrettyPrintStruct(swagger)
 	// Check that a field is correct
 	description := swagger.Paths.Paths["/categories.json"].Post.Description
@@ -18,12 +18,12 @@ func TestReadSwagger(t *testing.T) {
 
 // Just make sure we don't hit an unmarshaling error
 func TestReadDiscourseSwagger(t *testing.T) {
-	_ = ReadSwagger("discourseSwagger.json")
+	_ = ReadSwagger("../tests/discourseSwagger.json")
 	//util.PrettyPrintStruct(swagger)
 }
 
 func TestFromSwagger(t *testing.T) {
-	routes := FromSwagger("dummySwagger.json")
+	routes := FromSwagger("../tests/dummySwagger.json")
 	// Check a random field
 	require.Equal(t, routes[0].Method, "GET")
 }
@@ -54,6 +54,6 @@ func TestRegExp(t *testing.T) {
 
 func TestUnmarshalSwagger(t *testing.T) {
 	data := &spec.Schema{}
-	util.MustUnmarshalFile("test.swagger", data)
+	util.MustUnmarshalFile("../tests/test.swagger", data)
 	util.PrettyPrintStruct(data)
 }

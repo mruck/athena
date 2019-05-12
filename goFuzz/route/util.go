@@ -31,17 +31,17 @@ func FindRouteByPath(routes []*Route, path string, method string) *Route {
 	return nil
 }
 
+// Check if a route is blacklisted
+func blacklisted(path string) bool {
+	return strings.Contains(path, "readonly") ||
+		strings.Contains(path, "logout")
+}
+
 // ReadSwagger file into memory
 func ReadSwagger(path string) *spec.Swagger {
 	swagger := &spec.Swagger{}
 	util.MustUnmarshalFile(path, swagger)
 	return swagger
-}
-
-// Check if a route is blacklisted
-func blacklisted(path string) bool {
-	return strings.Contains(path, "readonly") ||
-		strings.Contains(path, "logout")
 }
 
 // FromSwagger loads routes from swagger file
