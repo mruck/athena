@@ -12,23 +12,37 @@ import (
 const PetStore = "tests/petstore.json"
 const PetStoreExpanded = "tests/petstore_expanded.json"
 
-// TestPathParam tests a path parameter that has no schema
-func TestPathParam(t *testing.T) {
-	path := "/pet/{petId}"
-	method := "get"
-	obj, err := Generate(PetStoreExpanded, path, method)
-	require.NoError(t, err)
-	_, ok := obj["petId"]
-	require.True(t, ok)
+// TODO: make this a table test
+func petStoreGenerate(path string, method string) (map[string]interface{}, error) {
+	return Generate(PetStoreExpanded, path, method)
 }
 
-// TestObj tests generating a random object for body parameters
-func TestObj(t *testing.T) {
-	path := "/store/order"
-	method := "post"
-	obj, err := Generate(PetStoreExpanded, path, method)
+//// TestPathParam tests a path parameter that has no schema
+//func TestPathParam(t *testing.T) {
+//	path := "/pet/{petId}"
+//	method := "get"
+//	obj, err := Generate(PetStoreExpanded, path, method)
+//	require.NoError(t, err)
+//	_, ok := obj["petId"]
+//	require.True(t, ok)
+//}
+//
+//// TestObj tests generating a random object for body parameters
+//func TestStruct(t *testing.T) {
+//	path := "/store/order"
+//	method := "post"
+//	obj, err := Generate(PetStoreExpanded, path, method)
+//	require.NoError(t, err)
+//	_, ok := obj["body"]
+//	require.True(t, ok)
+//}
+//
+func TestArray(t *testing.T) {
+	path := "/pet/findByStatus"
+	method := "get"
+	obj, err := petStoreGenerate(path, method)
 	require.NoError(t, err)
-	_, ok := obj["body"]
+	_, ok := obj["status"]
 	require.True(t, ok)
 }
 

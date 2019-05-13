@@ -36,16 +36,16 @@ func findOperation(swagger *spec.Swagger, key string, method string) (*spec.Oper
 }
 
 // GenerateEnum returns a valid enum for the given schema
-func GenerateEnum(schema spec.Schema) interface{} {
-	randIndex := int(uuid.New().ID()) % len(schema.Enum)
-	return schema.Enum[randIndex]
+func GenerateEnum(enum []interface{}) interface{} {
+	randIndex := int(uuid.New().ID()) % len(enum)
+	return enum[randIndex]
 }
 
 // GenerateBySchema takes a schema and generates random data
 // recursively
 func GenerateBySchema(schema spec.Schema) interface{} {
 	if schema.Enum != nil {
-		return GenerateEnum(schema)
+		return GenerateEnum(schema.Enum)
 	}
 
 	//util.PrettyPrintStruct(schema)
@@ -57,11 +57,13 @@ func GenerateBySchema(schema spec.Schema) interface{} {
 		}
 		return obj
 	}
-	//if dataType == "array" {
-	//	obj := []interface{}{}
-	//	obj[0] = mutateBySchema(schema.Items.Properties)
-	//	return obj
-	//}
+	fmt.Printf("data type: %v\n", dataType)
+	if dataType == "array" {
+		//obj := []interface{}{}
+		util.PrettyPrintStruct(*schema.Items)
+		//obj[0] = GenerateBySchema(schema.Items)
+		//return obj
+	}
 	return util.Rand(dataType)
 }
 
@@ -70,8 +72,25 @@ func GenerateBySchema(schema spec.Schema) interface{} {
 func GenerateByParam(param *spec.Parameter) interface{} {
 	// No schema provided
 	if param.Schema == nil {
-		if param.Type == "object" || param.Type == "array" {
-			log.Fatal("Unhandled param type\n")
+		if param.Type == "object" {
+			log.Fatal("Unhandled param type!!!!\n")
+		}
+		// Do arrays never have schema?
+		if param.Type == "array" {
+			obj := make([]interface{}, 1)
+			if param.Items.Type == "array" {
+				log.Fatal("Unhandled param type!!!!\n")
+			}
+			if param.Items.Type == "object" {
+				log.Fatal("Unhandled param type!!!!\n")
+			}
+			if param.Items.Enum != nil {
+				obj[0] = GenerateEnum(param.Items.Enum)
+				return obj
+			}
+			obj[0] = util.Rand(param.Type)
+			return obj
+			//util.PrettyPrintStruct(*param.Items)
 		}
 		return util.Rand(param.Type)
 	}
