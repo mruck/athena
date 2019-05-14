@@ -82,7 +82,14 @@ func GenerateByParam(param *spec.Parameter) interface{} {
 				log.Fatal("Unhandled param type!!!!\n")
 			}
 			if param.Items.Type == "object" {
-				log.Fatal("Unhandled param type!!!!\n")
+				fmt.Printf("here\n")
+				util.PrettyPrintStruct(*param.Items)
+				//dict := map[string]interface{}{}
+				//for key, schema := range param.Items.Schemas[0].Properties {
+				//	dict[key] = GenerateBySchema(schema)
+				//}
+				//obj[0] = dict
+				//return obj
 			}
 			if param.Items.Enum != nil {
 				obj[0] = GenerateEnum(param.Items.Enum)

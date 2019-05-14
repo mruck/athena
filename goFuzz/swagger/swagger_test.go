@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/mruck/athena/goFuzz/util"
 	"github.com/stretchr/testify/require"
 )
 
@@ -37,13 +38,23 @@ func petStoreGenerate(path string, method string) (map[string]interface{}, error
 //	require.True(t, ok)
 //}
 //
-func TestArray(t *testing.T) {
+func TestArrayWithPrimative(t *testing.T) {
 	path := "/pet/findByStatus"
 	method := "get"
 	obj, err := petStoreGenerate(path, method)
 	require.NoError(t, err)
 	_, ok := obj["status"]
 	require.True(t, ok)
+}
+
+func TestArrayWithObj(t *testing.T) {
+	path := "/user/createWithArray"
+	method := "post"
+	obj, err := petStoreGenerate(path, method)
+	require.NoError(t, err)
+	util.PrettyPrintStruct(obj)
+	//_, ok := obj["status"]
+	//require.True(t, ok)
 }
 
 // TestExpandedSchema makes refs are getting expanded properly
