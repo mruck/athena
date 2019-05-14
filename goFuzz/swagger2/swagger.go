@@ -63,22 +63,30 @@ func GeneratePrimativeArray(items *spec.Items) interface{} {
 func GenerateSchema(schema spec.Schema) interface{} {
 	if schema.Enum != nil {
 		// TODO: does it make sense for enum to be top level?
-		err := fmt.Errorf("enum in toplevel schema")
+		err := fmt.Errorf("unhandled: enum in toplevel schema")
 		log.Fatalf("%+v\n", errors.WithStack(err))
 		//return GenerateEnum(schema.Enum)
 	}
 	if schema.Type[0] == "object" {
-		return nil
+		return GenerateObj(schema.Properties)
 	}
 	if schema.Type[0] == "array" {
 		return GenerateArray(schema.Items)
 	}
-	return nil
-
+	err := fmt.Errorf("unhandled: schema with primative type")
+	log.Fatalf("%+v\n", errors.WithStack(err))
+	return util.Rand(schema.Type[0])
 }
 
 // GenerateVal runs on everything but a schema
 func GenerateParam(param *spec.Parameter) interface{} {
+	if param.Enum != nil {
+		// TODO: i'm pretty sure this can happen but I want to see a case where it does
+		// cause I can't find the enum field of the spec.Parameter struct
+		err := fmt.Errorf("unhandled: enum in toplevel non body param")
+		log.Fatalf("%+v\n", errors.WithStack(err))
+		return GenerateEnum(param.Enum)
+	}
 	if param.Type == "object" {
 		// TODO: Does this make sense for an obj to be in a header/query/etc?
 		err := fmt.Errorf("unhandled obj")
@@ -87,7 +95,7 @@ func GenerateParam(param *spec.Parameter) interface{} {
 	if param.Type == "array" {
 		return GeneratePrimativeArray(param.Items)
 	}
-	return nil
+	return util.Rand(param.Type)
 }
 
 func Generate(param *spec.Parameter) interface{} {
