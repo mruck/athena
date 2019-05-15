@@ -10,12 +10,13 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/go-openapi/loads"
 	"github.com/go-openapi/spec"
 	"github.com/google/uuid"
 	"github.com/mruck/athena/goFuzz/util"
 	"github.com/pkg/errors"
 )
+
+const object string = "object"
 
 // GenerateEnum returns a valid enum for the given schema
 func GenerateEnum(enum []interface{}) interface{} {
@@ -23,6 +24,7 @@ func GenerateEnum(enum []interface{}) interface{} {
 	return enum[randIndex]
 }
 
+// GenerateObj generates an object
 func GenerateObj(properties map[string]spec.Schema) map[string]interface{} {
 	obj := map[string]interface{}{}
 	for key, schema := range properties {
@@ -31,8 +33,7 @@ func GenerateObj(properties map[string]spec.Schema) map[string]interface{} {
 	return obj
 }
 
-const object string = "object"
-
+// GenerateArray generates an array of any type (including object)
 func GenerateArray(items *spec.SchemaOrArray) []interface{} {
 	schema := items.Schema
 	//util.PrettyPrintStruct(schema)
@@ -117,13 +118,7 @@ func GenerateAny(param *spec.Parameter) interface{} {
 	return GenerateParam(param)
 }
 
-// ReadSwagger file into memory
-func ReadSwagger(path string) *spec.Swagger {
-	swagger := &spec.Swagger{}
-	util.MustUnmarshalFile(path, swagger)
-	return swagger
-}
-
+// Generate generates fake parameter data for the first paramater of the given path and method
 func Generate(swaggerPath string, path string, method string) (map[string]interface{}, error) {
 	swagger := ReadSwagger(swaggerPath)
 	op, err := findOperation(swagger, path, method)
@@ -139,36 +134,4 @@ func Generate(swaggerPath string, path string, method string) (map[string]interf
 	final[op.Parameters[0].Name] = obj
 	//	util.PrettyPrintStruct(final)
 	return final, nil
-}
-
-func findOperation(swagger *spec.Swagger, key string, method string) (*spec.Operation, error) {
-	for path, pathItem := range swagger.Paths.Paths {
-		if path == key {
-			if method == "get" {
-				return pathItem.Get, nil
-			}
-			if method == "delete" {
-				return pathItem.Delete, nil
-			}
-			if method == "post" {
-				return pathItem.Post, nil
-			}
-		}
-	}
-	err := fmt.Errorf("failed to find %v %v in swagger spec", method, key)
-	return nil, err
-}
-
-// Expand takes a spec, expands it, and writes it to dst
-func Expand(spec string, dst string) error {
-	doc, err := loads.Spec(spec)
-	if err != nil {
-		return err
-	}
-	newDoc, err := doc.Expanded()
-	if err != nil {
-		return err
-	}
-	swag := newDoc.Spec()
-	return util.MarshalToFile(swag, dst)
 }
