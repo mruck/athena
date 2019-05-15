@@ -119,7 +119,7 @@ func tryOp(op *spec.Operation, method string, path string) {
 	fmt.Println("**************************************")
 }
 
-// TestPetStore mocks the first param for all of pet store
+// TestPetStore generates params for all of pet store
 func TestPetStore(t *testing.T) {
 	swagger := ReadSwagger(PetStoreExpanded)
 	for path, pathItem := range swagger.Paths.Paths {
@@ -129,5 +129,20 @@ func TestPetStore(t *testing.T) {
 		tryOp(pathItem.Patch, "patch", path)
 		tryOp(pathItem.Post, "post", path)
 		tryOp(pathItem.Head, "head", path)
+	}
+}
+
+const discourseSwagger = "test/discourseSwagger.json"
+
+// TestDiscourse generates params for all of discourse
+func TestDiscourse(t *testing.T) {
+	swagger := ReadSwagger(discourseSwagger)
+	for path, pathItem := range swagger.Paths.Paths {
+		tryOp(pathItem.Get, "get", path)
+		//tryOp(pathItem.Delete, "delete", path)
+		//tryOp(pathItem.Put, "put", path)
+		//tryOp(pathItem.Patch, "patch", path)
+		//tryOp(pathItem.Post, "post", path)
+		//tryOp(pathItem.Head, "head", path)
 	}
 }
