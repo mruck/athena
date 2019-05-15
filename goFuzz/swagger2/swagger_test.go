@@ -1,11 +1,14 @@
 package swagger
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
 
+	"github.com/go-openapi/spec"
+	"github.com/mruck/athena/goFuzz/util"
 	"github.com/stretchr/testify/require"
 )
 
@@ -97,4 +100,29 @@ func TestExpandSchema(t *testing.T) {
 
 	// Check that refs are expanded
 	require.False(t, strings.Contains(string(expanded), ref))
+}
+
+func tryOp(op *spec.Operation, method string, path string) {
+	if op == nil {
+		return
+	}
+	if len(op.Parameters) == 0 {
+		return
+	}
+	fmt.Printf("Trying %s %s\n", method, path)
+	data := map[string]interface{}{}
+	for _, param := range op.Parameters {
+		data[param.Name] = GenerateAny(&param)
+	}
+	util.PrettyPrintStruct(op.Parameters)
+	util.PrettyPrintStruct(data)
+	fmt.Println("**************************************")
+}
+
+// TestPetStore mocks the first param for all of pet store
+func TestPetStore(t *testing.T) {
+	swagger := ReadSwagger(PetStoreExpanded)
+	for path, pathItem := range swagger.Paths.Paths {
+		tryOp(pathItem.Get, "get", path)
+	}
 }
