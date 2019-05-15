@@ -1,5 +1,11 @@
 package swagger
 
+// Documentation:
+// https://swagger.io/docs/specification/2-0/describing-parameters/
+//
+// Nodejs swagger data generator:
+// https://github.com/subeeshcbabu/swagmock/blob/master/lib/generators/index.js
+
 import (
 	"fmt"
 	"log"
@@ -22,7 +28,6 @@ func GenerateObj(properties map[string]spec.Schema) map[string]interface{} {
 		obj[key] = GenerateSchema(schema)
 	}
 	return obj
-
 }
 
 const object string = "object"
@@ -46,7 +51,9 @@ func GenerateArray(items *spec.SchemaOrArray) []interface{} {
 
 }
 
-func GeneratePrimativeArray(items *spec.Items) interface{} {
+// GeneratePrimitiveArray generates an array with only primitive elemenets
+// Query, header, etc params are only allowed arrays with primitives.
+func GeneratePrimitiveArray(items *spec.Items) interface{} {
 	obj := make([]interface{}, 1)
 	if items.Enum != nil {
 		obj[0] = GenerateEnum(items.Enum)
@@ -60,6 +67,7 @@ func GeneratePrimativeArray(items *spec.Items) interface{} {
 	return obj
 }
 
+// GenerateSchema runs on body paramaters, i.e in: body
 func GenerateSchema(schema spec.Schema) interface{} {
 	if schema.Enum != nil {
 		// TODO: does it make sense for enum to be top level?
@@ -78,7 +86,7 @@ func GenerateSchema(schema spec.Schema) interface{} {
 	return util.Rand(schema.Type[0])
 }
 
-// GenerateVal runs on everything but a schema
+// GenerateParam runs on all param types except body params
 func GenerateParam(param *spec.Parameter) interface{} {
 	if param.Enum != nil {
 		// TODO: i'm pretty sure this can happen but I want to see a case where it does
@@ -89,20 +97,60 @@ func GenerateParam(param *spec.Parameter) interface{} {
 	}
 	if param.Type == "object" {
 		// TODO: Does this make sense for an obj to be in a header/query/etc?
-		err := fmt.Errorf("unhandled obj")
+		err := fmt.Errorf("unhandled: object in query/header/form data param")
 		log.Fatalf("%+v\n", errors.WithStack(err))
 	}
 	if param.Type == "array" {
-		return GeneratePrimativeArray(param.Items)
+		return GeneratePrimitiveArray(param.Items)
 	}
 	return util.Rand(param.Type)
 }
 
-func Generate(param *spec.Parameter) interface{} {
+// GenerateAny runs on all params, distinguishing between
+// body params and all other params
+func GenerateAny(param *spec.Parameter) interface{} {
 	// Handle body
 	if param.In == "body" {
-		_ = GenerateSchema(*param.Schema)
+		return GenerateSchema(*param.Schema)
 	}
 	// Handle path, header, query, form data
 	return GenerateParam(param)
+}
+
+// ReadSwagger file into memory
+func ReadSwagger(path string) *spec.Swagger {
+	swagger := &spec.Swagger{}
+	util.MustUnmarshalFile(path, swagger)
+	return swagger
+}
+
+func Generate(swaggerPath string, path string, method string) (map[string]interface{}, error) {
+	swagger := ReadSwagger(swaggerPath)
+	op, err := findOperation(swagger, path, method)
+	if err != nil {
+		return nil, err
+	}
+
+	obj := GenerateAny(&op.Parameters[0])
+	final := map[string]interface{}{}
+	final[op.Parameters[0].Name] = obj
+	return final, nil
+}
+
+func findOperation(swagger *spec.Swagger, key string, method string) (*spec.Operation, error) {
+	for path, pathItem := range swagger.Paths.Paths {
+		if path == key {
+			if method == "get" {
+				return pathItem.Get, nil
+			}
+			if method == "delete" {
+				return pathItem.Delete, nil
+			}
+			if method == "post" {
+				return pathItem.Post, nil
+			}
+		}
+	}
+	err := fmt.Errorf("failed to find %v %v in swagger spec", method, key)
+	return nil, err
 }
