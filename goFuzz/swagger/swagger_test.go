@@ -109,14 +109,14 @@ func tryOp(op *spec.Operation, method string, path string) {
 	if len(op.Parameters) == 0 {
 		return
 	}
-	fmt.Printf("Trying %s %s\n", method, path)
 	data := map[string]interface{}{}
+	fmt.Println("**************************************")
+	fmt.Printf("Trying %s %s\n", method, path)
+	util.PrettyPrintStruct(op.Parameters)
 	for _, param := range op.Parameters {
 		data[param.Name] = GenerateAny(&param)
 	}
-	util.PrettyPrintStruct(op.Parameters)
 	util.PrettyPrintStruct(data)
-	fmt.Println("**************************************")
 }
 
 // TestPetStore generates params for all of pet store

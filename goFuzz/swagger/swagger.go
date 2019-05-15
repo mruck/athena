@@ -90,10 +90,6 @@ func GenerateSchema(schema spec.Schema) interface{} {
 // GenerateParam runs on all param types except body params
 func GenerateParam(param *spec.Parameter) interface{} {
 	if param.Enum != nil {
-		// TODO: i'm pretty sure this can happen but I want to see a case where it does
-		// cause I can't find the enum field of the spec.Parameter struct
-		err := fmt.Errorf("unhandled: enum in toplevel non body param")
-		log.Fatalf("%+v\n", errors.WithStack(err))
 		return GenerateEnum(param.Enum)
 	}
 	if param.Type == "object" {
