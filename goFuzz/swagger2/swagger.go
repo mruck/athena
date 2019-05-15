@@ -27,8 +27,6 @@ func GenerateObj(properties map[string]spec.Schema) map[string]interface{} {
 	for key, schema := range properties {
 		obj[key] = GenerateSchema(schema)
 	}
-	fmt.Println("GenerateObj")
-	util.PrettyPrintStruct(obj)
 	return obj
 }
 
@@ -85,10 +83,7 @@ func GenerateSchema(schema spec.Schema) interface{} {
 		return GenerateObj(schema.Properties)
 	}
 	if schema.Type[0] == "array" {
-		val := GenerateArray(schema.Items)
-		fmt.Println("GenerateSchema")
-		util.PrettyPrintStruct(val)
-		return val
+		return GenerateArray(schema.Items)
 	}
 	return util.Rand(schema.Type[0])
 }
@@ -118,10 +113,7 @@ func GenerateParam(param *spec.Parameter) interface{} {
 func GenerateAny(param *spec.Parameter) interface{} {
 	// Handle body
 	if param.In == "body" {
-		val := GenerateSchema(*param.Schema)
-		fmt.Println("GenerateAny")
-		util.PrettyPrintStruct(val)
-		return val
+		return GenerateSchema(*param.Schema)
 	}
 	// Handle path, header, query, form data
 	return GenerateParam(param)
@@ -143,7 +135,7 @@ func Generate(swaggerPath string, path string, method string) (map[string]interf
 
 	//util.PrettyPrintStruct(op)
 	obj := GenerateAny(&op.Parameters[0])
-	util.PrettyPrintStruct(obj)
+	//util.PrettyPrintStruct(obj)
 
 	final := map[string]interface{}{}
 	final[op.Parameters[0].Name] = obj
