@@ -27,6 +27,8 @@ func GenerateObj(properties map[string]spec.Schema) map[string]interface{} {
 	for key, schema := range properties {
 		obj[key] = GenerateSchema(schema)
 	}
+	fmt.Println("GenerateObj")
+	util.PrettyPrintStruct(obj)
 	return obj
 }
 
@@ -34,6 +36,7 @@ const object string = "object"
 
 func GenerateArray(items *spec.SchemaOrArray) []interface{} {
 	schema := items.Schema
+	//util.PrettyPrintStruct(schema)
 	if schema == nil {
 		err := fmt.Errorf("unhandled: SchemaOrArray is array")
 		log.Fatalf("%+v\n", errors.WithStack(err))
@@ -45,6 +48,7 @@ func GenerateArray(items *spec.SchemaOrArray) []interface{} {
 	}
 	if schema.Type[0] == object {
 		obj[0] = GenerateObj(schema.Properties)
+		return obj
 	}
 	obj[0] = util.Rand(schema.Type[0])
 	return obj
@@ -67,8 +71,10 @@ func GeneratePrimitiveArray(items *spec.Items) interface{} {
 	return obj
 }
 
-// GenerateSchema runs on body paramaters, i.e in: body
+// GenerateSchema runs on body parameters, i.e in: body
 func GenerateSchema(schema spec.Schema) interface{} {
+	//util.PrettyPrintStruct(schema)
+	//fmt.Println("**************************")
 	if schema.Enum != nil {
 		// TODO: does it make sense for enum to be top level?
 		err := fmt.Errorf("unhandled: enum in toplevel schema")
@@ -79,10 +85,11 @@ func GenerateSchema(schema spec.Schema) interface{} {
 		return GenerateObj(schema.Properties)
 	}
 	if schema.Type[0] == "array" {
-		return GenerateArray(schema.Items)
+		val := GenerateArray(schema.Items)
+		fmt.Println("GenerateSchema")
+		util.PrettyPrintStruct(val)
+		return val
 	}
-	err := fmt.Errorf("unhandled: schema with primative type")
-	log.Fatalf("%+v\n", errors.WithStack(err))
 	return util.Rand(schema.Type[0])
 }
 
@@ -111,7 +118,10 @@ func GenerateParam(param *spec.Parameter) interface{} {
 func GenerateAny(param *spec.Parameter) interface{} {
 	// Handle body
 	if param.In == "body" {
-		return GenerateSchema(*param.Schema)
+		val := GenerateSchema(*param.Schema)
+		fmt.Println("GenerateAny")
+		util.PrettyPrintStruct(val)
+		return val
 	}
 	// Handle path, header, query, form data
 	return GenerateParam(param)
@@ -131,9 +141,13 @@ func Generate(swaggerPath string, path string, method string) (map[string]interf
 		return nil, err
 	}
 
+	//util.PrettyPrintStruct(op)
 	obj := GenerateAny(&op.Parameters[0])
+	util.PrettyPrintStruct(obj)
+
 	final := map[string]interface{}{}
 	final[op.Parameters[0].Name] = obj
+	//	util.PrettyPrintStruct(final)
 	return final, nil
 }
 
