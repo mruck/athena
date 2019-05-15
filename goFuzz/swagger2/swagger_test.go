@@ -124,5 +124,10 @@ func TestPetStore(t *testing.T) {
 	swagger := ReadSwagger(PetStoreExpanded)
 	for path, pathItem := range swagger.Paths.Paths {
 		tryOp(pathItem.Get, "get", path)
+		tryOp(pathItem.Delete, "delete", path)
+		tryOp(pathItem.Put, "put", path)
+		tryOp(pathItem.Patch, "patch", path)
+		tryOp(pathItem.Post, "post", path)
+		tryOp(pathItem.Head, "head", path)
 	}
 }
