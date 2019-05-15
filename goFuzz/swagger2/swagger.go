@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/go-openapi/loads"
 	"github.com/go-openapi/spec"
 	"github.com/google/uuid"
 	"github.com/mruck/athena/goFuzz/util"
@@ -74,10 +75,7 @@ func GenerateSchema(schema spec.Schema) interface{} {
 	//util.PrettyPrintStruct(schema)
 	//fmt.Println("**************************")
 	if schema.Enum != nil {
-		// TODO: does it make sense for enum to be top level?
-		err := fmt.Errorf("unhandled: enum in toplevel schema")
-		log.Fatalf("%+v\n", errors.WithStack(err))
-		//return GenerateEnum(schema.Enum)
+		return GenerateEnum(schema.Enum)
 	}
 	if schema.Type[0] == "object" {
 		return GenerateObj(schema.Properties)
@@ -159,4 +157,18 @@ func findOperation(swagger *spec.Swagger, key string, method string) (*spec.Oper
 	}
 	err := fmt.Errorf("failed to find %v %v in swagger spec", method, key)
 	return nil, err
+}
+
+// Expand takes a spec, expands it, and writes it to dst
+func Expand(spec string, dst string) error {
+	doc, err := loads.Spec(spec)
+	if err != nil {
+		return err
+	}
+	newDoc, err := doc.Expanded()
+	if err != nil {
+		return err
+	}
+	swag := newDoc.Spec()
+	return util.MarshalToFile(swag, dst)
 }
