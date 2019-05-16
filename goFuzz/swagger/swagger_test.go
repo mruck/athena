@@ -102,11 +102,19 @@ func TestExpandSchema(t *testing.T) {
 	require.False(t, strings.Contains(string(expanded), ref))
 }
 
+var broken = map[string]string{
+	"post /admin/api/web_hooks": "",
+}
+
 func tryOp(op *spec.Operation, method string, path string) {
 	if op == nil {
 		return
 	}
 	if len(op.Parameters) == 0 {
+		return
+	}
+	key := method + " " + path
+	if _, ok := broken[key]; ok {
 		return
 	}
 	data := map[string]interface{}{}
@@ -139,10 +147,10 @@ func TestDiscourse(t *testing.T) {
 	swagger := ReadSwagger(discourseSwagger)
 	for path, pathItem := range swagger.Paths.Paths {
 		tryOp(pathItem.Get, "get", path)
-		//tryOp(pathItem.Delete, "delete", path)
-		//tryOp(pathItem.Put, "put", path)
-		//tryOp(pathItem.Patch, "patch", path)
-		//tryOp(pathItem.Post, "post", path)
-		//tryOp(pathItem.Head, "head", path)
+		tryOp(pathItem.Delete, "delete", path)
+		tryOp(pathItem.Put, "put", path)
+		tryOp(pathItem.Patch, "patch", path)
+		tryOp(pathItem.Post, "post", path)
+		tryOp(pathItem.Head, "head", path)
 	}
 }
