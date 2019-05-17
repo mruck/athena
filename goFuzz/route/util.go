@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/go-openapi/spec"
+	"github.com/mruck/athena/goFuzz/swagger"
 	"github.com/mruck/athena/goFuzz/util"
 	"github.com/pkg/errors"
 )
@@ -37,16 +37,9 @@ func blacklisted(path string) bool {
 		strings.Contains(path, "logout")
 }
 
-// ReadSwagger file into memory
-func ReadSwagger(path string) *spec.Swagger {
-	swagger := &spec.Swagger{}
-	util.MustUnmarshalFile(path, swagger)
-	return swagger
-}
-
 // FromSwagger loads routes from swagger file
 func FromSwagger(path string) []*Route {
-	swagger := ReadSwagger(path)
+	swagger := swagger.ReadSwagger(path)
 	// All routes
 	routes := []*Route{}
 	for path, operations := range swagger.Paths.Paths {

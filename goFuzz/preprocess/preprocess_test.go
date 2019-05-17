@@ -18,7 +18,7 @@ func TestHarToRequest(t *testing.T) {
 }
 func TestCorpus(t *testing.T) {
 	harData := har.UnmarshalHar("../tests/corpus_har.json")
-	routes := route.FromSwagger("../route/discourseSwagger.json")
+	routes := route.FromSwagger("../swagger/test/discourseSwagger.json")
 	_, err := InitializeRoutes(routes, harData)
 	require.NoError(t, err)
 	//	for _, route := range corpus {

@@ -1,14 +1,12 @@
 package swagger
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
 
 	"github.com/go-openapi/spec"
-	"github.com/mruck/athena/goFuzz/util"
 	"github.com/stretchr/testify/require"
 )
 
@@ -118,13 +116,13 @@ func tryOp(op *spec.Operation, method string, path string) {
 		return
 	}
 	data := map[string]interface{}{}
-	fmt.Println("**************************************")
-	fmt.Printf("Trying %s %s\n", method, path)
-	util.PrettyPrintStruct(op.Parameters)
+	//fmt.Println("**************************************")
+	//fmt.Printf("Trying %s %s\n", method, path)
+	//util.PrettyPrintStruct(op.Parameters)
 	for _, param := range op.Parameters {
 		data[param.Name] = GenerateAny(&param)
 	}
-	util.PrettyPrintStruct(data)
+	//util.PrettyPrintStruct(data)
 }
 
 // TestPetStore generates params for all of pet store
@@ -153,4 +151,18 @@ func TestDiscourse(t *testing.T) {
 		tryOp(pathItem.Post, "post", path)
 		tryOp(pathItem.Head, "head", path)
 	}
+}
+
+func TestReadSwagger(t *testing.T) {
+	swagger := ReadSwagger("../tests/dummySwagger.json")
+	//util.PrettyPrintStruct(swagger)
+	// Check that a field is correct
+	description := swagger.Paths.Paths["/categories.json"].Post.Description
+	require.Equal(t, "Create a new category", description)
+}
+
+// Just make sure we don't hit an unmarshaling error
+func TestReadDiscourseSwagger(t *testing.T) {
+	_ = ReadSwagger("../tests/discourseSwagger.json")
+	//util.PrettyPrintStruct(swagger)
 }

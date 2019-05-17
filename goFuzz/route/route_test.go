@@ -6,26 +6,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestReadSwagger(t *testing.T) {
-	swagger := ReadSwagger("../tests/dummySwagger.json")
-	//util.PrettyPrintStruct(swagger)
-	// Check that a field is correct
-	description := swagger.Paths.Paths["/categories.json"].Post.Description
-	require.Equal(t, "Create a new category", description)
-}
-
-// Just make sure we don't hit an unmarshaling error
-func TestReadDiscourseSwagger(t *testing.T) {
-	_ = ReadSwagger("../tests/discourseSwagger.json")
-	//util.PrettyPrintStruct(swagger)
-}
-
-func TestFromSwagger(t *testing.T) {
-	routes := FromSwagger("../tests/dummySwagger.json")
-	// Check a random field
-	require.Equal(t, routes[0].Method, "GET")
-}
-
 type regexpTest struct {
 	input  string
 	output string
@@ -48,4 +28,10 @@ func TestRegExp(t *testing.T) {
 		}
 		require.Equal(t, test.output, output.String())
 	}
+}
+
+func TestFromSwagger(t *testing.T) {
+	routes := FromSwagger("../tests/dummySwagger.json")
+	// Check a random field
+	require.Equal(t, routes[0].Method, "GET")
 }
