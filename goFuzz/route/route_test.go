@@ -35,15 +35,3 @@ func TestFromSwagger(t *testing.T) {
 	// Check a random field
 	require.Equal(t, routes[0].Method, "GET")
 }
-
-func TestQueryParams(t *testing.T) {
-
-}
-
-func TestBodyParams(t *testing.T) {
-
-}
-
-func TestPathParams(t *testing.T) {
-
-}
