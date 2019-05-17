@@ -78,7 +78,7 @@ func (route *Route) ToHTTPRequest() (*http.Request, error) {
 
 	var body io.Reader
 
-	if strings.ToUpper(route.Method) == util.GET {
+	if route.Method == util.GET {
 		// populate query parameters
 		url += route.GetQueryStr()
 	} else {
