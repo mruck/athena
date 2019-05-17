@@ -1,15 +1,12 @@
 package route
 
 import (
-	"fmt"
-	"net/http"
 	"regexp"
 
 	"github.com/go-openapi/spec"
 	"github.com/mruck/athena/goFuzz/har"
 	"github.com/mruck/athena/goFuzz/param"
 	"github.com/mruck/athena/goFuzz/util"
-	"github.com/pkg/errors"
 )
 
 // SiblingMethod contains mutation state for sibling methods
@@ -67,15 +64,4 @@ func (route *Route) Mutate() {
 	for _, param := range route.State {
 		param.Mutate()
 	}
-}
-
-// ToHTTPRequest converts a route to an http.Request
-func (route *Route) ToHTTPRequest() (*http.Request, error) {
-	url := fmt.Sprintf("http://overwriteMe.com%s", route.Path)
-	// TODO: io.Reader to body
-	req, err := http.NewRequest(route.Method, url, nil)
-	if err != nil {
-		return nil, errors.Wrap(err, "")
-	}
-	return req, nil
 }

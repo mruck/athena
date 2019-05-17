@@ -84,3 +84,10 @@ func MarshalToFile(data interface{}, dst string) error {
 	}
 	return ioutil.WriteFile(dst, JSONData, 0644)
 }
+
+// Stringify takes an arbitrary primitive type and converts it to a string
+// Note:  doesn't support arrays or objects!
+// TODO: figure out how to support arrays
+func Stringify(data interface{}) string {
+	return fmt.Sprintf("%v", data)
+}

@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/mruck/athena/goFuzz/util"
 	"github.com/pkg/errors"
 )
 
@@ -43,7 +44,7 @@ func New(url *url.URL) (*Client, error) {
 // HealthCheck checks if a hard coded rails fork endpoint is up
 func (cli *Client) HealthCheck() (bool, error) {
 	url := fmt.Sprintf("%s%s", cli.URL, cli.HealthcheckPath)
-	request, err := http.NewRequest("GET", url, nil)
+	request, err := http.NewRequest(util.GET, url, nil)
 	if err != nil {
 		return false, errors.Wrap(err, "")
 	}

@@ -8,24 +8,6 @@ import (
 	"github.com/mruck/athena/goFuzz/util"
 )
 
-// GET for a spec.operation
-const GET = "get"
-
-// DELETE for a spec.operation
-const DELETE = "delete"
-
-// POST for a spec.operation
-const POST = "post"
-
-// PATCH for a spec.operation
-const PATCH = "patch"
-
-// PUT for a spec.operation
-const PUT = "put"
-
-// HEAD for a spec.operation
-const HEAD = "head"
-
 // ReadSwagger file into memory
 func ReadSwagger(path string) *spec.Swagger {
 	swagger := &spec.Swagger{}
@@ -37,22 +19,22 @@ func ReadSwagger(path string) *spec.Swagger {
 func findOperation(swagger *spec.Swagger, key string, method string) (*spec.Operation, error) {
 	for path, pathItem := range swagger.Paths.Paths {
 		if path == key {
-			if method == GET {
+			if method == util.GET {
 				return pathItem.Get, nil
 			}
-			if method == DELETE {
+			if method == util.DELETE {
 				return pathItem.Delete, nil
 			}
-			if method == POST {
+			if method == util.POST {
 				return pathItem.Post, nil
 			}
-			if method == PATCH {
+			if method == util.PATCH {
 				return pathItem.Patch, nil
 			}
-			if method == PUT {
+			if method == util.PUT {
 				return pathItem.Put, nil
 			}
-			if method == HEAD {
+			if method == util.HEAD {
 				return pathItem.Head, nil
 			}
 		}
