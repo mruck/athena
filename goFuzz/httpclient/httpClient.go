@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/mruck/athena/goFuzz/util"
@@ -108,8 +109,10 @@ func PrettyPrintRequest(req *http.Request) {
 		dst := map[string]interface{}{}
 		err = json.Unmarshal(b, &dst)
 		util.Must(err == nil, "%+v\n", errors.WithStack(err))
-		log.Printf("here1")
 		util.PrettyPrintStruct(dst)
-		log.Printf("here2")
+		// Reinitialize the reader
+		reader := strings.NewReader(string(b))
+		req.Body = ioutil.NopCloser(reader)
 	}
+
 }
