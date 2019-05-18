@@ -1,5 +1,7 @@
 package util
 
+import "strings"
+
 // GET for a spec.operation
 const GET = "get"
 
@@ -17,3 +19,8 @@ const PUT = "put"
 
 // HEAD for a spec.operation
 const HEAD = "head"
+
+// CompareMethods compares lowercased http method
+func CompareMethods(method1 string, method2 string) bool {
+	return strings.EqualFold(method1, method2)
+}

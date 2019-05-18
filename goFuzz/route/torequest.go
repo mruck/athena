@@ -48,8 +48,8 @@ func (route *Route) GetQueryStr() string {
 	if querystr == "?" {
 		return ""
 	}
-	// Strip the trailing &
 	// TODO: URL encoding?
+	// Strip the trailing &
 	return strings.TrimSuffix(querystr, "&")
 }
 
@@ -78,7 +78,7 @@ func (route *Route) ToHTTPRequest() (*http.Request, error) {
 
 	var body io.Reader
 
-	if route.Method == util.GET {
+	if util.CompareMethods(route.Method, util.GET) {
 		// populate query parameters
 		url += route.GetQueryStr()
 	} else {

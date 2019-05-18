@@ -51,7 +51,7 @@ func InitializeRoutes(routes []*route.Route, har *har.Har) ([]*route.Route, erro
 	corpus := []*route.Route{}
 	for _, entry := range har.Log.Entries {
 		url, err := url.Parse(entry.Request.URL)
-		// TODO: eventually log this and move in on
+		// TODO: eventually log this and move on
 		util.Must(err == nil, "%+v\n", errors.WithStack(err))
 		route := route.FindRouteByPath(routes, url.Path, entry.Request.Method)
 		// We didn't find this route in the swagger spec
