@@ -1,12 +1,16 @@
 package httpclient
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
 	"time"
 
+	"github.com/mruck/athena/goFuzz/util"
 	"github.com/pkg/errors"
 )
 
@@ -86,4 +90,26 @@ func (cli *Client) DoAll(requests []*http.Request) error {
 		}
 	}
 	return nil
+}
+
+// PrettyPrintRequest pretty prints http request
+func PrettyPrintRequest(req *http.Request) {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+	url := req.URL.Path
+	if req.Method == "GET" {
+		if req.URL.RawQuery != "" {
+			url += "?" + req.URL.RawQuery
+		}
+	}
+	log.Printf("%v %v\n", req.Method, url)
+	if req.Body != nil {
+		b, err := ioutil.ReadAll(req.Body)
+		util.Must(err == nil, "%+v\n", errors.WithStack(err))
+		dst := map[string]interface{}{}
+		err = json.Unmarshal(b, &dst)
+		util.Must(err == nil, "%+v\n", errors.WithStack(err))
+		log.Printf("here1")
+		util.PrettyPrintStruct(dst)
+		log.Printf("here2")
+	}
 }

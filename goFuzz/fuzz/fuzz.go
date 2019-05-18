@@ -1,8 +1,6 @@
 package fuzz
 
 import (
-	"fmt"
-
 	"github.com/mruck/athena/goFuzz/httpclient"
 	"github.com/mruck/athena/goFuzz/mutator"
 	"github.com/mruck/athena/goFuzz/route"
@@ -23,7 +21,7 @@ func Fuzz(client *httpclient.Client, routes []*route.Route, corpus []*route.Rout
 		}
 
 		// Send it.
-		fmt.Printf("%v %v\n", request.Method, request.URL)
+		httpclient.PrettyPrintRequest(request)
 		resp, err := client.Do(request)
 		util.Must(err == nil, "%+v", errors.WithStack(err))
 

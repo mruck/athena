@@ -21,13 +21,13 @@ type Mutator struct {
 	Coverage   *coverage.Coverage
 }
 
-func seedMutator(corpus []*http.Request) {
-}
-
 const coveragePath = "/tmp/results/coverage.json"
 
 // New creates a new mutator
 func New(routes []*route.Route, corpus []*route.Route) *Mutator {
+	// Make the order deterministic for debugging.  Order routes alphabetically
+	route.Order(routes)
+
 	// TODO: do something with the corpus
 	return &Mutator{Routes: routes, routeIndex: -1, Coverage: coverage.New(coveragePath)}
 }

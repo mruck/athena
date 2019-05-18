@@ -4,6 +4,7 @@ package route
 
 import (
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/mruck/athena/goFuzz/swagger"
@@ -34,7 +35,9 @@ func FindRouteByPath(routes []*Route, path string, method string) *Route {
 // Check if a route is blacklisted
 func blacklisted(path string) bool {
 	return strings.Contains(path, "readonly") ||
-		strings.Contains(path, "logout")
+		strings.Contains(path, "logout") ||
+		// This swagger is broken
+		strings.Contains(path, "/admin/api/web_hooks")
 }
 
 // FromSwagger loads routes from swagger file
@@ -82,4 +85,11 @@ func FromSwagger(path string) []*Route {
 	}
 
 	return routes
+}
+
+// Order orders a list of routes alphabetically
+func Order(routes []*Route) {
+	sort.Slice(routes, func(i, j int) bool {
+		return routes[i].Path < routes[j].Path
+	})
 }

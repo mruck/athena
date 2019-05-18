@@ -86,7 +86,7 @@ func (route *Route) ToHTTPRequest() (*http.Request, error) {
 		body, _ = route.GetBodyParams()
 	}
 
-	req, err := http.NewRequest(route.Method, url, body)
+	req, err := http.NewRequest(strings.ToUpper(route.Method), url, body)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
