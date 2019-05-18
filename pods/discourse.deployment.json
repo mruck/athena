@@ -26,7 +26,7 @@
         "initContainers": [
           {
             "name": "rails-fork",
-            "image": "gcr.io/athena-fuzzer/rails:4a09b2842b30633b5539",
+            "image": "gcr.io/athena-fuzzer/rails:ee2f0097917987999f8d",
             "resources": {},
             "volumeMounts": [
               {

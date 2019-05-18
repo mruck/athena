@@ -14,9 +14,9 @@ import (
 
 // TODO: this should be in the shared mount.
 // Add to target img?
-const harLogin = "preprocess/test/login_har.json"
-const swaggerPath = "routes/discourseSwagger.json"
-const harCorpus = "preprocess/test/corpus_har.json"
+const harLogin = "tests/login_har.json"
+const swaggerPath = "tests/discourseSwagger.json"
+const harCorpus = "tests/corpus_har.json"
 
 func main() {
 	port := util.MustGetTargetAppPort()
