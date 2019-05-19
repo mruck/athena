@@ -29,4 +29,5 @@ func Fuzz(client *httpclient.Client, routes []*route.Route, corpus []*route.Rout
 		err = mutator.UpdateState(resp)
 		util.Must(err == nil, "%+v", err)
 	}
+	util.PrettyPrintStruct(client.StatusCodes)
 }

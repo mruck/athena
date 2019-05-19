@@ -27,6 +27,7 @@ type Client struct {
 
 	URL             *url.URL
 	HealthcheckPath string
+	StatusCodes     map[int]int
 }
 
 // New allocates an http client with a cookie jar.
@@ -40,6 +41,7 @@ func New(url *url.URL) (*Client, error) {
 		Client:          httpClient,
 		URL:             url,
 		HealthcheckPath: healthCheckRoute,
+		StatusCodes:     map[int]int{},
 		// TODO: same thing with interval field that takes default
 		// from a constant.
 	}, nil
@@ -72,13 +74,26 @@ func (cli *Client) HealthCheck() (bool, error) {
 	return false, nil
 }
 
+// updateStatusCodes keeps track of status code of every response
+// after sending a request
+func (cli *Client) updateStatusCodes(code int) {
+	if _, ok := cli.StatusCodes[code]; ok {
+		cli.StatusCodes[code]++
+	} else {
+		cli.StatusCodes[code] = 1
+	}
+}
+
 // Do will MUTATE the URL of the request passed in to have the host:port
 // that the client points to. All other fields of the request
 // remain intact.
 func (cli *Client) Do(req *http.Request) (*http.Response, error) {
 	req.Host = cli.URL.Host
 	req.URL.Host = cli.URL.Host
-	return cli.Client.Do(req)
+	resp, err := cli.Client.Do(req)
+	cli.updateStatusCodes(resp.StatusCode)
+
+	return resp, err
 }
 
 // DoAll calls `.Do` on all requests and returns the first non-nil error
