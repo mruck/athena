@@ -2,7 +2,7 @@
   "apiVersion": "extensions/v1beta1",
   "kind": "Deployment",
   "metadata": {
-    "name": "mongodb-deployment"
+    "name": "mongodb"
   },
   "spec": {
     "replicas": 1,
@@ -16,7 +16,10 @@
         "containers": [
           {
             "image": "mongo:3.6.11-stretch",
-            "name": "my-mongodb"
+            "name": "my-mongodb",
+            "resources": {
+              "requests": { "cpu": "0m", "memory": "100Mi" }
+            }
           }
         ]
       }
