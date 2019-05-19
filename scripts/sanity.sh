@@ -2,7 +2,7 @@
 # Usage:
 #      bash scripts/sanity.sh
 #      bash scripts/sanity.sh all
-set -e
+set -ex
 
 function __is_pod_ready() {
   ready=$(kubectl get po "$1" -o 'jsonpath={.status.conditions[?(@.type=="Ready")].status}')
@@ -23,7 +23,7 @@ mkdir -p /tmp/sanity/$POD_NAME
 
 # Update image to reflect sha
 # Update pod name to reflect sha
-jq '.spec.containers[2].image = "gcr.io/athena-fuzzer/athena:'$GIT_SHA'"' pods/pod_sanity_template.json | \
+jq '.spec.containers[2].image = "gcr.io/athena-fuzzer/athena:'$GIT_SHA'"' pods/sanity.json | \
     jq '.metadata.name = "'$POD_NAME'"' > /tmp/sanity/$POD_NAME/pod.json
 kubectl apply -f /tmp/sanity/$POD_NAME/pod.json
 
@@ -43,7 +43,7 @@ kubectl delete pod $POD_NAME
 cnt=$(cat /tmp/sanity/$POD_NAME/client | grep "Code Counts" | cut -d ':' -f 2- | tr -d ' ' | tr -d '\r')
 cov=$(cat /tmp/sanity/$POD_NAME/client | grep "Final Coverage" | cut -d ':' -f 2 | tr -d ' ' | tr -d '\r')
 succ=$(cat /tmp/sanity/$POD_NAME/client | grep "Success Ratio" | cut -d ':' -f 2 | tr -d ' ' | tr -d '\r')
-reqs=$(cat /tmp/sanity/$POD_NAME/client | grep "Total requests" | cut -d ':' -f 2 | tr -d ' ' | tr -d '\r')
+reqs=$(cat /tmp/sanity/$POD_NAME/client | grep "Total Requests" | cut -d ':' -f 2 | tr -d ' ' | tr -d '\r')
 output="misc/sanity.txt"
 
 mkdir -p misc

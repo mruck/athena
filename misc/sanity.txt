@@ -53,3 +53,5 @@
 {"git_ref":"f669bf051628d3e54b990860239c8e687fc84baa","git_branch":"pluralization_endpoint","coverage":17.098728516082062,"success_rate":0.5714285714285714,"total_requests":308,"status_codes":{"200":176,"400":14,"403":15,"404":76,"409":2,"422":13,"500":12}}
 {"git_ref":"ee777cce9d5d4518e913ef7c21380c4466faa6f6","git_branch":"fix_verbs","coverage":17.168933149587872,"success_rate":0.5746753246753247,"total_requests":308,"status_codes":{"200":177,"400":16,"403":15,"404":77,"409":2,"422":12,"500":9}}
 {"git_ref":"314b2504e8874d398d4076a907ef140cfc15b9af","git_branch":"master","coverage":16.66449985699056,"success_rate":0.565359477124183,"total_requests":306,"status_codes":{"200":173,"400":16,"403":15,"404":78,"409":2,"422":13,"500":9}}
+{"git_ref":"e6e84848a0eb49e6f067d7777e33f3a44ea3c37d","git_branch":"goFuzz","coverage":2.08440251075757,"success_rate":0.6923076923076923,"total_requests":13,"status_codes":{"200":9,"400":2,"404":2}}
+{"git_ref":"e6e84848a0eb49e6f067d7777e33f3a44ea3c37d","git_branch":"goFuzz","coverage":13.646468495934961,"success_rate":0.8805732484076433,"total_requests":628,"status_codes":{"200":553,"400":18,"403":12,"404":39,"422":6}}
