@@ -23,7 +23,7 @@ mkdir -p /tmp/sanity/$POD_NAME
 
 # Update image to reflect sha
 # Update pod name to reflect sha
-jq '.spec.containers[2].image = "gcr.io/athena-fuzzer/athena:'$GIT_SHA'"' pods/sanity.json | \
+jq '.spec.containers[2].image = "gcr.io/athena-fuzzer/athena:'$GIT_SHA'"' pods/sanity_template.json | \
     jq '.metadata.name = "'$POD_NAME'"' > /tmp/sanity/$POD_NAME/pod.json
 kubectl apply -f /tmp/sanity/$POD_NAME/pod.json
 
