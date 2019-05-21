@@ -10,9 +10,8 @@ RUN apt-get update && apt-get install -y bpython3 \
     watch \
     vim
 
-RUN mkdir /fuzz
-WORKDIR /fuzz
-
-ADD goFuzz/ /fuzz
-
-WORKDIR /fuzz
+RUN mkdir /athena
+WORKDIR /athena
+ADD . /athena
+WORKDIR /athena/goFuzz
+CMD go run main.go
