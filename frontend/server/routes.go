@@ -3,9 +3,8 @@ package server
 import (
 	"net/http"
 
-	"github.com/mruck/athena/frontend/database"
-
 	"github.com/gorilla/mux"
+	"github.com/mruck/athena/lib/database"
 )
 
 type Route struct {

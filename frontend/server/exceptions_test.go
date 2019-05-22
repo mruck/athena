@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/mruck/athena/frontend/database"
+	"github.com/mruck/athena/lib/database"
 	"github.com/stretchr/testify/require"
 )
 
