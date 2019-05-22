@@ -6,11 +6,10 @@ package main
 //Shell out and spin this up
 
 import (
-	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/mruck/athena/frontend/server"
+	"github.com/mruck/athena/lib/log"
 )
 
 func main() {
@@ -19,6 +18,6 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Printf("Listening on 8081\n")
-	log.Fatal(http.ListenAndServe(":8081", router))
+	log.Infof("Listening on 8081\n")
+	log.Fatalf("%+v", http.ListenAndServe(":8081", router))
 }

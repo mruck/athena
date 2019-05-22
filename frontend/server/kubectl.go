@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/mruck/athena/frontend/log"
+	"github.com/mruck/athena/lib/log"
 	v1 "k8s.io/api/core/v1"
 )
 
