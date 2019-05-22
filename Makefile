@@ -20,6 +20,13 @@ postgres-stop:
 postgres-start: postgres-stop
 	docker run --name my-postgres -e POSTGRES_USER="root" -d postgres
 
+# To test frontend locally, simply run mongo in a contain and run front end natively
+mongo-start:
+	docker run -d -p 27017:27017 --name my-mongo mongo:3.6.11-stretch
+
+mongo-stop:
+	docker rm -f my-mongo
+
 venv: pip-reqs.txt
 	-rm -rf $(VENV_LOCATION)
 	virtualenv -p python3 $(VENV_LOCATION)
