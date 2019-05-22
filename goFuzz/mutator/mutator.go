@@ -8,6 +8,9 @@ import (
 
 	"github.com/mruck/athena/goFuzz/coverage"
 	"github.com/mruck/athena/goFuzz/route"
+	"github.com/mruck/athena/lib/database"
+	"github.com/mruck/athena/lib/exception"
+	"github.com/mruck/athena/lib/util"
 )
 
 // Mutate specifies required functions to be defined on a mutator class
@@ -16,20 +19,32 @@ type Mutate interface {
 
 // Mutator contains state for mutating
 type Mutator struct {
-	Routes     []*route.Route
-	routeIndex int
-	Coverage   *coverage.Coverage
+	Routes            []*route.Route
+	routeIndex        int
+	Coverage          *coverage.Coverage
+	ExceptionsManager *exception.ExceptionsManager
+	TargetID          string
 }
 
 const coveragePath = "/tmp/results/coverage.json"
 
 // New creates a new mutator
 func New(routes []*route.Route, corpus []*route.Route) *Mutator {
+	// Connect to mongodb to log exceptions
+	db := database.MustGetDatabase(database.MongoDbPort, "athena")
+	manager := exception.NewExceptionsManager(db)
+
 	// Make the order deterministic for debugging.  Order routes alphabetically
 	route.Order(routes)
 
 	// TODO: do something with the corpus
-	return &Mutator{Routes: routes, routeIndex: -1, Coverage: coverage.New(coveragePath)}
+	return &Mutator{
+		Routes:            routes,
+		routeIndex:        -1,
+		Coverage:          coverage.New(coveragePath),
+		ExceptionsManager: manager,
+		TargetID:          util.MustGetTargetID(),
+	}
 }
 
 func (mutator *Mutator) specialRoute() *route.Route {
@@ -82,6 +97,10 @@ func (mutator *Mutator) Next() *http.Request {
 	return req
 }
 
+func (mutator *Mutator) currentRoute() *route.Route {
+	return mutator.Routes[mutator.routeIndex]
+}
+
 // UpdateState parses the response and updates source code, parameter and
 // query coverage
 func (mutator *Mutator) UpdateState(resp *http.Response) error {
@@ -91,5 +110,6 @@ func (mutator *Mutator) UpdateState(resp *http.Response) error {
 	if err != nil {
 		return err
 	}
-	return nil
+	route := mutator.currentRoute()
+	return mutator.ExceptionsManager.Update(route.Path, route.Method, mutator.TargetID)
 }

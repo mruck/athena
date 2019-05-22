@@ -22,3 +22,14 @@ func TestStringify(t *testing.T) {
 	letters := []string{"a", "b", "c"}
 	fmt.Println(Stringify(letters))
 }
+
+// Test unmarshalling an empty file
+func TestUnmarshalFileEmpty(t *testing.T) {
+	type Test struct {
+		A string
+	}
+	test := &Test{}
+	err := UnmarshalFile("foo.json", test)
+	fmt.Println(err)
+	fmt.Println(test)
+}

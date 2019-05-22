@@ -20,6 +20,15 @@ func PrettyPrintStruct(data interface{}) {
 	fmt.Println(string(jsonified))
 }
 
+// MustGetTargetID returns the target id or panics
+func MustGetTargetID() string {
+	targetID := os.Getenv("TARGET_ID")
+	if targetID == "" {
+		log.Fatal("TARGET_ID not set")
+	}
+	return targetID
+}
+
 // MustGetTargetAppPort returns the port the target app is running on
 // or panics
 func MustGetTargetAppPort() string {
@@ -38,6 +47,20 @@ func MustGetTargetAppHost() string {
 		return "localhost"
 	}
 	return host
+}
+
+// FileIsEmpty returns whether or not a file is empty
+func FileIsEmpty(filepath string) (bool, error) {
+	fp, err := os.Open(filepath)
+	if err != nil {
+		return false, err
+	}
+	defer fp.Close()
+	result, err := fp.Stat()
+	if err != nil {
+		return false, err
+	}
+	return result.Size() == 0, nil
 }
 
 // UnmarshalFile reads a file and unmarshal it to the given
