@@ -11,7 +11,7 @@ import (
 	"testing"
 
 	"github.com/mruck/athena/goFuzz/httpclient"
-	"github.com/mruck/athena/goFuzz/util"
+	"github.com/mruck/athena/lib/util"
 	"github.com/stretchr/testify/require"
 )
 

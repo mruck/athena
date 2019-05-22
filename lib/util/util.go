@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 
+	"github.com/mruck/athena/lib/log"
 	"github.com/pkg/errors"
 )
 

@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/mruck/athena/goFuzz/util"
+	"github.com/mruck/athena/lib/util"
 	"github.com/pkg/errors"
 )
 

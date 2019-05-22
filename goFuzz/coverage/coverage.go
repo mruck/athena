@@ -1,8 +1,6 @@
 package coverage
 
-import (
-	"github.com/mruck/athena/goFuzz/util"
-)
+import "github.com/mruck/athena/lib/util"
 
 // Coverage contains metadata abouta  coverage object
 type Coverage struct {

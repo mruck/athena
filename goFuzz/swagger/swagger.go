@@ -12,7 +12,7 @@ import (
 
 	"github.com/go-openapi/spec"
 	"github.com/google/uuid"
-	"github.com/mruck/athena/goFuzz/util"
+	"github.com/mruck/athena/lib/util"
 	"github.com/pkg/errors"
 )
 

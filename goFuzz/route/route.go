@@ -6,7 +6,7 @@ import (
 	"github.com/go-openapi/spec"
 	"github.com/mruck/athena/goFuzz/har"
 	"github.com/mruck/athena/goFuzz/param"
-	"github.com/mruck/athena/goFuzz/util"
+	"github.com/mruck/athena/lib/util"
 )
 
 // SiblingMethod contains mutation state for sibling methods

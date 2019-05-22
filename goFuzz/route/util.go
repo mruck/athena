@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/mruck/athena/goFuzz/swagger"
-	"github.com/mruck/athena/goFuzz/util"
+	"github.com/mruck/athena/lib/util"
 	"github.com/pkg/errors"
 )
 

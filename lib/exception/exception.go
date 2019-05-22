@@ -18,6 +18,8 @@ type ExceptionsManager struct {
 	collection *mgo.Collection
 }
 
+const exceptionsFile = "/tmp/results/exceptions.json"
+
 func NewExceptionsManager(db *mgo.Database) *ExceptionsManager {
 	return &ExceptionsManager{
 		collection: db.C("exceptions"),
@@ -46,4 +48,9 @@ func (manager *ExceptionsManager) WriteOne(exc Exception) error {
 
 func (manager *ExceptionsManager) Drop() error {
 	return manager.collection.DropCollection()
+}
+
+// ReadExceptionsFile reads the file written by rails logging exceptions
+func ReadExceptionsFile() *Exception {
+	return nil
 }
