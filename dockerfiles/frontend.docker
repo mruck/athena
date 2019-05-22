@@ -1,13 +1,14 @@
 FROM golang:1.12.1 AS builder
 ADD . /workspace
 WORKDIR /workspace
-RUN go build -o /runnable *.go
+RUN go build -o /runnable /workspace/frontend/*.go
 
 
-FROM debian:9
+FROM debian:sid
 
 RUN apt-get update && apt-get install -y \
     apt-transport-https \
+    golang-1.12 \
     vim \
     curl \
     gnupg

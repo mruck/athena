@@ -37,11 +37,11 @@ fuzzer-client:
 	docker build -f dockerfiles/client.dockerfile -t gcr.io/athena-fuzzer/athena:$(GIT_SHA) .
 	docker push gcr.io/athena-fuzzer/athena:$(GIT_SHA)
 
-frontend_img:
-	docker build -t gcr.io/athena-fuzzer/frontend:$(GIT_SHA) frontend
+frontend-img:
+	docker build -f dockerfiles/frontend.docker -t gcr.io/athena-fuzzer/frontend:$(GIT_SHA) .
 	docker push gcr.io/athena-fuzzer/frontend:$(GIT_SHA)
 
-frontend_deploy: frontend_img fuzzer-client
+frontend_deploy: frontend-img fuzzer-client
 	jq '.spec.template.spec.containers[0].image = "gcr.io/athena-fuzzer/frontend:'$(GIT_SHA)'"' frontend/k8s/frontend.daemonset.template.json | jq '.spec.template.spec.containers[0].env[0].value = "gcr.io/athena-fuzzer/athena:'$(GIT_SHA)'"' > /tmp/frontend.daemonset.json
 	kubectl apply -f /tmp/frontend.daemonset.json
 
