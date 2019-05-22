@@ -1,4 +1,4 @@
-package server
+package exception
 
 // To run this test you need mongo up and running:
 // docker run -p 27017:27017 mongo

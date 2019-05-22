@@ -5,15 +5,16 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/mruck/athena/lib/exception"
 	"gopkg.in/mgo.v2"
 )
 
 type Server struct {
-	Exceptions *ExceptionsManager
+	Exceptions *exception.ExceptionsManager
 }
 
 func NewServer(db *mgo.Database) (*Server, error) {
-	exceptions := NewExceptionsManager(db)
+	exceptions := exception.NewExceptionsManager(db)
 	return &Server{Exceptions: exceptions}, nil
 }
 

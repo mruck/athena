@@ -1,4 +1,4 @@
-package server
+package exception
 
 import (
 	"gopkg.in/mgo.v2"
