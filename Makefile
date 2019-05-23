@@ -7,6 +7,10 @@ MITM_TARGET ?= 3000
 
 rails:
 	GIT_SHA=$(GIT_SHA) $(MAKE) -C ../rails-fork rails
+	# Bump the sanity template rails image
+	jq '.spec.initContainers[0].image = "gcr.io/athena-fuzzer/rails:'$(GIT_SHA)'"' pods/sanity_template.json > /tmp/$(GIT_SHA) && mv /tmp/$(GIT_SHA) pods/sanity_template.json
+	# Bump the discourse template rails image
+	jq '.spec.template.spec.initContainers[0].image = "gcr.io/athena-fuzzer/rails:'$(GIT_SHA)'"' pods/discourse.deployment.json > /tmp/$(GIT_SHA) && mv /tmp/$(GIT_SHA) pods/discourse.deployment.json
 
 # Bump images in debug deployment
 discourse-deployment: fuzzer-client
