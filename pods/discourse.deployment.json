@@ -28,7 +28,10 @@
             "name": "rails-fork",
             "image": "gcr.io/athena-fuzzer/rails:c9b82f8534c88a9b364e",
             "resources": {
-              "requests": { "cpu": "0m", "memory": "100Mi" }
+              "requests": {
+                "cpu": "0m",
+                "memory": "100Mi"
+              }
             },
             "volumeMounts": [
               {
@@ -49,7 +52,10 @@
               }
             ],
             "resources": {
-              "requests": { "cpu": "0m", "memory": "100Mi" }
+              "requests": {
+                "cpu": "0m",
+                "memory": "100Mi"
+              }
             }
           },
           {
@@ -85,7 +91,10 @@
               }
             ],
             "resources": {
-              "requests": { "cpu": "0m", "memory": "100Mi" }
+              "requests": {
+                "cpu": "0m",
+                "memory": "100Mi"
+              }
             },
             "volumeMounts": [
               {
@@ -143,7 +152,10 @@
               }
             ],
             "resources": {
-              "requests": { "cpu": "0m", "memory": "100Mi" }
+              "requests": {
+                "cpu": "0m",
+                "memory": "100Mi"
+              }
             },
             "volumeMounts": [
               {
