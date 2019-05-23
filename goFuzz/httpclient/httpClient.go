@@ -52,19 +52,20 @@ func (cli *Client) HealthCheck() (bool, error) {
 	url := fmt.Sprintf("%s%s", cli.URL, cli.HealthcheckPath)
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return false, errors.Wrap(err, "")
+		return false, errors.WithStack(err)
 	}
 
 	for i := 0; i < maxAttempts; i++ {
 		fmt.Printf("Polling %v\n", url)
 		resp, err := cli.Do(request)
-		if err != nil {
-			return false, errors.Wrap(err, "")
+		// We errored out on our last attempt
+		if err != nil && i == maxAttempts-1 {
+			return false, err
 		}
 		// Target app is up
 		// TODO: the 404 status code is wonky.  Change rails fork endpoint to
 		// return 200
-		if resp.StatusCode == 404 {
+		if err == nil && resp.StatusCode == 404 {
 			return true, nil
 		}
 		time.Sleep(time.Second * interval)
@@ -91,9 +92,11 @@ func (cli *Client) Do(req *http.Request) (*http.Response, error) {
 	req.Host = cli.URL.Host
 	req.URL.Host = cli.URL.Host
 	resp, err := cli.Client.Do(req)
-	cli.updateStatusCodes(resp.StatusCode)
-
-	return resp, err
+	// Only update status codes if we got a response
+	if err == nil {
+		cli.updateStatusCodes(resp.StatusCode)
+	}
+	return resp, errors.WithStack(err)
 }
 
 // DoAll calls `.Do` on all requests and returns the first non-nil error
