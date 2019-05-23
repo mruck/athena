@@ -18,13 +18,19 @@ type Exception struct {
 
 type ExceptionsManager struct {
 	collection *mgo.Collection
+	FilePath   string
 }
 
-const exceptionsFile = "/tmp/results/exceptions.json"
+const Path = "/tmp/results/exceptions.json"
 
-func NewExceptionsManager(db *mgo.Database) *ExceptionsManager {
+// NewExceptionsManager takes a connection to a mongo db and connects to the
+// exceptions collection.  It also takes a path to a file to read contents from to
+// write to the db.  If the path is the empty string, nothing shall be written to the db,
+// and it will only be read from.
+func NewExceptionsManager(db *mgo.Database, path string) *ExceptionsManager {
 	return &ExceptionsManager{
 		collection: db.C("exceptions"),
+		FilePath:   path,
 	}
 }
 
@@ -59,7 +65,7 @@ func (exception *Exception) benign() bool {
 
 // Update exceptions database from exceptions written by rails
 func (manager *ExceptionsManager) Update(path string, method string, targetid string) error {
-	exception, err := ReadExceptionsFile()
+	exception, err := manager.ReadExceptionsFile()
 	if err != nil {
 		return err
 	}
@@ -77,9 +83,13 @@ func (manager *ExceptionsManager) Update(path string, method string, targetid st
 }
 
 // ReadExceptionsFile reads the file written by rails logging exceptions
-func ReadExceptionsFile() (*Exception, error) {
+func (manager *ExceptionsManager) ReadExceptionsFile() (*Exception, error) {
+	// There's no file to read from
+	if manager.FilePath == "" {
+		return nil, nil
+	}
 	// Check if any exceptions were written
-	empty, err := util.FileIsEmpty(exceptionsFile)
+	empty, err := util.FileIsEmpty(manager.FilePath)
 	if err != nil {
 		return nil, err
 	}
@@ -87,6 +97,6 @@ func ReadExceptionsFile() (*Exception, error) {
 		return nil, nil
 	}
 	exception := &Exception{}
-	err = util.UnmarshalFile(exceptionsFile, exception)
+	err = util.UnmarshalFile(manager.FilePath, exception)
 	return exception, err
 }

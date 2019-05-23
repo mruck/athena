@@ -2,6 +2,8 @@ package coverage
 
 import "github.com/mruck/athena/lib/util"
 
+const Path = "/tmp/results/coverage.json"
+
 // Coverage contains metadata abouta  coverage object
 type Coverage struct {
 	// Total amount of coverage across all requests as a percentage

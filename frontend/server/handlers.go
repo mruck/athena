@@ -14,7 +14,7 @@ type Server struct {
 }
 
 func NewServer(db *mgo.Database) (*Server, error) {
-	exceptions := exception.NewExceptionsManager(db)
+	exceptions := exception.NewExceptionsManager(db, "")
 	return &Server{Exceptions: exceptions}, nil
 }
 

@@ -26,13 +26,11 @@ type Mutator struct {
 	TargetID          string
 }
 
-const coveragePath = "/tmp/results/coverage.json"
-
 // New creates a new mutator
 func New(routes []*route.Route, corpus []*route.Route) *Mutator {
 	// Connect to mongodb to log exceptions
 	db := database.MustGetDatabase(database.MongoDbPort, "athena")
-	manager := exception.NewExceptionsManager(db)
+	manager := exception.NewExceptionsManager(db, exception.Path)
 
 	// Make the order deterministic for debugging.  Order routes alphabetically
 	route.Order(routes)
@@ -41,7 +39,7 @@ func New(routes []*route.Route, corpus []*route.Route) *Mutator {
 	return &Mutator{
 		Routes:            routes,
 		routeIndex:        -1,
-		Coverage:          coverage.New(coveragePath),
+		Coverage:          coverage.New(coverage.Path),
 		ExceptionsManager: manager,
 		TargetID:          util.MustGetTargetID(),
 	}
