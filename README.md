@@ -31,7 +31,7 @@ Currently db instrumentation is done by hooking the rails fork.  Instead, we
 should either 1) stick a shim between the app and the db or 2) tail postgres
 queries.  These solutions are framework agnostic.  The latter is easier, so
 eventually we should do that.  Specifically it requires the config to look like
-`/athena/postgres/postgresql.conf` and that should be copies to
+`/athena/postgres/postgresql.conf` and that should be copied to
 `/var/lib/postgresql/data/postgresql.conf` in the postgres container. I wanted to create
 a custom image with this set up, but that value can't be set at container start up,
 so I need to do something more complicated which is why I'm deferring it.  If I
