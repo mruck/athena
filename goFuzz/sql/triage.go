@@ -16,5 +16,4 @@ func TriageQueries(params []string) {
 	// Check if params showed up
 	// Check for sql injections
 	// Check for hints, errors, etc from postgres
-
 }

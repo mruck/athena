@@ -5,7 +5,7 @@ type Parser struct {
 	scriptPath string
 }
 
-// AnalyzeSQL searcjes for parameters in the given queries
+// AnalyzeSQL searches for parameters in the given queries
 func (parser *Parser) AnalyzeSQL(params []string, queries []string) ([]ParamQuery, error) {
 	return nil, nil
 }
