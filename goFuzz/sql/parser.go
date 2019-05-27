@@ -2,9 +2,8 @@ package sql
 
 import (
 	"encoding/base64"
-	"fmt"
-	"log"
 
+	"github.com/mruck/athena/lib/log"
 	"github.com/mruck/athena/lib/util"
 	"github.com/pkg/errors"
 	"github.com/xwb1989/sqlparser"
@@ -41,6 +40,29 @@ type ParamQuery struct {
 	Method string
 }
 
+func ParseNode(node sqlparser.SQLNode) {
+	log.Infof("Type: %T\n", node)
+	switch stmt := node.(type) {
+	case *sqlparser.ComparisonExpr:
+		// Todo: store the operator?
+		// Only hand = for now to map to table/col, add other stuff
+		// later
+		ParseNode(stmt.Left)
+		ParseNode(stmt.Right)
+	case *sqlparser.ColName:
+		log.Infof("col name: %v", stmt.Name)
+	case *sqlparser.SQLVal:
+		log.Infof("col val: %v", string(stmt.Val))
+	}
+
+}
+func ParseWhere(where *sqlparser.Where) {
+	if where.Type != "where" {
+		log.Fatalf("where.Type == %v\n", where.Type)
+	}
+	ParseNode(where.Expr)
+}
+
 func ParseQuery(query string) error {
 	stmt, err := sqlparser.Parse(query)
 	if err != nil {
@@ -49,18 +71,19 @@ func ParseQuery(query string) error {
 
 	switch stmt := stmt.(type) {
 	case *sqlparser.Select:
-		util.PrettyPrintStruct(stmt.Where)
+		util.PrettyPrintStruct(stmt)
+		ParseWhere(stmt.Where)
+		// If we matched a param, parse the FROM clause to identify table name
 	case *sqlparser.Insert:
 		// Cast to a list of values
 		values := stmt.Rows.(sqlparser.Values)
-		log.Printf("type: %T\n", values[0])
+		log.Infof("type: %T\n", values[0])
 		util.PrettyPrintStruct(values[0])
-		log.Printf("type: %T\n", values[0][0])
+		log.Infof("type: %T\n", values[0][0])
 		util.PrettyPrintStruct(values[0][0])
 		sqlVal := values[0][0].(*sqlparser.SQLVal)
 		data, _ := base64.StdEncoding.DecodeString(string(sqlVal.Val))
-		fmt.Printf("Decoding %v as %v\n", string(sqlVal.Val), string(data))
-
+		log.Infof("Decoding %v as %v\n", string(sqlVal.Val), string(data))
 	case *sqlparser.Update:
 		util.PrettyPrintStruct(stmt)
 	case *sqlparser.Delete:

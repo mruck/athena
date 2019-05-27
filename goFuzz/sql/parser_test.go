@@ -25,7 +25,7 @@ func TestLib(t *testing.T) {
 		sqltypes.SQLDecodeMap[i] = byte(i)
 	}
 
-	//sql := "SELECT * FROM mytable WHERE a = 'abc';"
-	sql := "insert into cities (name, temp) values ('san jose', 67);"
+	sql := "SELECT * FROM mytable WHERE city = 'sunnyvale';"
+	//	sql := "insert into cities (name, temp) values ('san jose', 67);"
 	_ = ParseQuery(sql)
 }
