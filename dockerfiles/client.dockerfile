@@ -14,8 +14,10 @@ RUN apt-get update && apt-get install -y bpython3 \
 
 RUN mkdir /athena
 WORKDIR /athena
+# Add deps so they get cached
+ADD go.mod /athena
+ADD go.sum /athena
+RUN go get
 ADD . /athena
 WORKDIR /athena/goFuzz
-# Build it so it pulls the dependencies
-RUN go build -o athena *.go
-CMD ./athena
+CMD go run main.go
