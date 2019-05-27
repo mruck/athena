@@ -20,6 +20,16 @@ const (
 	Query         = 19
 )
 
+//func toQueryMeta(records [][]string) []QueryMeta {
+//	metas := make([]QueryMeta, len(records))
+//	for i, record := range records {
+//		metas[i].LogTime = record[LogTime]
+//		metas[i].ErrorSeverity = record[ErrorSeverity]
+//		metas[i].ErrorSeverity = record[ErrorSeverity]
+//	}
+//	return metas
+//}
+
 // QueryMeta contains meta data about each query logged by postgres
 type QueryMeta struct {
 	LogTime       string
@@ -35,7 +45,7 @@ type QueryMeta struct {
 
 type QueryMetas []QueryMeta
 
-// PostgresLogRead is responsible for reading the postgres log file
+// PostgresLogReader is responsible for reading the postgres log file
 // at `path` starting from `lastTimeStamp`
 type PostgresLogReader struct {
 	lastTimeStamp string
@@ -48,32 +58,40 @@ func New(path string) *PostgresLogReader {
 	return &PostgresLogReader{path: path}
 }
 
+// Next returns the most recent queries run by postgres
+func (reader *PostgresLogReader) Next() ([][]string, error) {
+	// Read the postgres log
+	records, err := util.LoadCSVFile(reader.path)
+	if err != nil {
+		return nil, err
+	}
+
+	// Truncate so only read the most recent records
+	truncated, err := truncate(reader.lastTimeStamp, records)
+	if err != nil {
+		return nil, err
+	}
+
+	// We read something new, update latest timestamp
+	if truncated != nil {
+		last := len(truncated) - 1
+		reader.lastTimeStamp = records[last][LogTime]
+	}
+
+	return truncated, nil
+}
+
 // Truncate returns the list of records appended since the
 // most recent time stamp
-func truncate(timestamp string, records [][]string) [][]string {
+func truncate(timestamp string, records [][]string) ([][]string, error) {
 	// This is the first time we've read the log file
 	if timestamp == "" {
-		return records
+		return records, nil
 	}
 	for i, record := range records {
 		if record[LogTime] == timestamp {
-			return records[i:]
+			return records[i+1:], nil
 		}
 	}
-	return nil
-}
-
-func (reader *PostgresLogReader) Next() ([]QueryMeta, error) {
-	// Read the postgres log
-	records := util.LoadCSVFile(reader.path)
-
-	// Truncate so only read the most recent records
-	truncated := truncate(reader.lastTimeStamp, records)
-
-	if truncated == nil {
-		return nil, fmt.Errorf("unable to find timestamp in query list")
-	}
-	// Convert each record to query meta object
-
-	return nil, nil
+	return nil, fmt.Errorf("unable to find timestamp %v in query list", timestamp)
 }
