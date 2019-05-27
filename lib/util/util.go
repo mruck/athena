@@ -1,8 +1,10 @@
 package util
 
 import (
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 
@@ -113,4 +115,38 @@ func MarshalToFile(data interface{}, dst string) error {
 // TODO: figure out how to support arrays
 func Stringify(data interface{}) string {
 	return fmt.Sprintf("%v", data)
+}
+
+// LoadCSVFile loads a cvs file at `path`
+func LoadCSVFile(path string) ([][]string, error) {
+	fp, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer fp.Close()
+	reader := csv.NewReader(fp)
+	records, err := reader.ReadAll()
+	return records, errors.WithStack(err)
+}
+
+// CopyFile takes in the path to the dst and src. The dst is truncated.
+func CopyFile(dst string, src string) error {
+	in, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+
+	out, err := os.OpenFile(dst, os.O_RDWR, 0755)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+
+	_, err = io.Copy(out, in)
+	if err != nil {
+		return err
+	}
+	return out.Close()
+
 }

@@ -2,34 +2,12 @@ package coverage
 
 import (
 	"fmt"
-	"io"
 	"io/ioutil"
-	"os"
 	"testing"
 
+	"github.com/mruck/athena/lib/util"
 	"github.com/stretchr/testify/require"
 )
-
-func copyFile(dst string, src string) error {
-	in, err := os.Open(src)
-	if err != nil {
-		return err
-	}
-	defer in.Close()
-
-	out, err := os.OpenFile(dst, os.O_RDWR, 0755)
-	if err != nil {
-		return err
-	}
-	defer in.Close()
-
-	_, err = io.Copy(out, in)
-	if err != nil {
-		return err
-	}
-	return out.Close()
-
-}
 
 func TestReadCoverage1(t *testing.T) {
 	readCoverageInner(t, "coverage1.json", "coverage2.json")
@@ -46,7 +24,7 @@ func readCoverageInner(t *testing.T, file1 string, file2 string) {
 	//defer os.Remove(tmp.Name())
 
 	coverage := New(tmp.Name())
-	err = copyFile(tmp.Name(), file1)
+	err = util.CopyFile(tmp.Name(), file1)
 	require.NoError(t, err)
 
 	// Read the coverage
@@ -62,7 +40,7 @@ func readCoverageInner(t *testing.T, file1 string, file2 string) {
 	fmt.Printf("Cumulative percentage: %v\n", coverage.Cumulative)
 
 	// Update coverage
-	err = copyFile(tmp.Name(), file2)
+	err = util.CopyFile(tmp.Name(), file2)
 	require.NoError(t, err)
 
 	// Read coverage again

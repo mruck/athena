@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y bpython3 \
     watch \
     vim
 
+RUN pip3 install moz-sql-parser
 RUN mkdir /athena
 WORKDIR /athena
 ADD . /athena
