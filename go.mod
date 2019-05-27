@@ -3,7 +3,7 @@ module github.com/mruck/athena
 go 1.12
 
 require (
-	github.com/apourchet/hermes v0.0.0-20180922181803-3e442b13f930
+	github.com/apourchet/hermes v0.0.0-20180922181803-3e442b13f930 // indirect
 	github.com/cznic/mathutil v0.0.0-20181122101859-297441e03548 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/gin-gonic/gin v1.4.0 // indirect
@@ -15,7 +15,7 @@ require (
 	github.com/juju/errors v0.0.0-20190207033735-e65537c515d7 // indirect
 	github.com/opentracing/opentracing-go v1.1.0 // indirect
 	github.com/pingcap/goleveldb v0.0.0-20171020122428-b9ff6c35079e // indirect
-	github.com/pingcap/tidb v2.0.11+incompatible
+	github.com/pingcap/tidb v2.0.11+incompatible // indirect
 	github.com/pingcap/tipb v0.0.0-20190428032612-535e1abaa330 // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/prometheus/client_golang v0.9.3 // indirect
@@ -26,6 +26,7 @@ require (
 	github.com/stretchr/testify v1.3.0
 	github.com/uber/jaeger-client-go v2.16.0+incompatible // indirect
 	github.com/uber/jaeger-lib v2.0.0+incompatible // indirect
+	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	go.uber.org/atomic v1.4.0 // indirect
 	go.uber.org/multierr v1.1.0 // indirect
 	go.uber.org/zap v1.10.0
