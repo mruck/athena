@@ -86,7 +86,7 @@ func parseQuery(query string, param string) (*TaintedQuery, error) {
 
 	switch stmt := stmt.(type) {
 	case *sqlparser.Select:
-		//util.PrettyPrintStruct(stmt)
+		util.PrettyPrintStruct(stmt)
 		return parseWhere(stmt.Where, param)
 		// If we matched a param, parse the FROM clause to identify table name
 		// Add method
