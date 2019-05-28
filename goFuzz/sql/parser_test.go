@@ -3,6 +3,8 @@ package sql
 import (
 	"testing"
 
+	"github.com/mruck/athena/lib/util"
+	"github.com/stretchr/testify/require"
 	"github.com/xwb1989/sqlparser/dependency/sqltypes"
 )
 
@@ -27,5 +29,9 @@ func TestLib(t *testing.T) {
 
 	sql := "SELECT * FROM mytable WHERE city = 'sunnyvale';"
 	//	sql := "insert into cities (name, temp) values ('san jose', 67);"
-	_ = ParseQuery(sql)
+	// AND statement
+	// OR statement
+	match, err := parseQuery(sql, "sunnyvale")
+	require.NoError(t, err)
+	util.PrettyPrintStruct(match)
 }

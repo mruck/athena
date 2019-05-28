@@ -2,6 +2,7 @@ package sql
 
 import (
 	"encoding/base64"
+	"strings"
 
 	"github.com/mruck/athena/lib/log"
 	"github.com/mruck/athena/lib/util"
@@ -17,20 +18,32 @@ const (
 	Insert
 )
 
-//// Analyze searches for parameters in the given queries
-//func Analyze(params []string, queries []string) ([]ParamQuery, error) {
-//	// params or queries are empty, return
-//	if len(params) == 0 || len(queries) == 0 {
-//		return nil, nil
-//	}
-//	for _, query := range queries {
-//		AnalyzeQuery(params, query)
-//	}
-//	return nil, nil
-//}
+// Analyze searches for parameters in the given queries
+func Analyze(params []string, queries []string) ([]TaintedQuery, error) {
+	// params or queries are empty, return
+	if len(params) == 0 || len(queries) == 0 {
+		return nil, nil
+	}
+	matches := []TaintedQuery{}
+	for _, query := range queries {
+		// Search this query for each param
+		for _, param := range params {
+			// Do a simple string check before searching
+			if !strings.Contains(query, param) {
+				continue
+			}
+			match, err := parseQuery(param, query)
+			util.Must(err == nil, "%+v\n", err)
+			if match != nil {
+				matches = append(matches, *match)
+			}
+		}
+	}
+	return matches, nil
+}
 
-// ParamQuery data matching a parameter to a query
-type ParamQuery struct {
+// TaintedQuery is a sql query tainted with user controlled data
+type TaintedQuery struct {
 	Param string
 	// Raw query to run to get comparable results
 	Query  string
@@ -40,40 +53,43 @@ type ParamQuery struct {
 	Method string
 }
 
-func ParseNode(node sqlparser.SQLNode) {
-	log.Infof("Type: %T\n", node)
+func parseNode(node sqlparser.SQLNode, param string) (*TaintedQuery, error) {
+	//log.Infof("Type: %T\n", node)
 	switch stmt := node.(type) {
+	// Leaf
 	case *sqlparser.ComparisonExpr:
-		// Todo: store the operator?
-		// Only hand = for now to map to table/col, add other stuff
-		// later
-		ParseNode(stmt.Left)
-		ParseNode(stmt.Right)
-	case *sqlparser.ColName:
-		log.Infof("col name: %v", stmt.Name)
-	case *sqlparser.SQLVal:
-		log.Infof("col val: %v", string(stmt.Val))
+		// Check val for a match
+		sqlval := stmt.Right.(*sqlparser.SQLVal)
+		if string(sqlval.Val) != param {
+			return nil, nil
+		}
+		// Found it
+		col := stmt.Left.(*sqlparser.ColName)
+		match := &TaintedQuery{Param: param, Column: col.Name.String()}
+		return match, nil
 	}
-
+	return nil, nil
 }
-func ParseWhere(where *sqlparser.Where) {
+
+func parseWhere(where *sqlparser.Where, param string) (*TaintedQuery, error) {
 	if where.Type != "where" {
 		log.Fatalf("where.Type == %v\n", where.Type)
 	}
-	ParseNode(where.Expr)
+	return parseNode(where.Expr, param)
 }
 
-func ParseQuery(query string) error {
+func parseQuery(query string, param string) (*TaintedQuery, error) {
 	stmt, err := sqlparser.Parse(query)
 	if err != nil {
-		return errors.WithStack(err)
+		return nil, errors.WithStack(err)
 	}
 
 	switch stmt := stmt.(type) {
 	case *sqlparser.Select:
-		util.PrettyPrintStruct(stmt)
-		ParseWhere(stmt.Where)
+		//util.PrettyPrintStruct(stmt)
+		return parseWhere(stmt.Where, param)
 		// If we matched a param, parse the FROM clause to identify table name
+		// Add method
 	case *sqlparser.Insert:
 		// Cast to a list of values
 		values := stmt.Rows.(sqlparser.Values)
@@ -91,5 +107,5 @@ func ParseQuery(query string) error {
 	default:
 		log.Panicf("Unhandled statement type: %T\n", stmt)
 	}
-	return nil
+	return nil, nil
 }
