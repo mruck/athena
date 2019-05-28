@@ -2,6 +2,7 @@ package sql
 
 import (
 	"encoding/base64"
+	"fmt"
 	"strings"
 
 	"github.com/mruck/athena/lib/log"
@@ -10,13 +11,26 @@ import (
 	"github.com/xwb1989/sqlparser"
 )
 
-// Sql operations
+// CRUD action on db
+type CRUD int
+
+// CRUD Sql operations
 const (
-	Update = iota
+	Update CRUD = iota
 	Select
 	Delete
 	Insert
 )
+
+// TaintedQuery is a sql query tainted with user controlled data
+type TaintedQuery struct {
+	Param string
+	// Raw query to run to get comparable results
+	Query  string
+	Table  string
+	Column string
+	CRUD   CRUD
+}
 
 // Analyze searches for parameters in the given queries
 func Analyze(params []string, queries []string) ([]TaintedQuery, error) {
@@ -42,17 +56,6 @@ func Analyze(params []string, queries []string) ([]TaintedQuery, error) {
 	return matches, nil
 }
 
-// TaintedQuery is a sql query tainted with user controlled data
-type TaintedQuery struct {
-	Param string
-	// Raw query to run to get comparable results
-	Query  string
-	Table  string
-	Column string
-	// CRUD action
-	Method string
-}
-
 func parseNode(node sqlparser.SQLNode, param string) (*TaintedQuery, error) {
 	//log.Infof("Type: %T\n", node)
 	switch stmt := node.(type) {
@@ -73,11 +76,45 @@ func parseNode(node sqlparser.SQLNode, param string) (*TaintedQuery, error) {
 
 func parseWhere(where *sqlparser.Where, param string) (*TaintedQuery, error) {
 	if where.Type != "where" {
-		log.Fatalf("where.Type == %v\n", where.Type)
+		log.Panicf("where.Type == %v\n", where.Type)
 	}
 	return parseNode(where.Expr, param)
 }
 
+func parseTableName(exprs sqlparser.TableExprs) (string, error) {
+	if len(exprs) != 1 {
+		log.Panic("there was more than 1 table expresion\n")
+		return "", fmt.Errorf("there was more than 1 table expression")
+	}
+	aliasedTableExpr := exprs[0].(*sqlparser.AliasedTableExpr)
+	tableName := aliasedTableExpr.Expr.(sqlparser.TableName)
+	return tableName.Name.String(), nil
+	//log.Infof("Type == %T\n", aliasedTableExpr.Expr)
+}
+
+func parseSelect(stmt *sqlparser.Select, param string) (*TaintedQuery, error) {
+	match, err := parseWhere(stmt.Where, param)
+	if err != nil {
+		return nil, err
+	}
+	if match == nil {
+		// We should only call parseQuery when we know the param is present in the string
+		log.Panic("Match is nil!\n")
+	}
+
+	match.CRUD = Select
+
+	// Parse table name
+	name, err := parseTableName(stmt.From)
+	if err != nil {
+		return nil, err
+	}
+	match.Table = name
+
+	return match, nil
+}
+
+// How to handle generic values like `1`, etc?
 func parseQuery(query string, param string) (*TaintedQuery, error) {
 	stmt, err := sqlparser.Parse(query)
 	if err != nil {
@@ -86,10 +123,7 @@ func parseQuery(query string, param string) (*TaintedQuery, error) {
 
 	switch stmt := stmt.(type) {
 	case *sqlparser.Select:
-		util.PrettyPrintStruct(stmt)
-		return parseWhere(stmt.Where, param)
-		// If we matched a param, parse the FROM clause to identify table name
-		// Add method
+		return parseSelect(stmt, param)
 	case *sqlparser.Insert:
 		// Cast to a list of values
 		values := stmt.Rows.(sqlparser.Values)
