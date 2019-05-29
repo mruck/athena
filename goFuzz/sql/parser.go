@@ -137,9 +137,22 @@ func parseRows(insertRows sqlparser.InsertRows, param string) (int, error) {
 			return index, nil
 		}
 	}
-	err := fmt.Errorf("failed to find param in list of values")
+	err := fmt.Errorf("failed to find param in list of inserted values")
 	log.Panic(err)
 	return -1, errors.WithStack(err)
+}
+
+// Iterate through columns and return the column name at the given index.  This allows
+// us to map a value inserted to a column
+func iterateColumns(index int, columns sqlparser.Columns) (string, error) {
+	for i, column := range columns {
+		if i == index {
+			return column.String(), nil
+		}
+	}
+	err := fmt.Errorf("failed to find index %v in columns", index)
+	log.Panic(err)
+	return "", errors.WithStack(err)
 }
 
 func parseInsert(stmt *sqlparser.Insert, param string) (*TaintedQuery, error) {
@@ -147,10 +160,19 @@ func parseInsert(stmt *sqlparser.Insert, param string) (*TaintedQuery, error) {
 	// Items are inserted as list.  Figure out the index of our parameter
 	//values := stmt.Rows.(sqlparser.Values)
 	index, err := parseRows(stmt.Rows, param)
-	log.Infof("Index: %v", index)
 	if err != nil {
 		return nil, err
 	}
+	columnName, err := iterateColumns(index, stmt.Columns)
+	if err != nil {
+		return nil, err
+	}
+	tainted := &TaintedQuery{
+		Column: columnName,
+		Param:  param,
+	}
+	return tainted, nil
+
 	// Map that index to a list of columns
 	// Identify the table
 
@@ -161,7 +183,6 @@ func parseInsert(stmt *sqlparser.Insert, param string) (*TaintedQuery, error) {
 	//sqlVal := values[0][0].(*sqlparser.SQLVal)
 	//data, _ := base64.StdEncoding.DecodeString(string(sqlVal.Val))
 	//log.Infof("Decoding %v as %v\n", string(sqlVal.Val), string(data))
-	return nil, nil
 }
 
 // How to handle generic values like `1`, etc?
