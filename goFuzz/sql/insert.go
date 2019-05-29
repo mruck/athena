@@ -32,20 +32,24 @@ func parseRows(insertRows sqlparser.InsertRows, param string) (int, error) {
 		}
 	}
 	err := fmt.Errorf("failed to find param in list of inserted values")
-	log.Panic(err)
+	log.Fatal(err)
 	return -1, errors.WithStack(err)
 }
 
 // Iterate through columns and return the column name at the given index.  This allows
 // us to map a value inserted to a column
 func iterateColumns(index int, columns sqlparser.Columns) (string, error) {
+	if len(columns) == 0 {
+		err := "unhandled: insert with no columns provided"
+		log.Fatal(err)
+	}
 	for i, column := range columns {
 		if i == index {
 			return column.String(), nil
 		}
 	}
 	err := fmt.Errorf("failed to find index %v in columns", index)
-	log.Panic(err)
+	log.Fatal(err)
 	return "", errors.WithStack(err)
 }
 
@@ -54,6 +58,8 @@ func parseInsert(stmt *sqlparser.Insert, param string) (*TaintedQuery, error) {
 	if err != nil {
 		return nil, err
 	}
+	// TODO: columns will not always be present! If not then I need to connect
+	// to db to see what cols are then cache
 	column, err := iterateColumns(index, stmt.Columns)
 	if err != nil {
 		return nil, err

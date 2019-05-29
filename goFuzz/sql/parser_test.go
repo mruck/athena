@@ -36,5 +36,15 @@ func TestInsertOneRow(t *testing.T) {
 	require.Equal(t, "cities", match.Table)
 }
 
+// Test insertion with no columns specified (see if we fail gracefully)
+func TestInsertNoCol(t *testing.T) {
+	return
+	sql := "insert into cities values ('san jose', 67);"
+	match, err := parseQuery(sql, "san jose")
+	require.NoError(t, err)
+	require.Equal(t, "name", match.Column)
+	require.Equal(t, "cities", match.Table)
+}
+
 func TestInsertManyRows(t *testing.T) {
 }
