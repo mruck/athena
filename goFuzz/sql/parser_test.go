@@ -29,13 +29,13 @@ func TestSelect(t *testing.T) {
 
 func TestInsertOneRow(t *testing.T) {
 	sql := "insert into cities (name, temp) values ('san jose', 67);"
-	// TODO: test searching for non stringified params? or should i stringify them before to make easier?
 	match, err := parseQuery(sql, "san jose")
 	require.NoError(t, err)
 	require.Equal(t, "name", match.Column)
 	require.Equal(t, "cities", match.Table)
 }
 
+// TODO:
 // Test insertion with no columns specified (see if we fail gracefully)
 func TestInsertNoCol(t *testing.T) {
 	return
@@ -46,5 +46,18 @@ func TestInsertNoCol(t *testing.T) {
 	require.Equal(t, "cities", match.Table)
 }
 
+// TODO: test searching for non stringified params? or should i stringify
+// them before to make easier? i.e. with values ('san jose', 67) if i'm looking
+// for 67 should param be 67 or '67'. either stringify both sql insertion
+// vals and param or make sure param is native type
+func TestTypes(t *testing.T) {
+}
+
 func TestInsertManyRows(t *testing.T) {
+	sql := "insert into cities (name, temp) values ('san jose', 67), ('sunnyvale', 60), " +
+		"('palo alto', 58);"
+	match, err := parseQuery(sql, "sunnyvale")
+	require.NoError(t, err)
+	require.Equal(t, "name", match.Column)
+	require.Equal(t, "cities", match.Table)
 }
