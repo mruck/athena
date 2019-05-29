@@ -156,7 +156,7 @@ func iterateColumns(index int, columns sqlparser.Columns) (string, error) {
 }
 
 func parseInsert(stmt *sqlparser.Insert, param string) (*TaintedQuery, error) {
-	util.PrettyPrintStruct(stmt)
+	//util.PrettyPrintStruct(stmt)
 	// Items are inserted as list.  Figure out the index of our parameter
 	//values := stmt.Rows.(sqlparser.Values)
 	index, err := parseRows(stmt.Rows, param)
