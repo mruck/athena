@@ -62,8 +62,33 @@ func TestInsertManyRows(t *testing.T) {
 	require.Equal(t, "cities", match.Table)
 }
 
+// Test updating a single column
 func TestUpdate(t *testing.T) {
 	sql := "update cities set temp = 30 where name = 'sunnyvale'"
+	match, _ := parseQuery(sql, "sunnyvale")
+	require.Equal(t, "name", match.Column)
+	require.Equal(t, "cities", match.Table)
+}
+
+// Test updating multiple columns
+func TestUpdateMultipleCol(t *testing.T) {
+	sql := "update cities set temp = 30, state = 'california'  where name = 'sunnyvale'"
+	match, _ := parseQuery(sql, "sunnyvale")
+	require.Equal(t, "name", match.Column)
+	require.Equal(t, "cities", match.Table)
+}
+
+// Test a greater than operator to make sure we handle, even if it's not exactly
+// how we want to handle
+func TestGreaterThan(t *testing.T) {
+	sql := "update cities set temp = 30, state = 'california'  where name > 'sunnyvale'"
+	match, _ := parseQuery(sql, "sunnyvale")
+	require.Equal(t, "name", match.Column)
+	require.Equal(t, "cities", match.Table)
+}
+
+func TestDelete(t *testing.T) {
+	sql := "delete from cities where name = 'sunnyvale'"
 	match, _ := parseQuery(sql, "sunnyvale")
 	require.Equal(t, "name", match.Column)
 	require.Equal(t, "cities", match.Table)

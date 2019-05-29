@@ -137,6 +137,27 @@ func parseUpdate(stmt *sqlparser.Update, param string) (*TaintedQuery, error) {
 	return match, nil
 }
 
+func parseDelete(stmt *sqlparser.Delete, param string) (*TaintedQuery, error) {
+	match, err := parseWhere(stmt.Where, param)
+	if err != nil {
+		return nil, err
+	}
+	if match == nil {
+		// We should only call parseQuery when we know the param is present in the string
+		log.Fatal("Match is nil!\n")
+	}
+	match.CRUD = Delete
+
+	// Parse table name
+	name, err := parseTableName(stmt.TableExprs)
+	if err != nil {
+		return nil, err
+	}
+	match.Table = name
+
+	return match, nil
+}
+
 // How to handle generic values like `1`, etc?
 func parseQuery(query string, param string) (*TaintedQuery, error) {
 	stmt, err := sqlparser.Parse(query)
@@ -150,10 +171,9 @@ func parseQuery(query string, param string) (*TaintedQuery, error) {
 	case *sqlparser.Insert:
 		return parseInsert(stmt, param)
 	case *sqlparser.Update:
-		//util.PrettyPrintStruct(stmt)
 		return parseUpdate(stmt, param)
 	case *sqlparser.Delete:
-		util.PrettyPrintStruct(stmt)
+		return parseDelete(stmt, param)
 	default:
 		log.Fatalf("Unhandled statement type: %T\n", stmt)
 	}
