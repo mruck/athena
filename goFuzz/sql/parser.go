@@ -147,7 +147,7 @@ func parseInsert(stmt *sqlparser.Insert, param string) (*TaintedQuery, error) {
 	// Items are inserted as list.  Figure out the index of our parameter
 	//values := stmt.Rows.(sqlparser.Values)
 	index, err := parseRows(stmt.Rows, param)
-	_ = index
+	log.Infof("Index: %v", index)
 	if err != nil {
 		return nil, err
 	}
