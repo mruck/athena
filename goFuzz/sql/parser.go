@@ -1,7 +1,6 @@
 package sql
 
 import (
-	"encoding/base64"
 	"fmt"
 	"strings"
 
@@ -57,7 +56,6 @@ func Analyze(params []string, queries []string) ([]TaintedQuery, error) {
 }
 
 func parseNode(node sqlparser.SQLNode, param string) (*TaintedQuery, error) {
-	//log.Infof("Type: %T\n", node)
 	switch stmt := node.(type) {
 	// Leaf
 	case *sqlparser.ComparisonExpr:
@@ -71,6 +69,8 @@ func parseNode(node sqlparser.SQLNode, param string) (*TaintedQuery, error) {
 		match := &TaintedQuery{Param: param, Column: col.Name.String()}
 		return match, nil
 	}
+	// Handle in
+	// Handle and/or
 	return nil, nil
 }
 
@@ -114,6 +114,56 @@ func parseSelect(stmt *sqlparser.Select, param string) (*TaintedQuery, error) {
 	return match, nil
 }
 
+// parseRow searches each val in a row for a parameter. If it's found, return
+// the index into the row
+func parseRow(exprs sqlparser.Exprs, param string) int {
+	for i, expr := range exprs {
+		sqlVal := expr.(*sqlparser.SQLVal)
+		if string(sqlVal.Val) == param {
+			return i
+		}
+	}
+	return -1
+}
+
+// This query inserts multiple rows, search each row for our param
+func parseRows(insertRows sqlparser.InsertRows, param string) (int, error) {
+	rows := insertRows.(sqlparser.Values)
+	for _, row := range rows {
+		row := sqlparser.Exprs(row)
+		index := parseRow(row, param)
+		// Found it
+		if index >= 0 {
+			return index, nil
+		}
+	}
+	err := fmt.Errorf("failed to find param in list of values")
+	log.Panic(err)
+	return -1, errors.WithStack(err)
+}
+
+func parseInsert(stmt *sqlparser.Insert, param string) (*TaintedQuery, error) {
+	util.PrettyPrintStruct(stmt)
+	// Items are inserted as list.  Figure out the index of our parameter
+	//values := stmt.Rows.(sqlparser.Values)
+	index, err := parseRows(stmt.Rows, param)
+	_ = index
+	if err != nil {
+		return nil, err
+	}
+	// Map that index to a list of columns
+	// Identify the table
+
+	//log.Infof("type: %T\n", values[0])
+	//util.PrettyPrintStruct(values[0])
+	//log.Infof("type: %T\n", values[0][0])
+	//util.PrettyPrintStruct(values[0][0])
+	//sqlVal := values[0][0].(*sqlparser.SQLVal)
+	//data, _ := base64.StdEncoding.DecodeString(string(sqlVal.Val))
+	//log.Infof("Decoding %v as %v\n", string(sqlVal.Val), string(data))
+	return nil, nil
+}
+
 // How to handle generic values like `1`, etc?
 func parseQuery(query string, param string) (*TaintedQuery, error) {
 	stmt, err := sqlparser.Parse(query)
@@ -125,15 +175,7 @@ func parseQuery(query string, param string) (*TaintedQuery, error) {
 	case *sqlparser.Select:
 		return parseSelect(stmt, param)
 	case *sqlparser.Insert:
-		// Cast to a list of values
-		values := stmt.Rows.(sqlparser.Values)
-		log.Infof("type: %T\n", values[0])
-		util.PrettyPrintStruct(values[0])
-		log.Infof("type: %T\n", values[0][0])
-		util.PrettyPrintStruct(values[0][0])
-		sqlVal := values[0][0].(*sqlparser.SQLVal)
-		data, _ := base64.StdEncoding.DecodeString(string(sqlVal.Val))
-		log.Infof("Decoding %v as %v\n", string(sqlVal.Val), string(data))
+		return parseInsert(stmt, param)
 	case *sqlparser.Update:
 		util.PrettyPrintStruct(stmt)
 	case *sqlparser.Delete:

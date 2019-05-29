@@ -150,3 +150,8 @@ func CopyFile(dst string, src string) error {
 	return out.Close()
 
 }
+
+// PrintType prints the type of data
+func PrintType(data interface{}) {
+	log.Infof("Type = %T", data)
+}
