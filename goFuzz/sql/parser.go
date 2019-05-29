@@ -114,66 +114,6 @@ func parseSelect(stmt *sqlparser.Select, param string) (*TaintedQuery, error) {
 	return match, nil
 }
 
-// parseRow searches each val in a row for a parameter. If it's found, return
-// the index into the row
-func parseRow(exprs sqlparser.Exprs, param string) int {
-	for i, expr := range exprs {
-		sqlVal := expr.(*sqlparser.SQLVal)
-		if string(sqlVal.Val) == param {
-			return i
-		}
-	}
-	return -1
-}
-
-// This query inserts multiple rows, search each row for our param
-func parseRows(insertRows sqlparser.InsertRows, param string) (int, error) {
-	rows := insertRows.(sqlparser.Values)
-	for _, row := range rows {
-		row := sqlparser.Exprs(row)
-		index := parseRow(row, param)
-		// Found it
-		if index >= 0 {
-			return index, nil
-		}
-	}
-	err := fmt.Errorf("failed to find param in list of inserted values")
-	log.Panic(err)
-	return -1, errors.WithStack(err)
-}
-
-// Iterate through columns and return the column name at the given index.  This allows
-// us to map a value inserted to a column
-func iterateColumns(index int, columns sqlparser.Columns) (string, error) {
-	for i, column := range columns {
-		if i == index {
-			return column.String(), nil
-		}
-	}
-	err := fmt.Errorf("failed to find index %v in columns", index)
-	log.Panic(err)
-	return "", errors.WithStack(err)
-}
-
-func parseInsert(stmt *sqlparser.Insert, param string) (*TaintedQuery, error) {
-	index, err := parseRows(stmt.Rows, param)
-	if err != nil {
-		return nil, err
-	}
-	column, err := iterateColumns(index, stmt.Columns)
-	if err != nil {
-		return nil, err
-	}
-	table := stmt.Table.Name.String()
-	tainted := &TaintedQuery{
-		Column: column,
-		Param:  param,
-		Table:  table,
-		CRUD:   Insert,
-	}
-	return tainted, nil
-}
-
 // How to handle generic values like `1`, etc?
 func parseQuery(query string, param string) (*TaintedQuery, error) {
 	stmt, err := sqlparser.Parse(query)
