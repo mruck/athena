@@ -156,9 +156,6 @@ func iterateColumns(index int, columns sqlparser.Columns) (string, error) {
 }
 
 func parseInsert(stmt *sqlparser.Insert, param string) (*TaintedQuery, error) {
-	//util.PrettyPrintStruct(stmt)
-	// Items are inserted as list.  Figure out the index of our parameter
-	//values := stmt.Rows.(sqlparser.Values)
 	index, err := parseRows(stmt.Rows, param)
 	if err != nil {
 		return nil, err
@@ -175,17 +172,6 @@ func parseInsert(stmt *sqlparser.Insert, param string) (*TaintedQuery, error) {
 		CRUD:   Insert,
 	}
 	return tainted, nil
-
-	// Map that index to a list of columns
-	// Identify the table
-
-	//log.Infof("type: %T\n", values[0])
-	//util.PrettyPrintStruct(values[0])
-	//log.Infof("type: %T\n", values[0][0])
-	//util.PrettyPrintStruct(values[0][0])
-	//sqlVal := values[0][0].(*sqlparser.SQLVal)
-	//data, _ := base64.StdEncoding.DecodeString(string(sqlVal.Val))
-	//log.Infof("Decoding %v as %v\n", string(sqlVal.Val), string(data))
 }
 
 // How to handle generic values like `1`, etc?
