@@ -163,13 +163,16 @@ func parseInsert(stmt *sqlparser.Insert, param string) (*TaintedQuery, error) {
 	if err != nil {
 		return nil, err
 	}
-	columnName, err := iterateColumns(index, stmt.Columns)
+	column, err := iterateColumns(index, stmt.Columns)
 	if err != nil {
 		return nil, err
 	}
+	table := stmt.Table.Name.String()
 	tainted := &TaintedQuery{
-		Column: columnName,
+		Column: column,
 		Param:  param,
+		Table:  table,
+		CRUD:   Insert,
 	}
 	return tainted, nil
 
