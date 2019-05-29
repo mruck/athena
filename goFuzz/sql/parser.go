@@ -55,6 +55,8 @@ func Analyze(params []string, queries []string) ([]TaintedQuery, error) {
 	return matches, nil
 }
 
+// parseNode searches for a parameter value.  If found, it allocates a tainted query
+// and populates the param and column fields
 func parseNode(node sqlparser.SQLNode, param string) (*TaintedQuery, error) {
 	switch stmt := node.(type) {
 	// Leaf
@@ -76,14 +78,14 @@ func parseNode(node sqlparser.SQLNode, param string) (*TaintedQuery, error) {
 
 func parseWhere(where *sqlparser.Where, param string) (*TaintedQuery, error) {
 	if where.Type != "where" {
-		log.Panicf("where.Type == %v\n", where.Type)
+		log.Fatalf("where.Type == %v\n", where.Type)
 	}
 	return parseNode(where.Expr, param)
 }
 
 func parseTableName(exprs sqlparser.TableExprs) (string, error) {
 	if len(exprs) != 1 {
-		log.Panic("there was more than 1 table expresion\n")
+		log.Fatal("there was more than 1 table expresion\n")
 		return "", fmt.Errorf("there was more than 1 table expression")
 	}
 	aliasedTableExpr := exprs[0].(*sqlparser.AliasedTableExpr)
@@ -99,13 +101,34 @@ func parseSelect(stmt *sqlparser.Select, param string) (*TaintedQuery, error) {
 	}
 	if match == nil {
 		// We should only call parseQuery when we know the param is present in the string
-		log.Panic("Match is nil!\n")
+		log.Fatal("Match is nil!\n")
 	}
 
 	match.CRUD = Select
 
 	// Parse table name
 	name, err := parseTableName(stmt.From)
+	if err != nil {
+		return nil, err
+	}
+	match.Table = name
+
+	return match, nil
+}
+
+func parseUpdate(stmt *sqlparser.Update, param string) (*TaintedQuery, error) {
+	match, err := parseWhere(stmt.Where, param)
+	if err != nil {
+		return nil, err
+	}
+	if match == nil {
+		// We should only call parseQuery when we know the param is present in the string
+		log.Fatal("Match is nil!\n")
+	}
+	match.CRUD = Update
+
+	// Parse table name
+	name, err := parseTableName(stmt.TableExprs)
 	if err != nil {
 		return nil, err
 	}
@@ -127,11 +150,12 @@ func parseQuery(query string, param string) (*TaintedQuery, error) {
 	case *sqlparser.Insert:
 		return parseInsert(stmt, param)
 	case *sqlparser.Update:
-		util.PrettyPrintStruct(stmt)
+		//util.PrettyPrintStruct(stmt)
+		return parseUpdate(stmt, param)
 	case *sqlparser.Delete:
 		util.PrettyPrintStruct(stmt)
 	default:
-		log.Panicf("Unhandled statement type: %T\n", stmt)
+		log.Fatalf("Unhandled statement type: %T\n", stmt)
 	}
 	return nil, nil
 }

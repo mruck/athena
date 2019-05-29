@@ -61,3 +61,11 @@ func TestInsertManyRows(t *testing.T) {
 	require.Equal(t, "name", match.Column)
 	require.Equal(t, "cities", match.Table)
 }
+
+func TestUpdate(t *testing.T) {
+	sql := "update cities set temp = 30 where name = 'sunnyvale'"
+	match, _ := parseQuery(sql, "sunnyvale")
+	require.Equal(t, "name", match.Column)
+	require.Equal(t, "cities", match.Table)
+	//util.PrettyPrintStruct(match)
+}
