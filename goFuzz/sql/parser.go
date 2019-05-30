@@ -11,29 +11,35 @@ import (
 // parseNode searches for a parameter value.  If found, it allocates a tainted query
 // and populates the param and column fields
 func parseNode(node sqlparser.SQLNode, param string) (*TaintedQuery, error) {
-	switch stmt := node.(type) {
+	switch node := node.(type) {
 	// Leaf
 	case *sqlparser.ComparisonExpr:
 		// Check val for a match
-		sqlval := stmt.Right.(*sqlparser.SQLVal)
+		sqlval := node.Right.(*sqlparser.SQLVal)
 		if string(sqlval.Val) != param {
 			return nil, nil
 		}
 		// Found it
-		col := stmt.Left.(*sqlparser.ColName)
+		col := node.Left.(*sqlparser.ColName)
 		match := &TaintedQuery{Param: param, Column: col.Name.String()}
 		return match, nil
+	case *sqlparser.Where:
+		// Sanity checking on where
+		if node.Type != "where" {
+			log.Fatalf("where.Type == %v\n", node.Type)
+		}
+		return parseNode(node.Expr, param)
+	case *sqlparser.Select:
+		return parseSelect(node, param)
+	case *sqlparser.Update:
+		return parseUpdate(node, param)
+	case *sqlparser.Delete:
+		return parseDelete(node, param)
+	case *sqlparser.Insert:
+		return parseInsert(node, param)
 	}
-	// Handle in
-	// Handle and/or
-	return nil, nil
-}
-
-func parseWhere(where *sqlparser.Where, param string) (*TaintedQuery, error) {
-	if where.Type != "where" {
-		log.Fatalf("where.Type == %v\n", where.Type)
-	}
-	return parseNode(where.Expr, param)
+	err := fmt.Errorf("unhandled node type: %T", node)
+	return nil, errors.WithStack(err)
 }
 
 func parseTableName(exprs sqlparser.TableExprs) (string, error) {
@@ -48,37 +54,46 @@ func parseTableName(exprs sqlparser.TableExprs) (string, error) {
 }
 
 func parseSelect(stmt *sqlparser.Select, param string) (*TaintedQuery, error) {
-	match, err := parseWhere(stmt.Where, param)
+	match, err := parseNode(stmt.Where, param)
 	if err != nil {
 		return nil, err
 	}
 	if match == nil {
-		// We should only call parseQuery when we know the param is present in the string
-		log.Fatal("Match is nil!\n")
+		return nil, nil
 	}
 
-	match.CRUD = Select
+	// Found the param.  Check if the table name has been set, if it has then
+	// this belongs to a nested query and a different table.
+	if match.Table != "" {
+		return match, nil
+	}
 
-	// Parse table name
+	// If not, then this is the tainty query so set the table name
 	name, err := parseTableName(stmt.From)
 	if err != nil {
 		return nil, err
 	}
 	match.Table = name
 
+	match.CRUD = Select
+
 	return match, nil
 }
 
 func parseUpdate(stmt *sqlparser.Update, param string) (*TaintedQuery, error) {
-	match, err := parseWhere(stmt.Where, param)
+	match, err := parseNode(stmt.Where, param)
 	if err != nil {
 		return nil, err
 	}
 	if match == nil {
-		// We should only call parseQuery when we know the param is present in the string
-		log.Fatal("Match is nil!\n")
+		return nil, nil
 	}
-	match.CRUD = Update
+
+	// Found the param.  Check if the table name has been set, if it has then
+	// this belongs to a nested query and a different table.
+	if match.Table != "" {
+		return match, nil
+	}
 
 	// Parse table name
 	name, err := parseTableName(stmt.TableExprs)
@@ -87,19 +102,24 @@ func parseUpdate(stmt *sqlparser.Update, param string) (*TaintedQuery, error) {
 	}
 	match.Table = name
 
+	match.CRUD = Update
 	return match, nil
 }
 
 func parseDelete(stmt *sqlparser.Delete, param string) (*TaintedQuery, error) {
-	match, err := parseWhere(stmt.Where, param)
+	match, err := parseNode(stmt.Where, param)
 	if err != nil {
 		return nil, err
 	}
 	if match == nil {
-		// We should only call parseQuery when we know the param is present in the string
-		log.Fatal("Match is nil!\n")
+		return nil, nil
 	}
-	match.CRUD = Delete
+
+	// Found the param.  Check if the table name has been set, if it has then
+	// this belongs to a nested query and a different table.
+	if match.Table != "" {
+		return match, nil
+	}
 
 	// Parse table name
 	name, err := parseTableName(stmt.TableExprs)
@@ -108,27 +128,15 @@ func parseDelete(stmt *sqlparser.Delete, param string) (*TaintedQuery, error) {
 	}
 	match.Table = name
 
+	match.CRUD = Delete
+
 	return match, nil
 }
 
-// How to handle generic values like `1`, etc?
 func parseQuery(query string, param string) (*TaintedQuery, error) {
 	stmt, err := sqlparser.Parse(query)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-
-	switch stmt := stmt.(type) {
-	case *sqlparser.Select:
-		return parseSelect(stmt, param)
-	case *sqlparser.Insert:
-		return parseInsert(stmt, param)
-	case *sqlparser.Update:
-		return parseUpdate(stmt, param)
-	case *sqlparser.Delete:
-		return parseDelete(stmt, param)
-	default:
-		log.Fatalf("Unhandled statement type: %T\n", stmt)
-	}
-	return nil, nil
+	return parseNode(stmt, param)
 }
