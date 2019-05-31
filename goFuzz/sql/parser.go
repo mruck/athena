@@ -21,16 +21,7 @@ func parseNode(node sqlparser.SQLNode, param string) (*TaintedQuery, error) {
 	case *sqlparser.ComparisonExpr:
 		switch node.Operator {
 		case sqlparser.InStr:
-			match, err := parseNode(node.Right, param)
-			if err != nil {
-				return nil, err
-			}
-			if match == nil {
-				return nil, nil
-			}
-			col := node.Left.(*sqlparser.ColName).Name.String()
-			match.Column = col
-			return match, nil
+			fallthrough
 		case sqlparser.EqualStr:
 			fallthrough
 		case sqlparser.GreaterThanStr:
