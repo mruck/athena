@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/mruck/athena/lib/log"
+	"github.com/mruck/athena/lib/util"
 	"github.com/pkg/errors"
 	"github.com/xwb1989/sqlparser"
 )
@@ -14,15 +15,27 @@ func parseNode(node sqlparser.SQLNode, param string) (*TaintedQuery, error) {
 	switch node := node.(type) {
 	// Leaf
 	case *sqlparser.ComparisonExpr:
-		// Check val for a match
-		sqlval := node.Right.(*sqlparser.SQLVal)
-		if string(sqlval.Val) != param {
+		switch node.Operator {
+		case sqlparser.InStr:
+			util.PrintType(node.Left)
+			util.PrintType(node.Right)
 			return nil, nil
+		case sqlparser.EqualStr:
+			fallthrough
+		case sqlparser.GreaterThanStr:
+			// Check val for a match
+			sqlval := node.Right.(*sqlparser.SQLVal)
+			if string(sqlval.Val) != param {
+				return nil, nil
+			}
+			// Found it
+			col := node.Left.(*sqlparser.ColName)
+			match := &TaintedQuery{Param: param, Column: col.Name.String()}
+			return match, nil
+		default:
+			err := fmt.Errorf("unhandled operator: %v", node.Operator)
+			return nil, errors.WithStack(err)
 		}
-		// Found it
-		col := node.Left.(*sqlparser.ColName)
-		match := &TaintedQuery{Param: param, Column: col.Name.String()}
-		return match, nil
 	case *sqlparser.Where:
 		// Sanity checking on where
 		if node.Type != "where" {
@@ -138,5 +151,6 @@ func parseQuery(query string, param string) (*TaintedQuery, error) {
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
+	//util.PrettyPrintStruct(stmt)
 	return parseNode(stmt, param)
 }

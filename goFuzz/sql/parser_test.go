@@ -94,3 +94,13 @@ func TestDelete(t *testing.T) {
 	require.Equal(t, "cities", match.Table)
 	//util.PrettyPrintStruct(match)
 }
+
+// Test update statement with nested select
+func TestUpdateFromSelect(t *testing.T) {
+
+}
+
+func TestIn2(t *testing.T) {
+	sql := "select name, temp from cities where temp in (50, 60);"
+	_, _ = parseQuery(sql, "sunnyvale")
+}
