@@ -101,6 +101,9 @@ func TestUpdateFromSelect(t *testing.T) {
 }
 
 func TestIn2(t *testing.T) {
-	sql := "select name, temp from cities where temp in (50, 60);"
-	_, _ = parseQuery(sql, "sunnyvale")
+	sql := "select name, temp from cities where name in ('palo alto', 'marin', 'sunnyvale');"
+	match, err := parseQuery(sql, "sunnyvale")
+	require.NoError(t, err)
+	require.Equal(t, "name", match.Column)
+	require.Equal(t, "cities", match.Table)
 }
