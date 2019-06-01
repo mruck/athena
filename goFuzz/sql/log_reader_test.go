@@ -22,7 +22,7 @@ func TestNext(t *testing.T) {
 	err = util.CopyFile(tmp.Name(), cities1)
 	require.NoError(t, err)
 
-	pgReader := New(tmp.Name())
+	pgReader := NewPostgresLogReader(tmp.Name())
 
 	// Read in all records with no time stamp
 	records, err := pgReader.Next()

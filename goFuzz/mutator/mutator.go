@@ -8,6 +8,7 @@ import (
 
 	"github.com/mruck/athena/goFuzz/coverage"
 	"github.com/mruck/athena/goFuzz/route"
+	"github.com/mruck/athena/goFuzz/sql"
 	"github.com/mruck/athena/lib/database"
 	"github.com/mruck/athena/lib/exception"
 	"github.com/mruck/athena/lib/util"
@@ -24,6 +25,7 @@ type Mutator struct {
 	Coverage          *coverage.Coverage
 	ExceptionsManager *exception.ExceptionsManager
 	TargetID          string
+	PostgresLogReader *sql.PostgresLogReader
 }
 
 // New creates a new mutator
@@ -35,6 +37,9 @@ func New(routes []*route.Route, corpus []*route.Route) *Mutator {
 	// Make the order deterministic for debugging.  Order routes alphabetically
 	route.Order(routes)
 
+	// The postgres log contains every query postgres makes
+	pgReader := sql.NewPostgresLogReader(sql.PostgresLogPath)
+
 	// TODO: do something with the corpus
 	return &Mutator{
 		Routes:            routes,
@@ -42,6 +47,7 @@ func New(routes []*route.Route, corpus []*route.Route) *Mutator {
 		Coverage:          coverage.New(coverage.Path),
 		ExceptionsManager: manager,
 		TargetID:          util.MustGetTargetID(),
+		PostgresLogReader: pgReader,
 	}
 }
 

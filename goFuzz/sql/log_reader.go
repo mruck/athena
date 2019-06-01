@@ -20,16 +20,6 @@ const (
 	Query         = 19
 )
 
-//func toQueryMetadata(records [][]string) []QueryMeta {
-//	metas := make([]QueryMetadata, len(records))
-//	for i, record := range records {
-//		metas[i].LogTime = record[LogTime]
-//		metas[i].ErrorSeverity = record[ErrorSeverity]
-//		metas[i].ErrorSeverity = record[ErrorSeverity]
-//	}
-//	return metas
-//}
-
 // QueryMetadata contains meta data about each query logged by postgres
 type QueryMetadata struct {
 	LogTime       string
@@ -43,6 +33,10 @@ type QueryMetadata struct {
 	Query         string
 }
 
+// PostgresLogPath is the path to the postgres path, configurable at start up of pg container
+const PostgresLogPath = "/tmp/pg.log"
+
+// QueryMetadatas is a list of query metadata
 type QueryMetadatas []QueryMetadata
 
 // PostgresLogReader is responsible for reading the postgres log file
@@ -52,9 +46,9 @@ type PostgresLogReader struct {
 	path          string
 }
 
-// New takes in the path to the postgres load and returns a postgres
+// NewPostgresLogReader takes in the path to the postgres load and returns a postgres
 // load reader
-func New(path string) *PostgresLogReader {
+func NewPostgresLogReader(path string) *PostgresLogReader {
 	return &PostgresLogReader{path: path}
 }
 
