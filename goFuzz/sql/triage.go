@@ -2,12 +2,12 @@ package sql
 
 // ValidateSQL checks for sql injection.
 // TODO: if discovered, repeat params but modify to have special characters
-func (queries QueryMetas) ValidateSQL() {
+func (queries QueryMetadatas) ValidateSQL() {
 }
 
 // Triage triages the provided records for any hints, errors, etc and logs them
 // TODO: eventually use this info to information param mutation/flag bad behavior
-func (queries QueryMetas) Triage() {
+func (queries QueryMetadatas) Triage() {
 }
 
 // TriageQueries triages the most recent sql queries

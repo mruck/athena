@@ -108,6 +108,7 @@ func (mutator *Mutator) UpdateState(resp *http.Response) error {
 	if err != nil {
 		return err
 	}
+	// Read queries dumped by PG and check if any contain params
 	route := mutator.currentRoute()
 	return mutator.ExceptionsManager.Update(route.Path, route.Method, mutator.TargetID)
 }

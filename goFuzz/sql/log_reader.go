@@ -20,8 +20,8 @@ const (
 	Query         = 19
 )
 
-//func toQueryMeta(records [][]string) []QueryMeta {
-//	metas := make([]QueryMeta, len(records))
+//func toQueryMetadata(records [][]string) []QueryMeta {
+//	metas := make([]QueryMetadata, len(records))
 //	for i, record := range records {
 //		metas[i].LogTime = record[LogTime]
 //		metas[i].ErrorSeverity = record[ErrorSeverity]
@@ -30,8 +30,8 @@ const (
 //	return metas
 //}
 
-// QueryMeta contains meta data about each query logged by postgres
-type QueryMeta struct {
+// QueryMetadata contains meta data about each query logged by postgres
+type QueryMetadata struct {
 	LogTime       string
 	ErrorSeverity string
 	SQLStateCode  string
@@ -43,7 +43,7 @@ type QueryMeta struct {
 	Query         string
 }
 
-type QueryMetas []QueryMeta
+type QueryMetadatas []QueryMetadata
 
 // PostgresLogReader is responsible for reading the postgres log file
 // at `path` starting from `lastTimeStamp`

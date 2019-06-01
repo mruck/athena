@@ -3,7 +3,6 @@ package sql
 import (
 	"testing"
 
-	"github.com/mruck/athena/lib/util"
 	"github.com/stretchr/testify/require"
 )
 
@@ -102,7 +101,8 @@ func TestUpdateFromSelect(t *testing.T) {
 	sql := "UPDATE cities SET temp = 30 WHERE name IN (SELECT name FROM cities WHERE name = 'sunnyvale');"
 	match, err := parseQuery(sql, "sunnyvale")
 	require.NoError(t, err)
-	util.PrettyPrintStruct(match)
+	require.Equal(t, "name", match.Column)
+	require.Equal(t, "cities", match.Table)
 }
 
 func TestIn2(t *testing.T) {
