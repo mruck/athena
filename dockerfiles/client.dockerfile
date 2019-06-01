@@ -17,7 +17,7 @@ WORKDIR /athena
 # Add deps so they get cached
 ADD go.mod /athena
 ADD go.sum /athena
-RUN go get
+RUN go mod download
 ADD . /athena
 WORKDIR /athena/goFuzz
 CMD go run main.go

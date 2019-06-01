@@ -41,7 +41,22 @@
         "name": "my-postgres",
         "image": "postgres:10.5",
         "args": [
-          "-c", "log_destination=stderr", "-c", "log_statement=all", "-c", "logging_collector=on", "-c", "log_directory=/tmp", "-c", "log_filename=postgresql-%Y-%m-%d_%H%M%S.log", "-c", "log_file_mode=0600"
+          "-c",
+          "log_destination=csvlog",
+          "-c",
+          "log_statement=all",
+          "-c",
+          "logging_collector=on",
+          "-c",
+          "log_directory=/tmp",
+          "-c",
+          "log_filename=postgres.log",
+          "-c",
+          "log_file_mode=0600",
+          "-c",
+          "log_min_error_statement=debug5",
+          "-c",
+          "log_error_verbosity=verbose"
         ],
         "env": [
           {

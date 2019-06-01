@@ -19,6 +19,10 @@
             "emptyDir": {}
           },
           {
+            "name": "postgreslog",
+            "emptyDir": {}
+          },
+          {
             "name": "results-dir",
             "emptyDir": {}
           }
@@ -53,7 +57,7 @@
               "-c",
               "logging_collector=on",
               "-c",
-              "log_directory=/tmp",
+              "log_directory=/var/log/athena",
               "-c",
               "log_filename=postgres.log",
               "-c",
@@ -67,6 +71,12 @@
               {
                 "name": "POSTGRES_USER",
                 "value": "root"
+              }
+            ],
+            "volumeMounts": [
+              {
+                "name": "postgreslog",
+                "mountPath": "/var/log/athena"
               }
             ],
             "resources": {
@@ -179,6 +189,10 @@
               {
                 "name": "results-dir",
                 "mountPath": "/tmp/results"
+              },
+              {
+                "name": "postgreslog",
+                "mountPath": "/var/log/athena"
               }
             ]
           }

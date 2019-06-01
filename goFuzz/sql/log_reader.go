@@ -34,7 +34,9 @@ type QueryMetadata struct {
 }
 
 // PostgresLogPath is the path to the postgres path, configurable at start up of pg container
-const PostgresLogPath = "/tmp/postgres.log"
+// via `log_filename` parameter, but this is a bit weird cause its for the log file, but uses
+// .csv for csv output
+const PostgresLogPath = "/var/log/athena/postgres.cvs"
 
 // QueryMetadatas is a list of query metadata
 type QueryMetadatas []QueryMetadata
