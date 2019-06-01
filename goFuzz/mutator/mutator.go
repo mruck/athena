@@ -38,7 +38,7 @@ func New(routes []*route.Route, corpus []*route.Route) *Mutator {
 	route.Order(routes)
 
 	// The postgres log contains every query postgres makes
-	pgReader := sql.NewPostgresLogReader(sql.PostgresLogPath)
+	pgReader := sql.NewPostgresLogReader()
 
 	// TODO: do something with the corpus
 	return &Mutator{

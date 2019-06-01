@@ -2,6 +2,7 @@ package sql
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/mruck/athena/lib/util"
 )
@@ -33,10 +34,13 @@ type QueryMetadata struct {
 	Query         string
 }
 
-// PostgresLogPath is the path to the postgres path, configurable at start up of pg container
+// PostgresLogEnvVar contains the postgres log path.
+const PostgresLogEnvVar = "POSTGRES_LOG_PATH"
+
+// PostgresLogPath is the default path to the postgres path, configurable at start up of pg container
 // via `log_filename` parameter, but this is a bit weird cause its for the log file, but uses
 // .csv for csv output
-const PostgresLogPath = "/var/log/athena/postgres.cvs"
+const PostgresLogPath = "/var/log/athena/postgres.csv"
 
 // QueryMetadatas is a list of query metadata
 type QueryMetadatas []QueryMetadata
@@ -50,8 +54,18 @@ type PostgresLogReader struct {
 
 // NewPostgresLogReader takes in the path to the postgres load and returns a postgres
 // load reader
-func NewPostgresLogReader(path string) *PostgresLogReader {
-	return &PostgresLogReader{path: path}
+func NewPostgresLogReader() *PostgresLogReader {
+	return &PostgresLogReader{path: GetPostgresLogPath()}
+}
+
+// GetPostgresLogPath returns the path to the postgres log set in the env, or defaults
+// to PostgresLogPath
+func GetPostgresLogPath() string {
+	path := os.Getenv(PostgresLogEnvVar)
+	if path == "" {
+		return PostgresLogPath
+	}
+	return path
 }
 
 // Next returns the most recent queries run by postgres
