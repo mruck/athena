@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/mruck/athena/lib/log"
+	"github.com/mruck/athena/lib/util"
 	"github.com/pkg/errors"
 	"github.com/xwb1989/sqlparser"
 )
@@ -66,8 +67,11 @@ func parseNode(node sqlparser.SQLNode, param string) (*TaintedQuery, error) {
 		return parseDelete(node, param)
 	case *sqlparser.Insert:
 		return parseInsert(node, param)
+	case *sqlparser.Subquery:
+		return parseNode(node.Select, param)
 	}
 	err := fmt.Errorf("unhandled node type: %T", node)
+	util.PrettyPrintStruct(node)
 	return nil, errors.WithStack(err)
 }
 
@@ -164,6 +168,7 @@ func parseDelete(stmt *sqlparser.Delete, param string) (*TaintedQuery, error) {
 
 func parseQuery(query string, param string) (*TaintedQuery, error) {
 	stmt, err := sqlparser.Parse(query)
+	//util.PrettyPrintStruct(stmt)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}

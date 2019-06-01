@@ -3,6 +3,7 @@ package sql
 import (
 	"testing"
 
+	"github.com/mruck/athena/lib/util"
 	"github.com/stretchr/testify/require"
 )
 
@@ -89,7 +90,8 @@ func TestGreaterThan(t *testing.T) {
 
 func TestDelete(t *testing.T) {
 	sql := "delete from cities where name = 'sunnyvale'"
-	match, _ := parseQuery(sql, "sunnyvale")
+	match, err := parseQuery(sql, "sunnyvale")
+	require.NoError(t, err)
 	require.Equal(t, "name", match.Column)
 	require.Equal(t, "cities", match.Table)
 	//util.PrettyPrintStruct(match)
@@ -97,7 +99,10 @@ func TestDelete(t *testing.T) {
 
 // Test update statement with nested select
 func TestUpdateFromSelect(t *testing.T) {
-
+	sql := "UPDATE cities SET temp = 30 WHERE name IN (SELECT name FROM cities WHERE name = 'sunnyvale');"
+	match, err := parseQuery(sql, "sunnyvale")
+	require.NoError(t, err)
+	util.PrettyPrintStruct(match)
 }
 
 func TestIn2(t *testing.T) {
