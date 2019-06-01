@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const cities1 = "cities1.csv"
-const cities2 = "cities2.csv"
+const cities1 = "test/cities1.csv"
+const cities2 = "test/cities2.csv"
 
 func TestNext(t *testing.T) {
 	// Create a tmp filel for the csv reader
