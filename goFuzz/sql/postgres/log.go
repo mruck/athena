@@ -3,6 +3,7 @@ package postgres
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/mruck/athena/lib/util"
 )
@@ -90,20 +91,34 @@ func (log *Log) Next() ([]string, error) {
 
 // Triage the postgres log for hints, errors, etc
 func (log *Log) Triage() error {
-	// Log hints, errors, etc
+	// Log hints, errors, etc to file
 	return nil
 }
 
-// extractRawQueries extracts the raw sql queries from each query metadata
-// object, skipping queries that errored out
+// extractRawQueries extracts the raw sql queries from the `message` field of
+// each query metadata object.  Skip information messages (i.e. postgres start up
+// messages that are not queries) and queries that errored out.  All queries are
+// prefixed with `statement`, so be sure to remove that, i.e.:
+// "statement: create table cities (name varchar(80), temp int);"
 func (log *Log) extractRawQueries() []string {
 	rawQueries := []string{}
+
 	// Extract the raw query
 	for _, query := range log.queryMetadata {
+
+		// Query errored out
 		if isPostgresError(query[ErrorSeverity]) {
 			continue
 		}
-		rawQueries = append(rawQueries, query[Message])
+
+		// This is an informational message, not a query
+		if !strings.HasPrefix(query[Message], "statement:") {
+			continue
+		}
+
+		// Remove prefix
+		trimmed := strings.TrimPrefix(query[Message], "statement: ")
+		rawQueries = append(rawQueries, trimmed)
 	}
 	return rawQueries
 }

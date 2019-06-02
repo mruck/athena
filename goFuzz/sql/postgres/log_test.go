@@ -13,7 +13,7 @@ const cities1 = "test/cities1.csv"
 const cities2 = "test/cities2.csv"
 
 func TestNext(t *testing.T) {
-	// Create a tmp filel for the csv reader
+	// Create a tmp file for the csv reader
 	tmp, err := ioutil.TempFile("/tmp", "")
 	require.NoError(t, err)
 	defer os.Remove(tmp.Name())
@@ -27,15 +27,30 @@ func TestNext(t *testing.T) {
 	pgReader := NewLog()
 
 	// Read in all records with no time stamp
-	_, err = pgReader.Next()
+	rawQueries, err := pgReader.Next()
 	require.NoError(t, err)
+
+	// Check the raw queries we extracted.
+	// The queries should match
+	correctQueries := []string{
+		"create table cities (name varchar(80), temp int);",
+		"insert into cities (name, temp) values (sunnyvale, 60)\n;",
+		"insert into cities (name, temp) values ('sunnyvale', 60);",
+		"insert into cities (name, temp) values ('menlo park', 58);",
+	}
+
+	for i, rawQuery := range rawQueries {
+		require.Equal(t, correctQueries[i], rawQuery)
+	}
+
+	// Check the query meta data
 	records := pgReader.queryMetadata
 
 	for _, record := range records {
 		// These fields should always be present
 		require.NotNil(t, record[LogTime])
 		require.NotNil(t, record[Message])
-		//util.PrettyPrintStruct(record)
+		//	util.PrettyPrintStruct(record)
 	}
 
 	// Check that the last ts is present
