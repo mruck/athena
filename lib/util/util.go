@@ -22,6 +22,19 @@ func PrettyPrintStruct(data interface{}) {
 	fmt.Println(string(jsonified))
 }
 
+// dataDirectory is the default path for where athena data should be stored
+const dataDirectory = "/data/athena"
+
+// GetDataDirectory returns where custom Athena data should be stored,
+// i.e. athena errors, parsed sql errors, etc
+func GetDataDirectory() string {
+	dataDir := os.Getenv("DATA_DIRECTORY")
+	if dataDir == "" {
+		return dataDirectory
+	}
+	return dataDir
+}
+
 // MustGetTargetID returns the target id or panics
 func MustGetTargetID() string {
 	targetID := os.Getenv("TARGET_ID")
