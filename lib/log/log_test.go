@@ -20,3 +20,7 @@ func stack1() error {
 func TestStackTrace(t *testing.T) {
 	Infof("%+v\n", stack1())
 }
+
+func TestLogToFile(t *testing.T) {
+	Info("hello")
+}
