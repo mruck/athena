@@ -27,8 +27,9 @@ func TestNext(t *testing.T) {
 	pgReader := NewLog()
 
 	// Read in all records with no time stamp
-	records, err := pgReader.Next()
+	_, err = pgReader.Next()
 	require.NoError(t, err)
+	records := pgReader.queryMetadata
 
 	for _, record := range records {
 		// These fields should always be present
@@ -47,8 +48,9 @@ func TestNext(t *testing.T) {
 	require.NoError(t, err)
 
 	// Read in all records, this time with a time stamp
-	records, err = pgReader.Next()
+	_, err = pgReader.Next()
 	require.NoError(t, err)
+	records = pgReader.queryMetadata
 
 	for _, record := range records {
 		// Check that other records are present

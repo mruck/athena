@@ -46,8 +46,8 @@ type Log struct {
 	lastTimeStamp string
 	// path to postgres log file
 	path string
-	// ParsedErrors from postgres log are dumped to a file
-	ParsedErrors *os.File
+	// parsedErrors from postgres log are dumped to a file
+	parsedErrors *os.File
 	// postgres log is a csv, each csv is loaded as []string
 	queryMetadata [][]string
 }
@@ -58,8 +58,12 @@ func NewLog() *Log {
 	return &Log{path: getPostgresLogPath()}
 }
 
-// Next returns the most recent queries run by postgres
-func (log *Log) Next() ([][]string, error) {
+// Next reads the postgres queries starting at `timestamp`, extracts the raw queries
+// from the meta data for each query, and returns them
+func (log *Log) Next() ([]string, error) {
+	// Reset stale data
+	log.queryMetadata = [][]string{}
+
 	// Read the postgres log
 	records, err := util.LoadCSVFile(log.path)
 	if err != nil {
@@ -71,6 +75,7 @@ func (log *Log) Next() ([][]string, error) {
 	if err != nil {
 		return nil, err
 	}
+	log.queryMetadata = truncated
 
 	// We read something new, update latest timestamp
 	if truncated != nil {
@@ -78,12 +83,20 @@ func (log *Log) Next() ([][]string, error) {
 		log.lastTimeStamp = records[last][LogTime]
 	}
 
-	return truncated, nil
+	// Extract raw queries
+	raw := log.extractRawQueries()
+	return raw, nil
 }
 
-// ExtractRawQueries extracts the raw sql queries from each query metadata
+// Triage the postgres log for hints, errors, etc
+func (log *Log) Triage() error {
+	// Log hints, errors, etc
+	return nil
+}
+
+// extractRawQueries extracts the raw sql queries from each query metadata
 // object, skipping queries that errored out
-func (log *Log) ExtractRawQueries() []string {
+func (log *Log) extractRawQueries() []string {
 	rawQueries := []string{}
 	// Extract the raw query
 	for _, query := range log.queryMetadata {
@@ -93,12 +106,6 @@ func (log *Log) ExtractRawQueries() []string {
 		rawQueries = append(rawQueries, query[Message])
 	}
 	return rawQueries
-}
-
-// Triage the postgres log for hints, errors, etc
-func (log *Log) Triage() error {
-	// Log hints, errors, etc
-	return nil
 }
 
 // isPostgresError checks postgres message severity levels
