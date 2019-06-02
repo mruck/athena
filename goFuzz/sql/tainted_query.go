@@ -27,8 +27,8 @@ type TaintedQuery struct {
 	CRUD   CRUD
 }
 
-// Analyze searches for parameters in the given queries
-func Analyze(params []string, queries []string) ([]TaintedQuery, error) {
+// search searches for parameters in the given queries
+func search(params []string, queries []string) ([]TaintedQuery, error) {
 	// params or queries are empty, return
 	if len(params) == 0 || len(queries) == 0 {
 		return nil, nil

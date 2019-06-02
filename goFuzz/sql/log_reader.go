@@ -21,19 +21,6 @@ const (
 	Query         = 19
 )
 
-// QueryMetadata contains meta data about each query logged by postgres
-type QueryMetadata struct {
-	LogTime       string
-	ErrorSeverity string
-	SQLStateCode  string
-	Message       string
-	Detail        string
-	Hint          string
-	InternalQuery string
-	Context       string
-	Query         string
-}
-
 // PostgresLogEnvVar contains the postgres log path.
 const PostgresLogEnvVar = "POSTGRES_LOG_PATH"
 
@@ -42,9 +29,6 @@ const PostgresLogEnvVar = "POSTGRES_LOG_PATH"
 // .csv for csv output
 const PostgresLogPath = "/var/log/athena/postgres.csv"
 
-// QueryMetadatas is a list of query metadata
-type QueryMetadatas []QueryMetadata
-
 // PostgresLogReader is responsible for reading the postgres log file
 // at `path` starting from `lastTimeStamp`
 type PostgresLogReader struct {
@@ -52,20 +36,20 @@ type PostgresLogReader struct {
 	path          string
 }
 
+// Postgres message severity levels taken from
+// https://www.postgresql.org/docs/9.2/runtime-config-logging.html
+// Table 18-1. Message Severity Levels
+const (
+	PostgresErr     = "ERROR"
+	PostgresPanic   = "PANIC"
+	PostgresFatal   = "Fatal"
+	PostgresWarning = "Warning"
+)
+
 // NewPostgresLogReader takes in the path to the postgres load and returns a postgres
 // load reader
 func NewPostgresLogReader() *PostgresLogReader {
-	return &PostgresLogReader{path: GetPostgresLogPath()}
-}
-
-// GetPostgresLogPath returns the path to the postgres log set in the env, or defaults
-// to PostgresLogPath
-func GetPostgresLogPath() string {
-	path := os.Getenv(PostgresLogEnvVar)
-	if path == "" {
-		return PostgresLogPath
-	}
-	return path
+	return &PostgresLogReader{path: getPostgresLogPath()}
 }
 
 // Next returns the most recent queries run by postgres
@@ -91,6 +75,15 @@ func (reader *PostgresLogReader) Next() ([][]string, error) {
 	return truncated, nil
 }
 
+// isPostgresError checks postgres message severity levels
+// and returns whether or not anything errored out
+func isPostgresError(err string) bool {
+	return err == PostgresErr ||
+		err == PostgresPanic ||
+		err == PostgresFatal ||
+		err == PostgresWarning
+}
+
 // Truncate returns the list of records appended since the
 // most recent time stamp
 func truncate(timestamp string, records [][]string) ([][]string, error) {
@@ -104,4 +97,14 @@ func truncate(timestamp string, records [][]string) ([][]string, error) {
 		}
 	}
 	return nil, fmt.Errorf("unable to find timestamp %v in query list", timestamp)
+}
+
+// getPostgresLogPath returns the path to the postgres log set in the env, or defaults
+// to PostgresLogPath
+func getPostgresLogPath() string {
+	path := os.Getenv(PostgresLogEnvVar)
+	if path == "" {
+		return PostgresLogPath
+	}
+	return path
 }

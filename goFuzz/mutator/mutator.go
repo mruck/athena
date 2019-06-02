@@ -2,7 +2,6 @@ package mutator
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/mruck/athena/goFuzz/sql"
 	"github.com/mruck/athena/lib/database"
 	"github.com/mruck/athena/lib/exception"
+	"github.com/mruck/athena/lib/log"
 	"github.com/mruck/athena/lib/util"
 )
 
@@ -25,7 +25,7 @@ type Mutator struct {
 	Coverage          *coverage.Coverage
 	ExceptionsManager *exception.ExceptionsManager
 	TargetID          string
-	PostgresLogReader *sql.PostgresLogReader
+	SQLLog            *sql.Log
 }
 
 // New creates a new mutator
@@ -37,9 +37,6 @@ func New(routes []*route.Route, corpus []*route.Route) *Mutator {
 	// Make the order deterministic for debugging.  Order routes alphabetically
 	route.Order(routes)
 
-	// The postgres log contains every query postgres makes
-	pgReader := sql.NewPostgresLogReader()
-
 	// TODO: do something with the corpus
 	return &Mutator{
 		Routes:            routes,
@@ -47,7 +44,7 @@ func New(routes []*route.Route, corpus []*route.Route) *Mutator {
 		Coverage:          coverage.New(coverage.Path),
 		ExceptionsManager: manager,
 		TargetID:          util.MustGetTargetID(),
-		PostgresLogReader: pgReader,
+		SQLLog:            sql.NewLog(),
 	}
 }
 
@@ -114,7 +111,13 @@ func (mutator *Mutator) UpdateState(resp *http.Response) error {
 	if err != nil {
 		return err
 	}
-	// Read queries dumped by PG and check if any contain params
+	// Read and analyze log dumped by postgres
+	err = mutator.SQLLog.Analyze(params)
+	if err != nil {
+		log.Errorf("error analyzing postgres log: %v", err)
+	}
+
 	route := mutator.currentRoute()
+	// Store any new exceptions
 	return mutator.ExceptionsManager.Update(route.Path, route.Method, mutator.TargetID)
 }
