@@ -29,13 +29,6 @@ const PostgresLogEnvVar = "POSTGRES_LOG_PATH"
 // .csv for csv output
 const PostgresLogPath = "/var/log/athena/postgres.csv"
 
-// PostgresLogReader is responsible for reading the postgres log file
-// at `path` starting from `lastTimeStamp`
-type PostgresLogReader struct {
-	lastTimeStamp string
-	path          string
-}
-
 // Postgres message severity levels taken from
 // https://www.postgresql.org/docs/9.2/runtime-config-logging.html
 // Table 18-1. Message Severity Levels
@@ -46,14 +39,21 @@ const (
 	PostgresWarning = "Warning"
 )
 
-// NewPostgresLogReader takes in the path to the postgres load and returns a postgres
+// PostgresLog is responsible for reading the postgres log file
+// at `path` starting from `lastTimeStamp`
+type PostgresLog struct {
+	lastTimeStamp string
+	path          string
+}
+
+// NewPostgresLog takes in the path to the postgres log and returns a postgres
 // load reader
-func NewPostgresLogReader() *PostgresLogReader {
-	return &PostgresLogReader{path: getPostgresLogPath()}
+func NewPostgresLog() *PostgresLog {
+	return &PostgresLog{path: getPostgresLogPath()}
 }
 
 // Next returns the most recent queries run by postgres
-func (reader *PostgresLogReader) Next() ([][]string, error) {
+func (reader *PostgresLog) Next() ([][]string, error) {
 	// Read the postgres log
 	records, err := util.LoadCSVFile(reader.path)
 	if err != nil {

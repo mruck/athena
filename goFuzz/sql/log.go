@@ -3,7 +3,7 @@ package sql
 // Log contains a reader to sql log (in this case postgres), and provides
 // methods on it for analysis
 type Log struct {
-	Reader         *PostgresLogReader
+	Reader         *PostgresLog
 	queryMetadata  [][]string
 	taintedQueries []TaintedQuery
 	// Vulnerable SQL
@@ -13,7 +13,7 @@ type Log struct {
 
 // NewLog allocates a new sql log object
 func NewLog() *Log {
-	return &Log{Reader: NewPostgresLogReader()}
+	return &Log{Reader: NewPostgresLog()}
 }
 
 // Analyze SQL log dumped by postgres (or in the future another db) by reading
@@ -62,7 +62,11 @@ func (log *Log) validateSQL() {
 
 // triageErrors updates SQL errors by parsing any errors, hints, etc from the log
 func (log *Log) triageErrors() {
-	// Log PG errs to file
+	for _, query := range log.queryMetadata {
+		if isPostgresError(query[ErrorSeverity]) {
+			continue
+		}
+	}
 }
 
 // extractRawQueries extracts the raw sql queries from each query metadata

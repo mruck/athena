@@ -24,7 +24,7 @@ func TestNext(t *testing.T) {
 
 	// Set postgres log path in env
 	os.Setenv(PostgresLogEnvVar, tmp.Name())
-	pgReader := NewPostgresLogReader()
+	pgReader := NewPostgresLog()
 
 	// Read in all records with no time stamp
 	records, err := pgReader.Next()
