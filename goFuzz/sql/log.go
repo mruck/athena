@@ -16,6 +16,8 @@ func NewLog() *Log {
 	return &Log{Reader: NewPostgresLogReader()}
 }
 
+// Analyze SQL log dumped by postgres (or in the future another db) by reading
+// from the log then triaging the queries
 func (log *Log) Analyze(params []string) error {
 	// Reset stale data
 	log.queryMetadata = [][]string{}

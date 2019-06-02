@@ -58,7 +58,7 @@ func (mutator *Mutator) specialRoute() *route.Route {
 			return route
 		}
 	}
-	log.Println("ROUTE env var set but didn't find")
+	log.Info("ROUTE env var set but didn't find")
 	return nil
 }
 
@@ -112,6 +112,7 @@ func (mutator *Mutator) UpdateState(resp *http.Response) error {
 		return err
 	}
 	// Read and analyze log dumped by postgres
+	params := []string{}
 	err = mutator.SQLLog.Analyze(params)
 	if err != nil {
 		log.Errorf("error analyzing postgres log: %v", err)

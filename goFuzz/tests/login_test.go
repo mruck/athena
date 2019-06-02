@@ -12,6 +12,7 @@ import (
 
 // TestLogin tests that we can login to discourse from a HAR file
 func TestLogin(t *testing.T) {
+	t.Skip()
 	harPath := "../tests/login_har.json"
 	// Retrieve HTTP state for logging in
 	login, err := preprocess.GetLogin(harPath)
