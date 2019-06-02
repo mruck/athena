@@ -4,7 +4,6 @@ package sql
 // methods on it for analysis
 type Log struct {
 	Reader         *PostgresLog
-	queryMetadata  [][]string
 	taintedQueries []TaintedQuery
 	// Vulnerable SQL
 	// SQL errors
@@ -69,16 +68,12 @@ func (log *Log) triageErrors() {
 	}
 }
 
-// extractRawQueries extracts the raw sql queries from each query metadata
-// object, skipping queries that errored out
-func (log *Log) extractRawQueries() []string {
-	rawQueries := []string{}
-	// Extract the raw query
-	for _, query := range log.queryMetadata {
-		if isPostgresError(query[ErrorSeverity]) {
-			continue
-		}
-		rawQueries = append(rawQueries, query[Message])
-	}
-	return rawQueries
+// GetTaintedQueries postgres log for user tainted queries
+func (reader *PostgresLog) GetTaintedQueries(params []string) ([]TaintedQuery, error) {
+	return nil, nil
+}
+
+// CheckForSQLInj checks if the most recent queries are vulnerable to sql inj
+func (reader *PostgresLog) CheckForSQLInj(params []string) (bool, error) {
+	return false, nil
 }

@@ -1,4 +1,4 @@
-package sql
+package postgres
 
 import (
 	"io/ioutil"
@@ -23,8 +23,8 @@ func TestNext(t *testing.T) {
 	require.NoError(t, err)
 
 	// Set postgres log path in env
-	os.Setenv(PostgresLogEnvVar, tmp.Name())
-	pgReader := NewPostgresLog()
+	os.Setenv(LogPathEnvVar, tmp.Name())
+	pgReader := NewLog()
 
 	// Read in all records with no time stamp
 	records, err := pgReader.Next()
