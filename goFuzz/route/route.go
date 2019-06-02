@@ -6,6 +6,7 @@ import (
 	"github.com/go-openapi/spec"
 	"github.com/mruck/athena/goFuzz/har"
 	"github.com/mruck/athena/goFuzz/param"
+	"github.com/mruck/athena/goFuzz/sql"
 	"github.com/mruck/athena/lib/util"
 )
 
@@ -67,5 +68,5 @@ func (route *Route) Mutate() {
 }
 
 // UpdateQueries updates each parameter with the tainted queries
-func (route *Route) UpdateQueries(queries []TaintedQuery) {
+func (route *Route) UpdateQueries(queries []sql.TaintedQuery) {
 }

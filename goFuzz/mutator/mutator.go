@@ -122,7 +122,7 @@ func (mutator *Mutator) UpdateState(resp *http.Response) error {
 
 	// Search for params present in queries
 	params := []string{}
-	taintedQueries, err = sql.Search(queries, params)
+	taintedQueries, err := sql.Search(queries, params)
 	if err != nil {
 		return err
 	}
@@ -132,10 +132,7 @@ func (mutator *Mutator) UpdateState(resp *http.Response) error {
 	route.UpdateQueries(taintedQueries)
 
 	// Check for sql inj
-	err = sql.Search(queries, params)
-	if err != nil {
-		return err
-	}
+	sql.CheckForSQLInj(queries, params)
 
 	// Store any new exceptions
 	return mutator.ExceptionsManager.Update(route.Path, route.Method, mutator.TargetID)
