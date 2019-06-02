@@ -8,15 +8,12 @@ import (
 	"github.com/mruck/athena/goFuzz/coverage"
 	"github.com/mruck/athena/goFuzz/route"
 	"github.com/mruck/athena/goFuzz/sql"
+	"github.com/mruck/athena/goFuzz/sql/postgres"
 	"github.com/mruck/athena/lib/database"
 	"github.com/mruck/athena/lib/exception"
 	"github.com/mruck/athena/lib/log"
 	"github.com/mruck/athena/lib/util"
 )
-
-// Mutate specifies required functions to be defined on a mutator class
-type Mutate interface {
-}
 
 // Mutator contains state for mutating
 type Mutator struct {
@@ -25,7 +22,7 @@ type Mutator struct {
 	Coverage          *coverage.Coverage
 	ExceptionsManager *exception.ExceptionsManager
 	TargetID          string
-	SQLLog            *sql.Log
+	DBLog             *postgres.Log
 }
 
 // New creates a new mutator
@@ -44,7 +41,7 @@ func New(routes []*route.Route, corpus []*route.Route) *Mutator {
 		Coverage:          coverage.New(coverage.Path),
 		ExceptionsManager: manager,
 		TargetID:          util.MustGetTargetID(),
-		SQLLog:            sql.NewLog(),
+		DBLog:             postgres.NewLog(),
 	}
 }
 
@@ -111,14 +108,35 @@ func (mutator *Mutator) UpdateState(resp *http.Response) error {
 	if err != nil {
 		return err
 	}
-	// Read and analyze log dumped by postgres
-	params := []string{}
-	err = mutator.SQLLog.Analyze(params)
+	// Read log dumped by postgres
+	queries, err := mutator.DBLog.Next()
 	if err != nil {
-		log.Errorf("error analyzing postgres log: %v", err)
+		return err
 	}
 
+	// Triage postgres log
+	err = mutator.DBLog.Triage()
+	if err != nil {
+		return err
+	}
+
+	// Search for params present in queries
+	params := []string{}
+	taintedQueries, err = sql.Search(queries, params)
+	if err != nil {
+		return err
+	}
+
+	// Update route with tainted queries
 	route := mutator.currentRoute()
+	route.UpdateQueries(taintedQueries)
+
+	// Check for sql inj
+	err = sql.Search(queries, params)
+	if err != nil {
+		return err
+	}
+
 	// Store any new exceptions
 	return mutator.ExceptionsManager.Update(route.Path, route.Method, mutator.TargetID)
 }

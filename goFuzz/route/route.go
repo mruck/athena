@@ -65,3 +65,7 @@ func (route *Route) Mutate() {
 		param.Mutate()
 	}
 }
+
+// UpdateQueries updates each parameter with the tainted queries
+func (route *Route) UpdateQueries(queries []TaintedQuery) {
+}
