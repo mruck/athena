@@ -6,19 +6,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-//func TestAnalyze(t *testing.T) {
-//	params := []string{"sunnyvale", "los altos", "marin"}
-//	queries := []string{
-//		"statement: insert into cities (name, temp) values ('sunnyvale', 60);",
-//		"statement: insert into cities (name, temp) values ('san jose', 67);",
-//	}
-//	parser := Parser{"parser.py"}
-//	matches, err := parser.Analyze(params, queries)
-//	require.NoError(t, err)
-//	fmt.Println(matches)
-//	//require.NotNil(t, matches)
-//}
-
 func TestSelect(t *testing.T) {
 	sql := "SELECT * FROM mytable WHERE city = 'sunnyvale';"
 	match, err := parseQuery(sql, "sunnyvale")
@@ -105,10 +92,27 @@ func TestUpdateFromSelect(t *testing.T) {
 	require.Equal(t, "cities", match.Table)
 }
 
-func TestIn2(t *testing.T) {
+func TestIn(t *testing.T) {
 	sql := "select name, temp from cities where name in ('palo alto', 'marin', 'sunnyvale');"
 	match, err := parseQuery(sql, "sunnyvale")
 	require.NoError(t, err)
 	require.Equal(t, "name", match.Column)
 	require.Equal(t, "cities", match.Table)
+}
+
+// Test how parser handles different formatting, ie semicolons, newline, etc
+func TestFormating(t *testing.T) {
+	// With a newline
+	sql := "SELECT * FROM mytable WHERE city = 'sunnyvale';\n"
+	match, err := parseQuery(sql, "sunnyvale")
+	require.NoError(t, err)
+	require.Equal(t, "city", match.Column)
+	require.Equal(t, "mytable", match.Table)
+
+	// With a newline before semicolon
+	sql = "SELECT * FROM mytable WHERE city = 'sunnyvale'\n;"
+	match, err = parseQuery(sql, "sunnyvale")
+	require.NoError(t, err)
+	require.Equal(t, "city", match.Column)
+	require.Equal(t, "mytable", match.Table)
 }
