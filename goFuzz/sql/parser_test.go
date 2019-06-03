@@ -116,3 +116,14 @@ func TestFormating(t *testing.T) {
 	require.Equal(t, "city", match.Column)
 	require.Equal(t, "mytable", match.Table)
 }
+
+// Test how parser handles integer comparison against string. Make sure we stringify
+// correctly
+func TestIntegerComparison(t *testing.T) {
+	// With a newline
+	sql := "SELECT * FROM mytable WHERE temp = 60;"
+	match, err := parseQuery(sql, "60")
+	require.NoError(t, err)
+	require.Equal(t, "temp", match.Column)
+	require.Equal(t, "mytable", match.Table)
+}
