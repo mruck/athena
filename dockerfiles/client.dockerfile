@@ -20,4 +20,5 @@ ADD go.sum /athena
 RUN go mod download
 ADD . /athena
 WORKDIR /athena/goFuzz
+RUN mkdir -p /var/log/athena
 CMD go run main.go

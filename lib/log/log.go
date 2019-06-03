@@ -12,7 +12,7 @@ func init() {
 	// If I want json logs use a production config
 	//config := zap.NewProductionConfig()
 	config := zap.NewDevelopmentConfig()
-	config.OutputPaths = []string{"stderr", "/tmp/athena.log"}
+	config.OutputPaths = []string{"stderr", "/var/log/athena/athena.log"}
 	config.DisableCaller = true
 	config.DisableStacktrace = false
 	log, err := config.Build()

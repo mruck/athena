@@ -28,7 +28,7 @@ const LogPathEnvVar = "POSTGRES_LOG_PATH"
 // LogPath is the default path to the postgres path, configurable at start up of pg container
 // via `log_filename` parameter, but this is a bit weird cause its for the log file, but uses
 // .csv for csv output
-const LogPath = "/var/log/athena/postgres.csv"
+const LogPath = "/var/log/athena/postgres/postgres.csv"
 
 // Postgres message severity levels taken from
 // https://www.postgresql.org/docs/9.2/runtime-config-logging.html
