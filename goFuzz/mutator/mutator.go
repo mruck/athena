@@ -102,12 +102,17 @@ func (mutator *Mutator) currentRoute() *route.Route {
 // UpdateState parses the response and updates source code, parameter and
 // query coverage
 func (mutator *Mutator) UpdateState(resp *http.Response) error {
+	// Get current route
+	route := mutator.currentRoute()
+
+	// Update coverage
 	err := mutator.Coverage.Update()
 	fmt.Printf("Delta: %v\n", mutator.Coverage.Delta)
 	fmt.Printf("Cumulative: %v\n", mutator.Coverage.Cumulative)
 	if err != nil {
 		return err
 	}
+
 	// Read log dumped by postgres
 	queries, err := mutator.DBLog.Next()
 	if err != nil {
@@ -121,14 +126,13 @@ func (mutator *Mutator) UpdateState(resp *http.Response) error {
 	}
 
 	// Search for params present in queries
-	params := []string{}
+	params := route.CurrentParams()
 	taintedQueries, err := sql.Search(queries, params)
 	if err != nil {
 		return err
 	}
 
 	// Update route with tainted queries
-	route := mutator.currentRoute()
 	route.UpdateQueries(taintedQueries)
 
 	// Check for sql inj

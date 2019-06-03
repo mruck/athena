@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/mruck/athena/lib/log"
 	"github.com/mruck/athena/lib/util"
 	"github.com/pkg/errors"
 )
@@ -16,10 +17,11 @@ func (route *Route) SetPathParams() string {
 	path := route.Path
 	for _, param := range route.State {
 		if param.In == "path" {
-			// TODO: assert param.Next != nil
 			if param.Next == nil {
-				err := fmt.Errorf("param %v is nil", param.Name)
-				panic(errors.WithStack(err))
+				err := fmt.Errorf("param path param %v is nil", param.Name)
+				log.Error(errors.WithStack(err))
+				// Give it a dummy value so we can continue
+				param.Next = "deadbeef"
 			}
 			stringified := util.Stringify(param.Next)
 			replacer := strings.NewReplacer("{"+param.Name+"}", stringified)
