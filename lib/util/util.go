@@ -68,12 +68,12 @@ func MustGetTargetAppHost() string {
 func FileIsEmpty(filepath string) (bool, error) {
 	fp, err := os.Open(filepath)
 	if err != nil {
-		return false, err
+		return false, errors.WithStack(err)
 	}
 	defer fp.Close()
 	result, err := fp.Stat()
 	if err != nil {
-		return false, err
+		return false, errors.WithStack(err)
 	}
 	return result.Size() == 0, nil
 }

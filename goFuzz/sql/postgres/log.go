@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/mruck/athena/lib/util"
+	"github.com/pkg/errors"
 )
 
 // For indexing into postgres csv, taken from:
@@ -144,7 +145,7 @@ func truncate(timestamp string, records [][]string) ([][]string, error) {
 			return records[i+1:], nil
 		}
 	}
-	return nil, fmt.Errorf("unable to find timestamp %v in query list", timestamp)
+	return nil, errors.WithStack(fmt.Errorf("unable to find timestamp %v in query list", timestamp))
 }
 
 // getPostgresLogPath returns the path to the postgres log set in the env, or defaults

@@ -1,6 +1,9 @@
 package coverage
 
-import "github.com/mruck/athena/lib/util"
+import (
+	"github.com/mruck/athena/lib/util"
+	"github.com/pkg/errors"
+)
 
 const Path = "/tmp/results/coverage.json"
 
@@ -92,7 +95,7 @@ func (coverage *Coverage) Read() (map[string][]int, error) {
 	var dst map[string][]*int
 	err := util.UnmarshalFile(coverage.FilePath, &dst)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	// Convert from map[string][]*int to map[string][]int
