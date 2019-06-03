@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
 	"strings"
 	"time"
 
+	"github.com/mruck/athena/lib/log"
 	"github.com/mruck/athena/lib/util"
 	"github.com/pkg/errors"
 )
@@ -113,14 +113,14 @@ func (cli *Client) DoAll(requests []*http.Request) error {
 
 // PrettyPrintRequest pretty prints http request
 func PrettyPrintRequest(req *http.Request) {
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
+	//log.SetFlags(log.LstdFlags | log.Lshortfile)
 	url := req.URL.Path
 	if req.Method == "GET" {
 		if req.URL.RawQuery != "" {
 			url += "?" + req.URL.RawQuery
 		}
 	}
-	log.Printf("%v %v\n", req.Method, url)
+	log.Infof("%v %v", req.Method, url)
 	if req.Body != nil {
 		b, err := ioutil.ReadAll(req.Body)
 		util.Must(err == nil, "%+v\n", errors.WithStack(err))

@@ -1,14 +1,19 @@
 package sql
 
-// CRUD action on db
-type CRUD int
+// Action on database
+type Action int
 
 // CRUD Sql operations
 const (
-	Update CRUD = iota
+	Update Action = iota
 	Select
 	Delete
 	Insert
+	Create
+	Truncate
+	Drop
+	Alter
+	Rename
 )
 
 // TaintedQuery is a sql query tainted with user controlled data
@@ -18,5 +23,5 @@ type TaintedQuery struct {
 	Query  string
 	Table  string
 	Column string
-	CRUD   CRUD
+	Action Action
 }

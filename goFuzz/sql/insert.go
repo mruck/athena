@@ -69,7 +69,7 @@ func parseInsert(stmt *sqlparser.Insert, param string) (*TaintedQuery, error) {
 		Column: column,
 		Param:  param,
 		Table:  table,
-		CRUD:   Insert,
+		Action: Insert,
 	}
 	return tainted, nil
 }

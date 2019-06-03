@@ -69,10 +69,41 @@ func parseNode(node sqlparser.SQLNode, param string) (*TaintedQuery, error) {
 		return parseInsert(node, param)
 	case *sqlparser.Subquery:
 		return parseNode(node.Select, param)
+	case *sqlparser.DDL:
+		return parseDDL(node, param)
 	}
-	err := fmt.Errorf("unhandled node type: %T", node)
+	err := fmt.Errorf("searching for params %q and hit unhandled node type: %T", param, node)
 	util.PrettyPrintStruct(node)
 	return nil, errors.WithStack(err)
+}
+
+func parseDDL(ddl *sqlparser.DDL, param string) (*TaintedQuery, error) {
+	// The parameter is neither present in the old table name nor in the new
+	// table name
+	if ddl.Table.Name.String() != param && ddl.NewName.Name.String() != param {
+		return nil, nil
+	}
+	// TODO: should also check if param name is equivalent to column names
+	// being created
+
+	// Found it
+	var action Action
+	switch ddl.Action {
+	case sqlparser.CreateStr:
+		action = Create
+	case sqlparser.DropStr:
+		action = Drop
+	case sqlparser.TruncateStr:
+		action = Truncate
+	case sqlparser.AlterStr:
+		action = Alter
+	default:
+		err := fmt.Errorf("failed to match ddl.Action = %s", ddl.Action)
+		log.Error(errors.WithStack(err))
+		return nil, err
+	}
+	query := &TaintedQuery{Param: param, Table: param, Action: action}
+	return query, nil
 }
 
 func parseTableName(exprs sqlparser.TableExprs) (string, error) {
@@ -108,7 +139,7 @@ func parseSelect(stmt *sqlparser.Select, param string) (*TaintedQuery, error) {
 	}
 	match.Table = name
 
-	match.CRUD = Select
+	match.Action = Select
 
 	return match, nil
 }
@@ -135,7 +166,7 @@ func parseUpdate(stmt *sqlparser.Update, param string) (*TaintedQuery, error) {
 	}
 	match.Table = name
 
-	match.CRUD = Update
+	match.Action = Update
 	return match, nil
 }
 
@@ -161,7 +192,7 @@ func parseDelete(stmt *sqlparser.Delete, param string) (*TaintedQuery, error) {
 	}
 	match.Table = name
 
-	match.CRUD = Delete
+	match.Action = Delete
 
 	return match, nil
 }

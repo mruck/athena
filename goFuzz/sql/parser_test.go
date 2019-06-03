@@ -127,3 +127,22 @@ func TestIntegerComparison(t *testing.T) {
 	require.Equal(t, "temp", match.Column)
 	require.Equal(t, "mytable", match.Table)
 }
+
+func TestParseCreate(t *testing.T) {
+	sql := `CREATE TABLE public.email_change_requests (
+	id integer NOT NULL,
+	user_id integer NOT NULL,
+	old_email character varying NOT NULL,
+	new_email character varying NOT NULL,
+	old_email_token_id integer,
+	new_email_token_id integer,
+	change_state integer NOT NULL,
+	created_at timestamp without time zone NOT NULL,
+	updated_at timestamp without time zone NOT NULL);`
+	match, err := parseQuery(sql, "active")
+	require.NoError(t, err)
+	require.Nil(t, match)
+	match, err = parseQuery(sql, "email_change_requests")
+	require.NoError(t, err)
+	require.Equal(t, "email_change_requests", match.Table)
+}
