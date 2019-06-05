@@ -9,8 +9,9 @@ import (
 
 const MongoDbPort = "27017"
 
-//MustGetHost returns the host platform for connecting to mongodb. Useful to tell if we are on k8s or local
-func MustGetHost() string {
+// getMongoHost returns the host platform for connecting to mongodb.
+// Useful to tell if we are on k8s or local
+func getMongoHost() string {
 	if runtime.GOOS == "linux" {
 		return "mongodb-service"
 	}
@@ -21,7 +22,7 @@ func MustGetHost() string {
 }
 
 func MustGetDatabase(port string, database string) *mgo.Database {
-	host := MustGetHost()
+	host := getMongoHost()
 	target := host + ":" + port
 	//TODO: Add context timeout
 	session, err := mgo.Dial(target)

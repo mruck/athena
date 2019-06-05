@@ -23,4 +23,6 @@ func TestStackTrace(t *testing.T) {
 
 func TestLogToFile(t *testing.T) {
 	Info("hello")
+	Error("this is an error")
+	Error("this is an error2")
 }

@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"runtime"
 
 	"github.com/mruck/athena/lib/log"
 	"github.com/pkg/errors"
@@ -22,17 +23,17 @@ func PrettyPrintStruct(data interface{}) {
 	fmt.Println(string(jsonified))
 }
 
-// dataDirectory is the default path for where athena data should be stored
-const dataDirectory = "/data/athena"
-
-// GetDataDirectory returns where custom Athena data should be stored,
+// GetLogPath returns where custom Athena data should be stored,
 // i.e. athena errors, parsed sql errors, etc
-func GetDataDirectory() string {
-	dataDir := os.Getenv("DATA_DIRECTORY")
-	if dataDir == "" {
-		return dataDirectory
+func GetLogPath() string {
+	path := os.Getenv("ATHENA_LOG_PATH")
+	if path == "" {
+		if runtime.GOOS == "darwin" {
+			return log.DevPath
+		}
+		return log.Path
 	}
-	return dataDir
+	return path
 }
 
 // MustGetTargetID returns the target id or panics

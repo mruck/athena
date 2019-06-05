@@ -1,24 +1,73 @@
 package log
 
 import (
+	"os"
+	"path/filepath"
+	"runtime"
+
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 var (
 	logger *zap.SugaredLogger
 )
 
+// Path is the default path for where athena data should be stored. This is the log path on
+// a k8s pod
+const Path = "/var/log/athena"
+
+// DevPath is the log path if we are local and deving (i.e. osx)
+const DevPath = "/tmp"
+
+// GetLogPath returns where custom Athena data should be stored,
+// i.e. athena errors, parsed sql errors, etc
+func getLogPath() string {
+	path := os.Getenv("ATHENA_LOG_PATH")
+	if path == "" {
+		if runtime.GOOS == "darwin" {
+			return DevPath
+		}
+		return Path
+	}
+	return path
+}
+
 func init() {
-	// If I want json logs use a production config
-	//config := zap.NewProductionConfig()
-	config := zap.NewDevelopmentConfig()
-	config.OutputPaths = []string{"stderr", "/var/log/athena/athena.log"}
-	config.DisableCaller = true
-	config.DisableStacktrace = false
-	log, err := config.Build()
+	// Define our level-handling logic.
+	highPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		return lvl >= zapcore.ErrorLevel
+	})
+	allPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		return true
+	})
+
+	// Get the files we want to log to
+	logPath := getLogPath()
+
+	name := filepath.Join(logPath, "debug.log")
+	dbgFile, err := os.OpenFile(name, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
 		panic(err)
 	}
+	name = filepath.Join(logPath, "error.log")
+	errFile, err := os.OpenFile(name, os.O_RDWR|os.O_CREATE, 0666)
+	if err != nil {
+		panic(err)
+	}
+	topicDebugging := zapcore.AddSync(dbgFile)
+	topicErrors := zapcore.AddSync(errFile)
+
+	// Create development configs
+	dbgEncoder := zapcore.NewJSONEncoder(zap.NewDevelopmentEncoderConfig())
+	errEncoder := zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
+
+	// Create our custom loggers
+	core := zapcore.NewTee(
+		zapcore.NewCore(dbgEncoder, topicDebugging, allPriority),
+		zapcore.NewCore(errEncoder, topicErrors, highPriority),
+	)
+	log := zap.New(core)
 	logger = log.Sugar()
 }
 
