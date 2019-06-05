@@ -148,3 +148,10 @@ func (mutator *Mutator) UpdateState(resp *http.Response) {
 		log.Error(err)
 	}
 }
+
+func (route *Route) LogError(err error) {
+	// Pretty print request that was sent
+	// (params, url, method) for context
+
+	// Log original error
+}

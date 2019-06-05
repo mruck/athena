@@ -1,6 +1,9 @@
 package sql
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 // CheckForSQLInj updates AnalyzedLog.VulnerableSQL
 func CheckForSQLInj(queries []string, params []string) {
@@ -21,6 +24,7 @@ func Search(queries []string, params []string) ([]TaintedQuery, error) {
 			}
 			taintedQuery, err := parseQuery(query, param)
 			if err != nil {
+				err = fmt.Errorf("error parsing query: %s\n%+v", query, err)
 				return nil, err
 			}
 			if taintedQuery != nil {

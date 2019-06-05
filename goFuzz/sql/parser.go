@@ -72,7 +72,7 @@ func parseNode(node sqlparser.SQLNode, param string) (*TaintedQuery, error) {
 	case *sqlparser.DDL:
 		return parseDDL(node, param)
 	}
-	err := fmt.Errorf("searching for params %q and hit unhandled node type: %T", param, node)
+	err := fmt.Errorf("searching for param %q and hit unhandled node type: %T", param, node)
 	util.PrettyPrintStruct(node)
 	return nil, errors.WithStack(err)
 }

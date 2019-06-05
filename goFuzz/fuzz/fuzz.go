@@ -8,6 +8,7 @@ import (
 	"github.com/mruck/athena/goFuzz/httpclient"
 	"github.com/mruck/athena/goFuzz/mutator"
 	"github.com/mruck/athena/goFuzz/route"
+	"github.com/mruck/athena/lib/log"
 	"github.com/mruck/athena/lib/util"
 	"github.com/pkg/errors"
 )
@@ -41,18 +42,21 @@ func Fuzz(client *httpclient.Client, routes []*route.Route, corpus []*route.Rout
 	for {
 		// Get next request
 		request := mutator.Next()
+
 		// No routes left to explore
 		if request == nil {
 			break
 		}
 
 		// Send it.
-		httpclient.PrettyPrintRequest(request)
 		resp, err := client.Do(request)
-		util.Must(err == nil, "%+v", errors.WithStack(err))
+		if err != nil {
+			log.Error(err)
+		}
 
 		// Collect our deltas
 		mutator.UpdateState(resp)
 	}
+
 	logStats(client, mutator)
 }
