@@ -6,7 +6,6 @@ import (
 	"github.com/mruck/athena/goFuzz/har"
 	"github.com/mruck/athena/goFuzz/param"
 	"github.com/mruck/athena/goFuzz/route"
-	"github.com/mruck/athena/lib/log"
 	"github.com/mruck/athena/lib/util"
 	"github.com/pkg/errors"
 )
@@ -39,7 +38,7 @@ func initializeRoute(route *route.Route, entry har.Entry) {
 	//initializeBodyParams(entry.Request.PostData.Params, route.State)
 	// TODO: initialize query strings and path params
 	//	util.PrettyPrintStruct(route.State)
-	//	fmt.Println("**********************************")
+	//	log.Infof("**********************************")
 	//	util.PrettyPrintStruct(entry.Request.PostData.Params)
 	//	os.Exit(1)
 	initializeHeaders()
@@ -57,7 +56,7 @@ func InitializeRoutes(routes []*route.Route, har *har.Har) ([]*route.Route, erro
 		route := route.FindRouteByPath(routes, url.Path, entry.Request.Method)
 		// We didn't find this route in the swagger spec
 		if route == nil {
-			log.Warnf("HAR route not found in swagger spec: %v %v\n", entry.Request.Method, url.Path)
+			//log.Warnf("HAR route not found in swagger spec: %v %v\n", entry.Request.Method, url.Path)
 			continue
 		}
 		// Initialize Har data inside route

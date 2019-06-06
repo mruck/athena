@@ -2,7 +2,6 @@ package fuzz
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 
 	"github.com/mruck/athena/goFuzz/httpclient"
@@ -28,10 +27,10 @@ func logStats(client *httpclient.Client, mutator *mutator.Mutator) {
 	codes, err := json.Marshal(stringified)
 	util.Must(err == nil, "%+v\n", errors.WithStack(err))
 
-	fmt.Println("Code Counts: ", string(codes))
-	fmt.Printf("Final Coverage: %v\n", mutator.Coverage.Cumulative)
-	fmt.Printf("Success Ratio: %v\n", successRatio)
-	fmt.Printf("Total Requests: %v\n", totalRequests)
+	log.Infof("Code Counts: %s", string(codes))
+	log.Infof("Final Coverage: %v\n", mutator.Coverage.Cumulative)
+	log.Infof("Success Ratio: %v\n", successRatio)
+	log.Infof("Total Requests: %v\n", totalRequests)
 
 }
 

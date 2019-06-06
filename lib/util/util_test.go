@@ -1,9 +1,9 @@
 package util
 
 import (
-	"fmt"
 	"testing"
 
+	"github.com/mruck/athena/lib/log"
 	"github.com/stretchr/testify/require"
 )
 
@@ -13,14 +13,14 @@ import (
 //   lines, err := ReadLines(fp)
 //   require.NoError(t, err)
 //   for _, line := range lines {
-//   	fmt.Println(line)
+//   	log.Infof(line)
 //   }
 
 func TestStringify(t *testing.T) {
 	float := 5.123
 	require.Equal(t, "5.123", Stringify(float))
 	letters := []string{"a", "b", "c"}
-	fmt.Println(Stringify(letters))
+	log.Infof(Stringify(letters))
 }
 
 // Test unmarshalling an empty file
@@ -30,6 +30,6 @@ func TestUnmarshalFileEmpty(t *testing.T) {
 	}
 	test := &Test{}
 	err := UnmarshalFile("foo.json", test)
-	fmt.Println(err)
-	fmt.Println(test)
+	log.Info(err)
+	log.Info(test)
 }

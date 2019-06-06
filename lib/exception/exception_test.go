@@ -4,12 +4,12 @@ package exception
 // docker run -p 27017:27017 mongo
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"testing"
 
 	"github.com/mruck/athena/lib/database"
+	"github.com/mruck/athena/lib/log"
 	"github.com/mruck/athena/lib/util"
 	"github.com/stretchr/testify/require"
 )
@@ -49,7 +49,7 @@ func TestWriteReadAll(t *testing.T) {
 	results, err := exceptions.GetAll("12345")
 	require.NoError(t, err)
 	for _, result := range results {
-		fmt.Println(result)
+		log.Info(result)
 	}
 }
 

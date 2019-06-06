@@ -74,7 +74,7 @@ func GeneratePrimitiveArray(items *spec.Items) interface{} {
 // GenerateSchema runs on body parameters, i.e in: body
 func GenerateSchema(schema spec.Schema) interface{} {
 	//util.PrettyPrintStruct(schema)
-	//fmt.Println("**************************")
+	//log.Infof("**************************")
 	if schema.Enum != nil {
 		return GenerateEnum(schema.Enum)
 	}

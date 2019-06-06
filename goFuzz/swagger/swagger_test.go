@@ -116,8 +116,8 @@ func tryOp(op *spec.Operation, method string, path string) {
 		return
 	}
 	data := map[string]interface{}{}
-	//fmt.Println("**************************************")
-	//fmt.Printf("Trying %s %s\n", method, path)
+	//log.Infof("**************************************")
+	//log.Infof("Trying %s %s\n", method, path)
 	//util.PrettyPrintStruct(op.Parameters)
 	for _, param := range op.Parameters {
 		data[param.Name] = GenerateAny(&param)

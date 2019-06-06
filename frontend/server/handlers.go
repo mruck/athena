@@ -6,6 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/mruck/athena/lib/exception"
+	"github.com/mruck/athena/lib/log"
 	"gopkg.in/mgo.v2"
 )
 
@@ -50,7 +51,7 @@ func (server *Server) Index(w http.ResponseWriter, r *http.Request) {
 func (server *Server) ExceptionsHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	targetID := vars["targetID"]
-	fmt.Printf("Target id: %v", targetID)
+	log.Infof("Target id: %v", targetID)
 
 	results, err := server.Exceptions.GetAll(targetID)
 	if err != nil {

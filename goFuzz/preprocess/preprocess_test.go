@@ -22,7 +22,7 @@ func TestCorpus(t *testing.T) {
 	_, err := InitializeRoutes(routes, harData)
 	require.NoError(t, err)
 	//	for _, route := range corpus {
-	//		fmt.Printf("%v %v\n", route.Method, route.Path)
+	//		log.Infof("%v %v\n", route.Method, route.Path)
 	//	}
 
 }

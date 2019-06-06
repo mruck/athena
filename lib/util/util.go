@@ -20,7 +20,7 @@ func PrettyPrintStruct(data interface{}) {
 		err = fmt.Errorf("failed to pretty print json: %v", err)
 		log.Fatal(err)
 	}
-	fmt.Println(string(jsonified))
+	log.Infof(string(jsonified))
 }
 
 // GetLogPath returns where custom Athena data should be stored,

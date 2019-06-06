@@ -1,7 +1,6 @@
 package mutator
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 
@@ -107,8 +106,8 @@ func (mutator *Mutator) UpdateState(resp *http.Response) {
 
 	// Update coverage
 	err := mutator.Coverage.Update()
-	fmt.Printf("Delta: %v\n", mutator.Coverage.Delta)
-	fmt.Printf("Cumulative: %v\n", mutator.Coverage.Cumulative)
+	log.Infof("Delta: %v", mutator.Coverage.Delta)
+	log.Infof("Cumulative: %v", mutator.Coverage.Cumulative)
 	if err != nil {
 		log.Error(err)
 		return

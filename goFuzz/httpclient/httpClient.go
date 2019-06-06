@@ -56,7 +56,7 @@ func (cli *Client) HealthCheck() (bool, error) {
 	}
 
 	for i := 0; i < maxAttempts; i++ {
-		fmt.Printf("Polling %v\n", url)
+		log.Infof("Polling %v\n", url)
 		resp, err := cli.Do(request)
 		// We errored out on our last attempt
 		if err != nil && i == maxAttempts-1 {
