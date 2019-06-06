@@ -1,7 +1,6 @@
 package coverage
 
 import (
-	"fmt"
 	"io/ioutil"
 	"testing"
 
@@ -36,8 +35,8 @@ func readCoverageInner(t *testing.T, file1 string, file2 string) {
 	require.True(t, coverage.Cumulative > 0)
 	oldDelta := coverage.Delta
 	oldCumulative := coverage.Cumulative
-	fmt.Printf("Delta percentage: %v\n", coverage.Delta)
-	fmt.Printf("Cumulative percentage: %v\n", coverage.Cumulative)
+	require.True(t, coverage.Delta > 0)
+	require.True(t, coverage.Cumulative > 0)
 
 	// Update coverage
 	err = util.CopyFile(tmp.Name(), file2)
@@ -46,9 +45,6 @@ func readCoverageInner(t *testing.T, file1 string, file2 string) {
 	// Read coverage again
 	err = coverage.Update()
 	require.NoError(t, err)
-
-	fmt.Printf("Delta percentage: %v\n", coverage.Delta)
-	fmt.Printf("Cumulative percentage: %v\n", coverage.Cumulative)
 
 	// Check we got more coverage
 	require.True(t, coverage.Delta > oldDelta)

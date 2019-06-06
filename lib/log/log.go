@@ -58,14 +58,19 @@ func init() {
 	topicDebugging := zapcore.AddSync(dbgFile)
 	topicErrors := zapcore.AddSync(errFile)
 
+	// Let's also log to stderr
+	consoleLog := zapcore.Lock(os.Stderr)
+	consoleEncoder := zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
+
 	// Create development configs
-	dbgEncoder := zapcore.NewJSONEncoder(zap.NewDevelopmentEncoderConfig())
+	dbgEncoder := zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
 	errEncoder := zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
 
 	// Create our custom loggers
 	core := zapcore.NewTee(
 		zapcore.NewCore(dbgEncoder, topicDebugging, allPriority),
 		zapcore.NewCore(errEncoder, topicErrors, highPriority),
+		zapcore.NewCore(consoleEncoder, consoleLog, allPriority),
 	)
 	log := zap.New(core)
 	logger = log.Sugar()
