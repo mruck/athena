@@ -52,7 +52,7 @@
           "-c",
           "logging_collector=on",
           "-c",
-          "log_directory=/var/log/athena",
+          "log_directory=/var/log/athena/postgres",
           "-c",
           "log_filename=postgres.log",
           "-c",
@@ -71,7 +71,7 @@
         "volumeMounts": [
           {
             "name": "postgreslog",
-            "mountPath": "/var/log/athena"
+            "mountPath": "/var/log/athena/postgres"
           }
         ],
         "resources": {
@@ -183,7 +183,7 @@
           },
           {
             "name": "postgreslog",
-            "mountPath": "/var/log/athena"
+            "mountPath": "/var/log/athena/postgres"
           }
         ]
       }

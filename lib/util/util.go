@@ -29,8 +29,10 @@ func GetLogPath() string {
 	path := os.Getenv("ATHENA_LOG_PATH")
 	if path == "" {
 		if runtime.GOOS == "darwin" {
+			// Development log path, i.e. /tmp on osx
 			return log.DevPath
 		}
+		// Production log path, i.e. /var/log/athena on k8s
 		return log.Path
 	}
 	return path

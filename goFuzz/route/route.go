@@ -91,3 +91,10 @@ func (route *Route) CurrentParams() []string {
 	}
 	return params
 }
+
+func (route *Route) LogError(err error) {
+	// Pretty print request that was sent
+	// (params, url, method) for context
+
+	// Log original error
+}
