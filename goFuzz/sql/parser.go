@@ -198,7 +198,7 @@ func parseDelete(stmt *sqlparser.Delete, param string) (*TaintedQuery, error) {
 }
 
 func parseQuery(query string, param string) (*TaintedQuery, error) {
-	stmt, err := sqlparser.Parse(query)
+	stmt, err := sqlparser.ParseStrictDDL(query)
 	//util.PrettyPrintStruct(stmt)
 	if err != nil {
 		return nil, errors.WithStack(err)
