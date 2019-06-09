@@ -130,12 +130,19 @@ func toStruct(query []string) jsonifiedQuery {
 
 }
 
+// TODO: pg emits this error msg a lot. right now i'm just
+// ignoring it but eventually I should figure it out and fix it
+const vagrantMsg = "role \"vagrant\" does not exist"
+
 // Triage the postgres log for hints, errors, etc
 func (log *Log) Triage() error {
 	for _, query := range log.queryMetadata {
 		isErr := isPostgresError(query[ErrorSeverity])
 		// Nothing went wrong
 		if !isErr {
+			continue
+		}
+		if query[Message] == vagrantMsg {
 			continue
 		}
 		data := toStruct(query)
