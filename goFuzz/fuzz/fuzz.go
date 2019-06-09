@@ -28,7 +28,7 @@ func logStats(client *httpclient.Client, mutator *mutator.Mutator) {
 	codes, err := json.Marshal(stringified)
 	util.Must(err == nil, "%+v\n", errors.WithStack(err))
 
-	fmt.Printf("Code Counts: %s", string(codes))
+	fmt.Printf("Code Counts: %s\n", string(codes))
 	fmt.Printf("Final Coverage: %v\n", mutator.Coverage.Cumulative)
 	fmt.Printf("Success Ratio: %v\n", successRatio)
 	fmt.Printf("Total Requests: %v\n", totalRequests)
