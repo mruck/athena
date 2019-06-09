@@ -58,6 +58,9 @@ func TestNext(t *testing.T) {
 	ts := "2019-05-27 14:47:57.840 UTC"
 	require.Equal(t, ts, records[last][LogTime])
 
+	// Triage
+	_ = pgReader.Triage()
+
 	// Update the csv and read again
 	err = util.CopyFile(tmp.Name(), cities2)
 	require.NoError(t, err)
@@ -75,4 +78,6 @@ func TestNext(t *testing.T) {
 		// reading after it)
 		require.NotEqual(t, ts, record[LogTime])
 	}
+	// Triage
+	_ = pgReader.Triage()
 }

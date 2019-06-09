@@ -1,8 +1,10 @@
 package postgres
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/mruck/athena/lib/util"
@@ -31,6 +33,9 @@ const LogPathEnvVar = "POSTGRES_LOG_PATH"
 // .csv for csv output
 const LogPath = "/var/log/athena/postgres/postgres.csv"
 
+// triaged postgres errors are written to this file
+const triagedLogFile = "triaged_postgres.log"
+
 // Postgres message severity levels taken from
 // https://www.postgresql.org/docs/9.2/runtime-config-logging.html
 // Table 18-1. Message Severity Levels
@@ -48,16 +53,23 @@ type Log struct {
 	lastTimeStamp string
 	// path to postgres log file
 	path string
-	// parsedErrors from postgres log are dumped to a file
-	parsedErrors *os.File
+	// triaged postgres log
+	triagedLog *os.File
 	// postgres log is a csv, each csv is loaded as []string
 	queryMetadata [][]string
 }
 
 // NewLog takes in the path to the postgres log and returns a postgres
 // load reader
-func NewLog() *Log {
-	return &Log{path: getPostgresLogPath()}
+func NewLog() *Log { // Open a file for logging triaged postgres errors
+	name := filepath.Join(util.GetLogPath(), triagedLogFile)
+	fp, err := os.OpenFile(name, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
+	util.Must(err == nil, "%+v\n", errors.WithStack(err))
+
+	return &Log{
+		path:       getPostgresLogPath(),
+		triagedLog: fp,
+	}
 }
 
 // Next reads the postgres queries starting at `timestamp`, extracts the raw queries
@@ -90,9 +102,60 @@ func (log *Log) Next() ([]string, error) {
 	return raw, nil
 }
 
+// jsonifiedQuery is for converting a query in array form to struct form
+type jsonifiedQuery struct {
+	LogTime       string
+	ErrorSeverity string
+	SQLStateCode  string
+	Message       string
+	Detail        string
+	Hint          string
+	InternalQuery string
+	Context       string
+	Query         string
+}
+
+func toStruct(query []string) jsonifiedQuery {
+	return jsonifiedQuery{
+		LogTime:       query[LogTime],
+		ErrorSeverity: query[ErrorSeverity],
+		SQLStateCode:  query[SQLStateCode],
+		Message:       query[Message],
+		Detail:        query[Detail],
+		Hint:          query[Hint],
+		InternalQuery: query[InternalQuery],
+		Context:       query[Context],
+		Query:         query[Query],
+	}
+
+}
+
 // Triage the postgres log for hints, errors, etc
 func (log *Log) Triage() error {
-	// Log hints, errors, etc to file
+	for _, query := range log.queryMetadata {
+		isErr := isPostgresError(query[ErrorSeverity])
+		// Nothing went wrong
+		if !isErr {
+			continue
+		}
+		data := toStruct(query)
+		JSONData, err := json.Marshal(data)
+		if err != nil {
+			//TODO: log error
+			return err
+		}
+		_, err = log.triagedLog.Write(JSONData)
+		if err != nil {
+			//TODO: log error
+			return err
+		}
+		_, err = log.triagedLog.Write([]byte("\n"))
+		if err != nil {
+			//TODO: log error
+			return err
+		}
+
+	}
 	return nil
 }
 

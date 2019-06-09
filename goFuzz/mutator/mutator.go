@@ -118,7 +118,7 @@ func (mutator *Mutator) UpdateState(resp *http.Response) error {
 		return err
 	}
 
-	// Triage postgres log
+	// Triage postgres log for errors, hints, etc
 	err = mutator.DBLog.Triage()
 	if err != nil {
 		return err
