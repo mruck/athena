@@ -5,8 +5,10 @@ import (
 
 	"github.com/go-openapi/spec"
 	"github.com/mruck/athena/goFuzz/har"
+	"github.com/mruck/athena/goFuzz/httpclient"
 	"github.com/mruck/athena/goFuzz/param"
 	"github.com/mruck/athena/goFuzz/sql"
+	"github.com/mruck/athena/lib/log"
 	"github.com/mruck/athena/lib/util"
 )
 
@@ -92,9 +94,16 @@ func (route *Route) CurrentParams() []string {
 	return params
 }
 
-func (route *Route) LogError(err error) {
+// LogError logs an error with the context of the most recent request sent
+func (route *Route) LogError(traceback error) {
+	// Get the most recent request sent
+	req, err := route.ToHTTPRequest()
+	if err != nil {
+		log.Warn(err)
+		return
+	}
 	// Pretty print request that was sent
-	// (params, url, method) for context
-
+	httpclient.PrettyPrintRequestError(req)
 	// Log original error
+	log.Error(traceback)
 }

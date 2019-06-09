@@ -60,7 +60,11 @@ func Fuzz(client *httpclient.Client, routes []*route.Route, corpus []*route.Rout
 		}
 
 		// Collect our deltas
-		mutator.UpdateState(resp)
+		err = mutator.UpdateState(resp)
+		if err != nil {
+			// Log the error with some additional context
+			mutator.LogError(err)
+		}
 	}
 
 	logStats(client, mutator)

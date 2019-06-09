@@ -134,3 +134,32 @@ func PrettyPrintRequest(req *http.Request) {
 	}
 
 }
+
+// PrettyPrintRequestError pretty prints http request as logger level error
+func PrettyPrintRequestError(req *http.Request) {
+	//log.SetFlags(log.LstdFlags | log.Lshortfile)
+	url := req.URL.Path
+	if req.Method == "GET" {
+		if req.URL.RawQuery != "" {
+			url += "?" + req.URL.RawQuery
+		}
+	}
+	log.Errorf("%v %v", req.Method, url)
+	if req.Body != nil {
+		b, err := ioutil.ReadAll(req.Body)
+		if err != nil {
+			log.Warnf("failed to read request: %+v", errors.WithStack(err))
+			return
+		}
+		dst := map[string]interface{}{}
+		err = json.Unmarshal(b, &dst)
+		if err != nil {
+			log.Warnf("%+v", errors.WithStack(err))
+		}
+		util.PrettyPrintStruct(dst)
+		// Reinitialize the reader
+		reader := strings.NewReader(string(b))
+		req.Body = ioutil.NopCloser(reader)
+	}
+
+}

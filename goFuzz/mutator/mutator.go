@@ -100,7 +100,7 @@ func (mutator *Mutator) currentRoute() *route.Route {
 
 // UpdateState parses the response and updates source code, parameter and
 // query coverage
-func (mutator *Mutator) UpdateState(resp *http.Response) {
+func (mutator *Mutator) UpdateState(resp *http.Response) error {
 	// Get current route
 	route := mutator.currentRoute()
 
@@ -109,30 +109,26 @@ func (mutator *Mutator) UpdateState(resp *http.Response) {
 	log.Infof("Delta: %v", mutator.Coverage.Delta)
 	log.Infof("Cumulative: %v", mutator.Coverage.Cumulative)
 	if err != nil {
-		log.Error(err)
-		return
+		return err
 	}
 
 	// Read log dumped by postgres
 	queries, err := mutator.DBLog.Next()
 	if err != nil {
-		log.Error(err)
-		return
+		return err
 	}
 
 	// Triage postgres log
 	err = mutator.DBLog.Triage()
 	if err != nil {
-		log.Error(err)
-		return
+		return err
 	}
 
 	// Search for params present in queries
 	params := route.CurrentParams()
 	taintedQueries, err := sql.Search(queries, params)
 	if err != nil {
-		log.Error(err)
-		return
+		return err
 	}
 
 	// Update route with tainted queries
@@ -142,8 +138,12 @@ func (mutator *Mutator) UpdateState(resp *http.Response) {
 	sql.CheckForSQLInj(queries, params)
 
 	// Store any new exceptions
-	err = mutator.ExceptionsManager.Update(route.Path, route.Method, mutator.TargetID)
-	if err != nil {
-		log.Error(err)
-	}
+	return mutator.ExceptionsManager.Update(route.Path, route.Method, mutator.TargetID)
+}
+
+// LogError logs an error with context from the most recent request sent
+func (mutator *Mutator) LogError(err error) {
+	// Get current route
+	route := mutator.currentRoute()
+	route.LogError(err)
 }

@@ -18,9 +18,21 @@ func PrettyPrintStruct(data interface{}) {
 	jsonified, err := json.MarshalIndent(data, "", "    ")
 	if err != nil {
 		err = fmt.Errorf("failed to pretty print json: %v", err)
-		log.Fatal(err)
+		log.Warn(err)
+		return
 	}
 	log.Infof(string(jsonified))
+}
+
+// PrettyPrintStructError prints a struct with logger level Error
+func PrettyPrintStructError(data interface{}) {
+	jsonified, err := json.MarshalIndent(data, "", "    ")
+	if err != nil {
+		err = fmt.Errorf("failed to pretty print json: %v", err)
+		log.Warn(err)
+		return
+	}
+	log.Error(string(jsonified))
 }
 
 // GetLogPath returns where custom Athena data should be stored,
