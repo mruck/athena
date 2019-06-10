@@ -33,3 +33,12 @@ func TestUnmarshalFileEmpty(t *testing.T) {
 	log.Info(err)
 	log.Info(test)
 }
+
+func TestReadLineByLine(t *testing.T) {
+	correctlines := []string{"line1", "line2"}
+	lines, err := ReadFileLineByLine("test/lines.txt")
+	require.NoError(t, err)
+	for i, line := range lines {
+		require.Equal(t, correctlines[i], line)
+	}
+}

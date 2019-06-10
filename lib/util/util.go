@@ -1,6 +1,7 @@
 package util
 
 import (
+	"bufio"
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
@@ -182,4 +183,20 @@ func CopyFile(dst string, src string) error {
 // PrintType prints the type of data
 func PrintType(data interface{}) {
 	log.Infof("Type = %T", data)
+}
+
+// ReadFileLineByLine opens a file and reads it line by line
+func ReadFileLineByLine(path string) ([]string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	defer file.Close()
+
+	lines := []string{}
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	return lines, scanner.Err()
 }
