@@ -1,6 +1,8 @@
 package postgres
 
 import (
+	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -12,7 +14,24 @@ import (
 const cities1 = "test/cities1.csv"
 const cities2 = "test/cities2.csv"
 
+// Warning: if you get a file pointer, delete the file, then write to the
+// file pointer, it doesn't error out!
+func TestRm(t *testing.T) {
+	name := "/tmp/test"
+	fp, err := os.OpenFile(name, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
+	require.NoError(t, err)
+	os.Remove(name)
+	// Should this write error because we removed the file?
+	n, err := fp.Write([]byte("hello"))
+	require.NoError(t, err)
+	fmt.Printf("%v bytes written\n", n)
+}
+
 func TestNext(t *testing.T) {
+	// Remove stale triaging files
+	path := "/tmp/" + triagedLogFile
+	os.Remove(path)
+
 	// Create a tmp file for the csv reader
 	tmp, err := ioutil.TempFile("/tmp", "")
 	require.NoError(t, err)
@@ -58,8 +77,21 @@ func TestNext(t *testing.T) {
 	ts := "2019-05-27 14:47:57.840 UTC"
 	require.Equal(t, ts, records[last][LogTime])
 
-	// Triage
-	_ = pgReader.Triage()
+	// Triage PG errors
+	correctMessages := []string{
+		"syntax error at or near \"(\"",
+		"column \"sunnyvale\" does not exist",
+	}
+	err = pgReader.Triage()
+	require.NoError(t, err)
+	lines, err := util.ReadFileLineByLine(path)
+	require.NoError(t, err)
+	for i, line := range lines {
+		jsonified := &jsonifiedQuery{}
+		err = json.Unmarshal([]byte(line), jsonified)
+		require.NoError(t, err)
+		require.Equal(t, correctMessages[i], jsonified.Message)
+	}
 
 	// Update the csv and read again
 	err = util.CopyFile(tmp.Name(), cities2)
@@ -78,6 +110,4 @@ func TestNext(t *testing.T) {
 		// reading after it)
 		require.NotEqual(t, ts, record[LogTime])
 	}
-	// Triage
-	_ = pgReader.Triage()
 }

@@ -25,6 +25,19 @@ const (
 	Query         = 19
 )
 
+// jsonifiedQuery is for converting a query in array form to struct form
+type jsonifiedQuery struct {
+	LogTime       string
+	ErrorSeverity string
+	SQLStateCode  string
+	Message       string
+	Detail        string
+	Hint          string
+	InternalQuery string
+	Context       string
+	Query         string
+}
+
 // LogPathEnvVar contains the postgres log path.
 const LogPathEnvVar = "POSTGRES_LOG_PATH"
 
@@ -100,19 +113,6 @@ func (log *Log) Next() ([]string, error) {
 	// Extract raw queries
 	raw := log.extractRawQueries()
 	return raw, nil
-}
-
-// jsonifiedQuery is for converting a query in array form to struct form
-type jsonifiedQuery struct {
-	LogTime       string
-	ErrorSeverity string
-	SQLStateCode  string
-	Message       string
-	Detail        string
-	Hint          string
-	InternalQuery string
-	Context       string
-	Query         string
 }
 
 func toStruct(query []string) jsonifiedQuery {
