@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/mruck/athena/lib/log"
 	"github.com/mruck/athena/lib/util"
 	"github.com/pkg/errors"
 )
@@ -135,7 +136,7 @@ func toStruct(query []string) jsonifiedQuery {
 const vagrantMsg = "role \"vagrant\" does not exist"
 
 // Triage the postgres log for hints, errors, etc
-func (pglog *PGLog) Triage() error {
+func (pglog *PGLog) Triage() {
 	for _, query := range pglog.queryMetadata {
 		isErr := isPostgresError(query[ErrorSeverity])
 		// Nothing went wrong
@@ -148,22 +149,15 @@ func (pglog *PGLog) Triage() error {
 		data := toStruct(query)
 		JSONData, err := json.Marshal(data)
 		if err != nil {
-			//TODO: log error
-			return err
+			log.Errorf("Failed to triage postgres log: %+v", errors.WithStack(err))
+			return
 		}
-		_, err = pglog.triagedLog.Write(JSONData)
+		_, err = pglog.triagedLog.Write(append(JSONData, '\n'))
 		if err != nil {
-			//TODO: log error
-			return err
+			log.Errorf("Failed to triage postgres log: %+v", errors.WithStack(err))
+			return
 		}
-		_, err = pglog.triagedLog.Write([]byte("\n"))
-		if err != nil {
-			//TODO: log error
-			return err
-		}
-
 	}
-	return nil
 }
 
 // extractRawQueries extracts the raw sql queries from the `message` field of

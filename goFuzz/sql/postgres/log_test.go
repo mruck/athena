@@ -81,7 +81,7 @@ func TestNext(t *testing.T) {
 		"syntax error at or near \"(\"",
 		"column \"sunnyvale\" does not exist",
 	}
-	err = pgReader.Triage()
+	pgReader.Triage()
 	require.NoError(t, err)
 	lines, err := util.ReadFileLineByLine(path)
 	require.NoError(t, err)
