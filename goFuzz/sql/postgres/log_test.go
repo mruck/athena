@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -22,9 +21,9 @@ func TestRm(t *testing.T) {
 	require.NoError(t, err)
 	os.Remove(name)
 	// Should this write error because we removed the file?
-	n, err := fp.Write([]byte("hello"))
+	_, err = fp.Write([]byte("hello"))
 	require.NoError(t, err)
-	fmt.Printf("%v bytes written\n", n)
+	//fmt.Printf("%v bytes written\n", n)
 }
 
 func TestNext(t *testing.T) {

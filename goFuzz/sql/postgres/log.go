@@ -59,9 +59,9 @@ const (
 	postgresWarning = "Warning"
 )
 
-// Log is responsible for reading the postgres log file
+// PGLog is responsible for reading the postgres log file
 // at `path` starting from `lastTimeStamp`
-type Log struct {
+type PGLog struct {
 	// last query read had this timestamp
 	lastTimeStamp string
 	// path to postgres log file
@@ -74,12 +74,12 @@ type Log struct {
 
 // NewLog takes in the path to the postgres log and returns a postgres
 // load reader
-func NewLog() *Log { // Open a file for logging triaged postgres errors
+func NewLog() *PGLog { // Open a file for logging triaged postgres errors
 	name := filepath.Join(util.GetLogPath(), triagedLogFile)
 	fp, err := os.OpenFile(name, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
 	util.Must(err == nil, "%+v\n", errors.WithStack(err))
 
-	return &Log{
+	return &PGLog{
 		path:       getPostgresLogPath(),
 		triagedLog: fp,
 	}
@@ -87,31 +87,31 @@ func NewLog() *Log { // Open a file for logging triaged postgres errors
 
 // Next reads the postgres queries starting at `timestamp`, extracts the raw queries
 // from the meta data for each query, and returns them
-func (log *Log) Next() ([]string, error) {
+func (pglog *PGLog) Next() ([]string, error) {
 	// Reset stale data
-	log.queryMetadata = [][]string{}
+	pglog.queryMetadata = [][]string{}
 
 	// Read the postgres log
-	records, err := util.LoadCSVFile(log.path)
+	records, err := util.LoadCSVFile(pglog.path)
 	if err != nil {
 		return nil, err
 	}
 
 	// Truncate so only read the most recent records
-	truncated, err := truncate(log.lastTimeStamp, records)
+	truncated, err := truncate(pglog.lastTimeStamp, records)
 	if err != nil {
 		return nil, err
 	}
-	log.queryMetadata = truncated
+	pglog.queryMetadata = truncated
 
 	// We read something new, update latest timestamp
 	if truncated != nil {
 		last := len(truncated) - 1
-		log.lastTimeStamp = records[last][LogTime]
+		pglog.lastTimeStamp = records[last][LogTime]
 	}
 
 	// Extract raw queries
-	raw := log.extractRawQueries()
+	raw := pglog.extractRawQueries()
 	return raw, nil
 }
 
@@ -135,8 +135,8 @@ func toStruct(query []string) jsonifiedQuery {
 const vagrantMsg = "role \"vagrant\" does not exist"
 
 // Triage the postgres log for hints, errors, etc
-func (log *Log) Triage() error {
-	for _, query := range log.queryMetadata {
+func (pglog *PGLog) Triage() error {
+	for _, query := range pglog.queryMetadata {
 		isErr := isPostgresError(query[ErrorSeverity])
 		// Nothing went wrong
 		if !isErr {
@@ -151,12 +151,12 @@ func (log *Log) Triage() error {
 			//TODO: log error
 			return err
 		}
-		_, err = log.triagedLog.Write(JSONData)
+		_, err = pglog.triagedLog.Write(JSONData)
 		if err != nil {
 			//TODO: log error
 			return err
 		}
-		_, err = log.triagedLog.Write([]byte("\n"))
+		_, err = pglog.triagedLog.Write([]byte("\n"))
 		if err != nil {
 			//TODO: log error
 			return err
@@ -171,11 +171,11 @@ func (log *Log) Triage() error {
 // messages that are not queries) and queries that errored out.  All queries are
 // prefixed with `statement`, so be sure to remove that, i.e.:
 // "statement: create table cities (name varchar(80), temp int);"
-func (log *Log) extractRawQueries() []string {
+func (pglog *PGLog) extractRawQueries() []string {
 	rawQueries := []string{}
 
 	// Extract the raw query
-	for _, query := range log.queryMetadata {
+	for _, query := range pglog.queryMetadata {
 
 		// Query errored out
 		if isPostgresError(query[ErrorSeverity]) {
