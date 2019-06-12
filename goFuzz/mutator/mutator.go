@@ -124,10 +124,7 @@ func (mutator *Mutator) UpdateState(resp *http.Response) error {
 	// Search for params present in queries
 	// TODO: current params should return map[string]string
 	params := route.CurrentParams()
-	taintedQueries, err := sql.Search(queries, params)
-	if err != nil {
-		return err
-	}
+	taintedQueries := sql.Search(queries, params)
 
 	// Update route with tainted queries
 	route.UpdateQueries(taintedQueries)

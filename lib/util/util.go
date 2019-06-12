@@ -25,6 +25,17 @@ func PrettyPrintStruct(data interface{}) {
 	log.Infof(string(jsonified))
 }
 
+// PrettyPrintStructInfo prints a struct with logger level Info
+func PrettyPrintStructInfo(data interface{}) {
+	jsonified, err := json.MarshalIndent(data, "", "    ")
+	if err != nil {
+		err = fmt.Errorf("failed to pretty print json: %v", err)
+		log.Warn(err)
+		return
+	}
+	log.Info(string(jsonified))
+}
+
 // PrettyPrintStructError prints a struct with logger level Error
 func PrettyPrintStructError(data interface{}) {
 	jsonified, err := json.MarshalIndent(data, "", "    ")
