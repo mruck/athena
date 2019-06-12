@@ -21,7 +21,7 @@ type Mutator struct {
 	Coverage          *coverage.Coverage
 	ExceptionsManager *exception.ExceptionsManager
 	TargetID          string
-	DBLog             *postgres.Log
+	DBLog             *postgres.PGLog
 }
 
 // New creates a new mutator
@@ -119,12 +119,10 @@ func (mutator *Mutator) UpdateState(resp *http.Response) error {
 	}
 
 	// Triage postgres log for errors, hints, etc
-	err = mutator.DBLog.Triage()
-	if err != nil {
-		return err
-	}
+	mutator.DBLog.Triage()
 
 	// Search for params present in queries
+	// TODO: current params should return map[string]string
 	params := route.CurrentParams()
 	taintedQueries, err := sql.Search(queries, params)
 	if err != nil {

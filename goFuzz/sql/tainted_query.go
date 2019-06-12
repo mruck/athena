@@ -24,4 +24,5 @@ type TaintedQuery struct {
 	Table  string
 	Column string
 	Action Action
+	Name   string
 }
