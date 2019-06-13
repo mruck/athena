@@ -36,7 +36,7 @@ func getLogPath() string {
 func init() {
 	// Define our level-handling logic.
 	highPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl >= zapcore.WarnLevel
+		return lvl >= zapcore.ErrorLevel
 	})
 	allPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		return true

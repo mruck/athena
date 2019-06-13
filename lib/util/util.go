@@ -9,10 +9,24 @@ import (
 	"io/ioutil"
 	"os"
 	"runtime"
+	"strings"
 
 	"github.com/mruck/athena/lib/log"
 	"github.com/pkg/errors"
 )
+
+// StringInSlice iterates over the list, checking if `a` contains
+// any element from the list. i.e. `a` maybe a full blown error string
+// like `failed to COPY from STDIN` and the list only has keywords
+// like `COPY`
+func StringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if strings.Contains(a, b) {
+			return true
+		}
+	}
+	return false
+}
 
 // PrettyPrintStruct prints a struct
 func PrettyPrintStruct(data interface{}) {
