@@ -80,10 +80,15 @@ func NewLog() *PGLog { // Open a file for logging triaged postgres errors
 	fp, err := os.OpenFile(name, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
 	util.Must(err == nil, "%+v\n", errors.WithStack(err))
 
-	return &PGLog{
+	pgLog := &PGLog{
 		path:       getPostgresLogPath(),
 		triagedLog: fp,
 	}
+	// Seek over all stale data so that we are pointing to the most recent
+	// queries
+	_, err = pgLog.Next()
+	util.Must(err == nil, "%+v\n", errors.WithStack(err))
+	return pgLog
 }
 
 // Next reads the postgres queries starting at `timestamp`, extracts the raw queries
