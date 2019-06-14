@@ -44,8 +44,16 @@ func New(routes []*route.Route, corpus []*route.Route) *Mutator {
 	}
 }
 
+var visited = false
+
 // User manually specified a route via env vars
 func (mutator *Mutator) manualRoute() *route.Route {
+	// We've been here before
+	if visited {
+		return nil
+	}
+	visited = true
+
 	routeEnvVar := os.Getenv("ROUTE")
 	if routeEnvVar == "" {
 		return nil
