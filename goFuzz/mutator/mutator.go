@@ -50,7 +50,8 @@ var visited = false
 func (mutator *Mutator) manualRoute() *route.Route {
 	// We've been here before
 	if visited {
-		return nil
+		os.Exit(1)
+		//return nil
 	}
 	visited = true
 
@@ -72,6 +73,7 @@ func (mutator *Mutator) manualRoute() *route.Route {
 		}
 	}
 	log.Infof("ROUTE=%s METHOD=%s but couldn't find a match", routeEnvVar, method)
+	os.Exit(1)
 	return nil
 }
 
