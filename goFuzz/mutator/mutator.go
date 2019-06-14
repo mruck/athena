@@ -45,13 +45,16 @@ func New(routes []*route.Route, corpus []*route.Route) *Mutator {
 }
 
 var visited = false
+var shouldExit = false
 
 // User manually specified a route via env vars
 func (mutator *Mutator) manualRoute() *route.Route {
 	// We've been here before
 	if visited {
-		os.Exit(1)
-		//return nil
+		if shouldExit {
+			os.Exit(1)
+		}
+		return nil
 	}
 	visited = true
 
@@ -68,6 +71,8 @@ func (mutator *Mutator) manualRoute() *route.Route {
 		if route.Path == routeEnvVar {
 			if route.Method == method {
 				mutator.routeIndex = i
+				// Hit route once then exit
+				shouldExit = true
 				return route
 			}
 		}
