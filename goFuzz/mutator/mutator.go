@@ -44,24 +44,36 @@ func New(routes []*route.Route, corpus []*route.Route) *Mutator {
 	}
 }
 
-func (mutator *Mutator) specialRoute() *route.Route {
+// User manually specified a route via env vars
+func (mutator *Mutator) manualRoute() *route.Route {
 	routeEnvVar := os.Getenv("ROUTE")
 	if routeEnvVar == "" {
 		return nil
 	}
-	for _, route := range mutator.Routes {
+	method := os.Getenv("METHOD")
+	if method == "" {
+		return nil
+	}
+
+	for i, route := range mutator.Routes {
 		if route.Path == routeEnvVar {
-			return route
+			if route.Method == method {
+				mutator.routeIndex = i
+				return route
+			}
 		}
 	}
-	log.Info("ROUTE env var set but didn't find")
+	log.Infof("ROUTE=%s METHOD=%s but couldn't find a match", routeEnvVar, method)
 	return nil
 }
 
 // Mutate picks the next route and mutates the parameters
 func (mutator *Mutator) Mutate() *route.Route {
 	// User specified route
-	if route := mutator.specialRoute(); route != nil {
+	if route := mutator.manualRoute(); route != nil {
+		// Populate params
+		route.Mutate()
+		log.Infof("%v %v", route.Method, route.Path)
 		return route
 	}
 
@@ -74,14 +86,18 @@ func (mutator *Mutator) Mutate() *route.Route {
 		}
 	}
 	route := mutator.Routes[mutator.routeIndex]
+
 	// Mutate each parameter
 	route.Mutate()
+	log.Infof("%v %v", route.Method, route.Path)
 	return route
 }
 
 // Next picks the route, mutates the parameters, and formats it as a request
 func (mutator *Mutator) Next() *http.Request {
+	// Ask the mutator for the next route
 	route := mutator.Mutate()
+
 	// We are done
 	if route == nil {
 		return nil
