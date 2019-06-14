@@ -46,12 +46,12 @@ func init() {
 	logPath := getLogPath()
 
 	name := filepath.Join(logPath, "debug.log")
-	dbgFile, err := os.OpenFile(name, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
+	dbgFile, err := os.OpenFile(name, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		panic(err)
 	}
 	name = filepath.Join(logPath, "error.log")
-	errFile, err := os.OpenFile(name, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
+	errFile, err := os.OpenFile(name, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		panic(err)
 	}
