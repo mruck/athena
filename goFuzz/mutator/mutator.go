@@ -33,6 +33,10 @@ func New(routes []*route.Route, corpus []*route.Route) *Mutator {
 	// Make the order deterministic for debugging.  Order routes alphabetically
 	route.Order(routes)
 
+	// Get a new pg log and seek to the end
+	pgLog := postgres.NewLog()
+	pgLog.Seek()
+
 	// TODO: do something with the corpus
 	return &Mutator{
 		Routes:            routes,
@@ -40,7 +44,7 @@ func New(routes []*route.Route, corpus []*route.Route) *Mutator {
 		Coverage:          coverage.New(coverage.Path),
 		ExceptionsManager: manager,
 		TargetID:          util.MustGetTargetID(),
-		DBLog:             postgres.NewLog(),
+		DBLog:             pgLog,
 	}
 }
 
