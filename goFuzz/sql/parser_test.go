@@ -146,3 +146,9 @@ func TestParseCreate(t *testing.T) {
 	//require.NoError(t, err)
 	//require.Equal(t, "email_change_requests", match.Table)
 }
+
+func TestSetVal(t *testing.T) {
+	sql := "SELECT pg_catalog.setval('public.categories_id_seq', 4, true);"
+	_, err := parseQuery(sql, "true")
+	require.Nil(t, err)
+}

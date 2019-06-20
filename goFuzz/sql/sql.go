@@ -15,9 +15,9 @@ func CheckForSQLInj(queries []string, params map[string]string) {
 }
 
 // whitelistErrors contains acceptable sql parsing errors
-var whitelistErrors = []string{}
+var whitelistErrors = []string{"COPY", "CREATE TABLE"}
 
-//var whitelistErrors = []string{"COPY", "CREATE TABLE"}
+//var whitelistErrors = []string{}
 
 // triageError checks if the error is in our whitelist of acceptable errors,
 // emitting a warning if it's not severe, otherwise returning the err so it can
@@ -44,7 +44,7 @@ func Search(queries []string, params map[string]string) ([]TaintedQuery, error) 
 			if !strings.Contains(query, val) {
 				continue
 			}
-			log.Infof("Matched param \"%s\" with value \"%s\" in query:\n%v", name, val, query)
+			//log.Infof("Matched param \"%s\" with value \"%s\" in query:\n%v", name, val, query)
 			taintedQuery, err := parseQuery(query, val)
 			if err != nil {
 				err = fmt.Errorf("error searching for param %s with value %v in query:\n%s\n%+v", name, val, query, err)

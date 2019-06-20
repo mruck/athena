@@ -118,6 +118,12 @@ func parseTableName(exprs sqlparser.TableExprs) (string, error) {
 }
 
 func parseSelect(stmt *sqlparser.Select, param string) (*TaintedQuery, error) {
+	// TODO: this can happen with statements like:
+	// "SELECT pg_catalog.setval('public.categories_id_seq', 4, true);"
+	// Right now we ignore, should we handle
+	if stmt.Where == nil {
+		return nil, nil
+	}
 	match, err := parseNode(stmt.Where, param)
 	if err != nil {
 		return nil, err
@@ -198,6 +204,9 @@ func parseDelete(stmt *sqlparser.Delete, param string) (*TaintedQuery, error) {
 }
 
 func parseQuery(query string, param string) (*TaintedQuery, error) {
+	// TODO: log to a file in case we segfault parsing, then we can unit test
+	// broken query
+	log.Info(query)
 	stmt, err := sqlparser.ParseStrictDDL(query)
 	if err != nil {
 		return nil, errors.WithStack(err)
