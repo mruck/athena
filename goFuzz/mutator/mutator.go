@@ -22,6 +22,8 @@ type Mutator struct {
 	ExceptionsManager *exception.ExceptionsManager
 	TargetID          string
 	DBLog             *postgres.PGLog
+	// user specified route via env vars ROUTE and METHOD
+	userRoute *route.Route
 }
 
 // New creates a new mutator
@@ -37,8 +39,7 @@ func New(routes []*route.Route, corpus []*route.Route) *Mutator {
 	pgLog := postgres.NewLog()
 	pgLog.Seek()
 
-	// TODO: do something with the corpus
-	return &Mutator{
+	mutator := &Mutator{
 		Routes:            routes,
 		routeIndex:        -1,
 		Coverage:          coverage.New(coverage.Path),
@@ -46,58 +47,50 @@ func New(routes []*route.Route, corpus []*route.Route) *Mutator {
 		TargetID:          util.MustGetTargetID(),
 		DBLog:             pgLog,
 	}
+
+	// Check if user specified route, and if so update our mutator to reflect that
+	mutator.getUserRoute()
+
+	return mutator
 }
 
-var visited = false
-var shouldExit = false
-
-// User manually specified a route via env vars
-func (mutator *Mutator) manualRoute() *route.Route {
-	// We've been here before
-	if visited {
-		if shouldExit {
-			os.Exit(1)
-		}
-		return nil
-	}
-	visited = true
-
+// get user specified route
+func (mutator *Mutator) getUserRoute() {
 	routeEnvVar := os.Getenv("ROUTE")
 	if routeEnvVar == "" {
-		return nil
+		return
 	}
 	method := os.Getenv("METHOD")
 	if method == "" {
-		return nil
+		return
 	}
 
 	for i, route := range mutator.Routes {
 		if route.Path == routeEnvVar {
 			if route.Method == method {
-				mutator.routeIndex = i
-				// Hit route once then exit
-				shouldExit = true
-				return route
+				// On mutator we increment the index, so start at -1
+				mutator.routeIndex = i - 1
+				mutator.userRoute = route
+				return
 			}
 		}
 	}
 	log.Infof("ROUTE=%s METHOD=%s but couldn't find a match", routeEnvVar, method)
 	os.Exit(1)
-	return nil
 }
 
 // Mutate picks the next route and mutates the parameters
 func (mutator *Mutator) Mutate() *route.Route {
-	// User specified route
-	if route := mutator.manualRoute(); route != nil {
-		// Populate params
-		route.Mutate()
-		return route
-	}
-
 	// We didn't get new coverage, next route
 	if mutator.Coverage.Delta == 0 {
 		mutator.routeIndex++
+		// A user specified route was provided
+		if mutator.userRoute != nil {
+			// We are done mutating the user specified route so we are done here
+			if mutator.Routes[mutator.routeIndex] != mutator.userRoute {
+				return nil
+			}
+		}
 		// We've exhausted all routes
 		if mutator.routeIndex >= len(mutator.Routes) {
 			return nil
