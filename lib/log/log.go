@@ -9,6 +9,9 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+// Fn typedefs a logging function so it can be passed around
+type Fn func(string, ...interface{})
+
 var (
 	logger *zap.SugaredLogger
 )

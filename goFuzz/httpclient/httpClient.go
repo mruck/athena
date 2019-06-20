@@ -127,7 +127,7 @@ func PrettyPrintRequest(req *http.Request) {
 		dst := map[string]interface{}{}
 		err = json.Unmarshal(b, &dst)
 		util.Must(err == nil, "%+v\n", errors.WithStack(err))
-		util.PrettyPrintStruct(dst)
+		util.PrettyPrintStruct(dst, nil)
 		// Reinitialize the reader
 		reader := strings.NewReader(string(b))
 		req.Body = ioutil.NopCloser(reader)
@@ -156,7 +156,7 @@ func PrettyPrintRequestError(req *http.Request) {
 		if err != nil {
 			log.Warnf("%+v", errors.WithStack(err))
 		}
-		util.PrettyPrintStruct(dst)
+		util.PrettyPrintStruct(dst, nil)
 		// Reinitialize the reader
 		reader := strings.NewReader(string(b))
 		req.Body = ioutil.NopCloser(reader)

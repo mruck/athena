@@ -60,7 +60,6 @@ func TestArrayWithObj(t *testing.T) {
 	//        }
 	//    ]
 	//   }
-	//util.PrettyPrintStruct(obj)
 	val, ok := obj["body"]
 	require.True(t, ok)
 	//    val = [
@@ -69,10 +68,8 @@ func TestArrayWithObj(t *testing.T) {
 	//            "firstName": "c61c2dc1-e0ad-4a88-881f-f5f9d513fcf4",
 	//        }
 	//          ]
-	//util.PrettyPrintStruct(val)
 	arr, ok := val.([]interface{})
 	require.True(t, ok)
-	//util.PrettyPrintStruct(arr)
 	items, ok := arr[0].(map[string]interface{})
 	require.True(t, ok)
 	_, ok = items["email"]
@@ -118,11 +115,9 @@ func tryOp(op *spec.Operation, method string, path string) {
 	data := map[string]interface{}{}
 	//log.Infof("**************************************")
 	//log.Infof("Trying %s %s\n", method, path)
-	//util.PrettyPrintStruct(op.Parameters)
 	for _, param := range op.Parameters {
 		data[param.Name] = GenerateAny(&param)
 	}
-	//util.PrettyPrintStruct(data)
 }
 
 // TestPetStore generates params for all of pet store
@@ -155,7 +150,6 @@ func TestDiscourse(t *testing.T) {
 
 func TestReadSwagger(t *testing.T) {
 	swagger := ReadSwagger("../tests/dummySwagger.json")
-	//util.PrettyPrintStruct(swagger)
 	// Check that a field is correct
 	description := swagger.Paths.Paths["/categories.json"].Post.Description
 	require.Equal(t, "Create a new category", description)
@@ -164,5 +158,4 @@ func TestReadSwagger(t *testing.T) {
 // Just make sure we don't hit an unmarshaling error
 func TestReadDiscourseSwagger(t *testing.T) {
 	_ = ReadSwagger("../tests/discourseSwagger.json")
-	//util.PrettyPrintStruct(swagger)
 }

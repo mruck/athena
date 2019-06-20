@@ -36,7 +36,6 @@ func GenerateObj(properties map[string]spec.Schema) map[string]interface{} {
 // GenerateArray generates an array of any type (including object)
 func GenerateArray(items *spec.SchemaOrArray) []interface{} {
 	schema := items.Schema
-	//util.PrettyPrintStruct(schema)
 	if schema == nil {
 		err := fmt.Errorf("unhandled: SchemaOrArray is array")
 		log.Fatalf("%+v\n", errors.WithStack(err))
@@ -73,8 +72,6 @@ func GeneratePrimitiveArray(items *spec.Items) interface{} {
 
 // GenerateSchema runs on body parameters, i.e in: body
 func GenerateSchema(schema spec.Schema) interface{} {
-	//util.PrettyPrintStruct(schema)
-	//log.Infof("**************************")
 	if schema.Enum != nil {
 		return GenerateEnum(schema.Enum)
 	}
@@ -122,12 +119,9 @@ func Generate(swaggerPath string, path string, method string) (map[string]interf
 		return nil, err
 	}
 
-	//util.PrettyPrintStruct(op)
 	obj := GenerateAny(&op.Parameters[0])
-	//util.PrettyPrintStruct(obj)
 
 	final := map[string]interface{}{}
 	final[op.Parameters[0].Name] = obj
-	//	util.PrettyPrintStruct(final)
 	return final, nil
 }

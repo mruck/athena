@@ -15,7 +15,7 @@ func CheckForSQLInj(queries []string, params map[string]string) {
 }
 
 // whitelistErrors contains acceptable sql parsing errors
-var whitelistErrors = []string{"COPY"}
+var whitelistErrors = []string{}
 
 //var whitelistErrors = []string{"COPY", "CREATE TABLE"}
 
@@ -58,7 +58,7 @@ func Search(queries []string, params map[string]string) ([]TaintedQuery, error) 
 			if taintedQuery != nil {
 				taintedQuery.Name = name
 				log.Infof("Tainted query:")
-				util.PrettyPrintStructInfo(taintedQuery)
+				util.PrettyPrintStruct(taintedQuery, nil)
 				taintedQueries = append(taintedQueries, *taintedQuery)
 			}
 		}

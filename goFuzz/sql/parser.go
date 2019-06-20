@@ -73,7 +73,7 @@ func parseNode(node sqlparser.SQLNode, param string) (*TaintedQuery, error) {
 		return parseDDL(node, param)
 	}
 	err := fmt.Errorf("searching for param %q and hit unhandled node type: %T", param, node)
-	util.PrettyPrintStruct(node)
+	util.PrettyPrintStruct(node, log.Errorf)
 	return nil, errors.WithStack(err)
 }
 
@@ -199,10 +199,8 @@ func parseDelete(stmt *sqlparser.Delete, param string) (*TaintedQuery, error) {
 
 func parseQuery(query string, param string) (*TaintedQuery, error) {
 	stmt, err := sqlparser.ParseStrictDDL(query)
-	//util.PrettyPrintStruct(stmt)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	//util.PrettyPrintStruct(stmt)
 	return parseNode(stmt, param)
 }

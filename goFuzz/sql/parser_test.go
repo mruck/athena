@@ -80,7 +80,6 @@ func TestDelete(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "name", match.Column)
 	require.Equal(t, "cities", match.Table)
-	//util.PrettyPrintStruct(match)
 }
 
 // Test update statement with nested select

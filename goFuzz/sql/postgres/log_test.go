@@ -68,7 +68,6 @@ func TestNext(t *testing.T) {
 		// These fields should always be present
 		require.NotNil(t, record[LogTime])
 		require.NotNil(t, record[Message])
-		//	util.PrettyPrintStruct(record)
 	}
 
 	// Check that the last ts is present
