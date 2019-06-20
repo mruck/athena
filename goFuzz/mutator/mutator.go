@@ -92,7 +92,6 @@ func (mutator *Mutator) Mutate() *route.Route {
 	if route := mutator.manualRoute(); route != nil {
 		// Populate params
 		route.Mutate()
-		log.Infof("%v %v", route.Method, route.Path)
 		return route
 	}
 
@@ -108,7 +107,6 @@ func (mutator *Mutator) Mutate() *route.Route {
 
 	// Mutate each parameter
 	route.Mutate()
-	log.Infof("%v %v", route.Method, route.Path)
 	return route
 }
 
@@ -141,6 +139,7 @@ func (mutator *Mutator) UpdateState(resp *http.Response) error {
 
 	// Update coverage
 	err := mutator.Coverage.Update()
+	route.PrettyPrint(nil)
 	log.Infof("Delta: %v", mutator.Coverage.Delta)
 	log.Infof("Cumulative: %v", mutator.Coverage.Cumulative)
 	if err != nil {

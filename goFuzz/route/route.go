@@ -94,18 +94,45 @@ func (route *Route) CurrentParams() map[string]string {
 	return params
 }
 
-// LogError logs an error with the context of the most recent request sent
-func (route *Route) LogError(traceback error) {
+// hasPathParams checks whether or not a route has path params
+func (route *Route) hasPathParams() bool {
+	for _, param := range route.State {
+		if param.In == "path" {
+			return true
+		}
+	}
+	return false
+}
+
+// PrettyPrint most recent request sent at log level specified or level `info`
+// if level is nil
+func (route *Route) PrettyPrint(logFn log.Fn) {
+	if logFn == nil {
+		logFn = log.Infof
+	}
+
 	// Get the most recent request sent
 	req, err := route.ToHTTPRequest()
 	if err != nil {
 		log.Warn(err)
 		return
 	}
-	// Print the canonicalized path i.e. /about/{type}.json
-	log.Error(route.Path)
-	// Pretty print request that was sent
-	httpclient.PrettyPrintRequest(req, log.Errorf)
+
+	if route.hasPathParams() {
+		// Print the canonicalized path i.e. /about/{type}.json
+		logFn("%s %s", route.Method, route.Path)
+	}
+
+	// Pretty print request that was sest
+	httpclient.PrettyPrintRequest(req, logFn)
+}
+
+// LogError logs an error with the context of the most recent request sent
+func (route *Route) LogError(traceback error) {
+
+	// Print the context
+	route.PrettyPrint(log.Errorf)
+
 	// Log original error
 	log.Error(traceback)
 }
