@@ -105,7 +105,7 @@ func (route *Route) LogError(traceback error) {
 	// Print the canonicalized path i.e. /about/{type}.json
 	log.Error(route.Path)
 	// Pretty print request that was sent
-	httpclient.PrettyPrintRequestError(req)
+	httpclient.PrettyPrintRequest(req, log.Errorf)
 	// Log original error
 	log.Error(traceback)
 }

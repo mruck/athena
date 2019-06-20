@@ -111,40 +111,19 @@ func (cli *Client) DoAll(requests []*http.Request) error {
 	return nil
 }
 
-// PrettyPrintRequest pretty prints http request
-func PrettyPrintRequest(req *http.Request) {
-	//log.SetFlags(log.LstdFlags | log.Lshortfile)
+// PrettyPrintRequest pretty prints http request at log level passed in
+// or info if nil
+func PrettyPrintRequest(req *http.Request, logFn log.Fn) {
+	if logFn == nil {
+		logFn = log.Infof
+	}
 	url := req.URL.Path
 	if req.Method == "GET" {
 		if req.URL.RawQuery != "" {
 			url += "?" + req.URL.RawQuery
 		}
 	}
-	log.Infof("%v %v", req.Method, url)
-	if req.Body != nil {
-		b, err := ioutil.ReadAll(req.Body)
-		util.Must(err == nil, "%+v\n", errors.WithStack(err))
-		dst := map[string]interface{}{}
-		err = json.Unmarshal(b, &dst)
-		util.Must(err == nil, "%+v\n", errors.WithStack(err))
-		util.PrettyPrintStruct(dst, nil)
-		// Reinitialize the reader
-		reader := strings.NewReader(string(b))
-		req.Body = ioutil.NopCloser(reader)
-	}
-
-}
-
-// PrettyPrintRequestError pretty prints http request as logger level error
-func PrettyPrintRequestError(req *http.Request) {
-	//log.SetFlags(log.LstdFlags | log.Lshortfile)
-	url := req.URL.Path
-	if req.Method == "GET" {
-		if req.URL.RawQuery != "" {
-			url += "?" + req.URL.RawQuery
-		}
-	}
-	log.Errorf("%v %v", req.Method, url)
+	logFn("%v %v", req.Method, url)
 	if req.Body != nil {
 		b, err := ioutil.ReadAll(req.Body)
 		if err != nil {
@@ -156,7 +135,7 @@ func PrettyPrintRequestError(req *http.Request) {
 		if err != nil {
 			log.Warnf("%+v", errors.WithStack(err))
 		}
-		util.PrettyPrintStruct(dst, nil)
+		util.PrettyPrintStruct(dst, logFn)
 		// Reinitialize the reader
 		reader := strings.NewReader(string(b))
 		req.Body = ioutil.NopCloser(reader)
