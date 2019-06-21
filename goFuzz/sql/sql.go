@@ -15,7 +15,7 @@ func CheckForSQLInj(queries []string, params map[string]string) {
 }
 
 // whitelistErrors contains acceptable sql parsing errors
-var whitelistErrors = []string{"COPY", "CREATE TABLE"}
+var whitelistErrors = []string{"COPY", "CREATE TABLE", "COMMENT ON COLUMN"}
 
 //var whitelistErrors = []string{}
 
