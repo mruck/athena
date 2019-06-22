@@ -70,7 +70,8 @@ func GeneratePrimitiveArray(items *spec.Items) interface{} {
 	return obj
 }
 
-// GenerateSchema runs on body parameters, i.e in: body
+// GenerateSchema generates fake data for body parameters
+// (i.e. in: body)
 func GenerateSchema(schema spec.Schema) interface{} {
 	if schema.Enum != nil {
 		return GenerateEnum(schema.Enum)
@@ -100,8 +101,7 @@ func GenerateParam(param *spec.Parameter) interface{} {
 	return util.Rand(param.Type)
 }
 
-// GenerateAny runs on all params, distinguishing between
-// body params and all other params
+// GenerateAny generates fake data for all param types
 func GenerateAny(param *spec.Parameter) interface{} {
 	// Handle body
 	if param.In == "body" {
