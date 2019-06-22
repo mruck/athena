@@ -10,7 +10,7 @@ import (
 )
 
 // CheckForSQLInj updates AnalyzedLog.VulnerableSQL
-func CheckForSQLInj(queries []string, params map[string]string) {
+func CheckForSQLInj(queries []string, params []string) {
 	// Log to file
 }
 
@@ -32,22 +32,22 @@ func triageError(err error) error {
 }
 
 // Search for user tainted queries
-func Search(queries []string, params map[string]string) ([]TaintedQuery, error) {
+func Search(queries []string, params []string) ([]TaintedQuery, error) {
 	errs := utils.NewMultiErrors()
 	if len(queries) == 0 || len(params) == 0 {
 		return nil, nil
 	}
 	taintedQueries := []TaintedQuery{}
 	for _, query := range queries {
-		for name, val := range params {
+		for _, param := range params {
 			// Do a simple string check before searching
-			if !strings.Contains(query, val) {
+			if !strings.Contains(query, param) {
 				continue
 			}
 			//log.Infof("Matched param \"%s\" with value \"%s\" in query:\n%v", name, val, query)
-			taintedQuery, err := parseQuery(query, val)
+			taintedQuery, err := parseQuery(query, param)
 			if err != nil {
-				err = fmt.Errorf("error searching for param %s with value %v in query:\n%s\n%+v", name, val, query, err)
+				err = fmt.Errorf("error searching for param value %v in query:\n%s\n%+v", param, query, err)
 				err = triageError(err)
 				if err != nil {
 					errs.Add(err)
@@ -56,7 +56,6 @@ func Search(queries []string, params map[string]string) ([]TaintedQuery, error) 
 				break
 			}
 			if taintedQuery != nil {
-				taintedQuery.Name = name
 				log.Infof("Tainted query:")
 				util.PrettyPrintStruct(taintedQuery, nil)
 				taintedQueries = append(taintedQueries, *taintedQuery)

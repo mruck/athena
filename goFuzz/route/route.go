@@ -74,9 +74,8 @@ func (route *Route) UpdateQueries(queries []sql.TaintedQuery) {
 }
 
 // CurrentParams stringifies the most recent params sent and returns them as a list
-// TODO: return key val list in case params are the same
-func (route *Route) CurrentParams() map[string]string {
-	params := map[string]string{}
+func (route *Route) CurrentParams() []string {
+	params := []string{}
 	for _, param := range route.Params {
 		// We never set this parameter
 		if param.Next == nil {
@@ -85,7 +84,7 @@ func (route *Route) CurrentParams() map[string]string {
 		// This is a query or path parameter
 		if param.In == "query" || param.In == "path" {
 			stringified := util.Stringify(param.Next)
-			params[param.Name] = stringified
+			params = append(params, stringified)
 			continue
 		}
 		// This is a body parameter
