@@ -16,7 +16,7 @@ import (
 // on the same path
 type SiblingMethod struct {
 	Method string
-	State  *[]*param.State
+	Param  *[]*param.Param
 }
 
 // Route contains static information from a swagger, and dynamic mutation state
@@ -30,7 +30,7 @@ type Route struct {
 	// value for field in Spec.Swagger.Path.Path[Path].Get
 	Meta *spec.Operation
 	// Mutation state for each parameter object
-	State          []*param.State
+	Params         []*param.Param
 	SiblingMethods *[]*SiblingMethod
 	// Har entries for this route
 	Entries *[]har.Entry
@@ -40,7 +40,7 @@ type Route struct {
 // then allocates a route with this information
 func New(path string, method string, meta *spec.Operation, siblingMethods *[]*SiblingMethod) *Route {
 	// Initialize object to keep track of state for each param
-	state := param.InitializeParamState(meta.Parameters)
+	params := param.InitializeParamState(meta.Parameters)
 
 	// Allocate an object to keep track of har entries for the route
 	entries := &[]har.Entry{}
@@ -58,13 +58,13 @@ func New(path string, method string, meta *spec.Operation, siblingMethods *[]*Si
 	//*siblingMethods = append(*siblingMethods, sibling)
 
 	return &Route{Path: path, Method: method, Meta: meta,
-		State: state, Re: re, Entries: entries}
+		Params: params, Re: re, Entries: entries}
 }
 
-// Mutate mutates parameters in a route, setting param.State.Next
+// Mutate mutates parameters in a route, setting param.Next
 // for each parameter, or nil if the paramater shouldn't be sent
 func (route *Route) Mutate() {
-	for _, param := range route.State {
+	for _, param := range route.Params {
 		param.Mutate()
 	}
 }
@@ -77,7 +77,7 @@ func (route *Route) UpdateQueries(queries []sql.TaintedQuery) {
 // TODO: return key val list in case params are the same
 func (route *Route) CurrentParams() map[string]string {
 	params := map[string]string{}
-	for _, param := range route.State {
+	for _, param := range route.Params {
 		// We never set this parameter
 		if param.Next == nil {
 			continue
@@ -96,7 +96,7 @@ func (route *Route) CurrentParams() map[string]string {
 
 // hasPathParams checks whether or not a route has path params
 func (route *Route) hasPathParams() bool {
-	for _, param := range route.State {
+	for _, param := range route.Params {
 		if param.In == "path" {
 			return true
 		}

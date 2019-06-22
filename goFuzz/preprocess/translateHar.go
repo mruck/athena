@@ -11,7 +11,7 @@ import (
 )
 
 // Initialize each body parameter in the har
-func initializeBodyParams(harParams []har.Param, states []*param.State) {
+func initializeBodyParams(harParams []har.Param, states []*param.Param) {
 	for _, harParam := range harParams {
 		// Find the param in the route
 		for _, state := range states {

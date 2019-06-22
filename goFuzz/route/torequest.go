@@ -15,7 +15,7 @@ import (
 // SetPathParams takes the path and populates any path params with param.Next
 func (route *Route) SetPathParams() string {
 	path := route.Path
-	for _, param := range route.State {
+	for _, param := range route.Params {
 		if param.In == "path" {
 			if param.Next == nil {
 				err := fmt.Errorf("param path param %v is nil", param.Name)
@@ -35,7 +35,7 @@ func (route *Route) SetPathParams() string {
 func (route *Route) GetQueryStr() string {
 	// Start the query string
 	querystr := "?"
-	for _, param := range route.State {
+	for _, param := range route.Params {
 		if param.In == "query" {
 			// TODO: skip if param.Next == nil
 			if param.Next == nil {
@@ -57,7 +57,7 @@ func (route *Route) GetQueryStr() string {
 
 // GetBodyParams marshals body params and returns a reader to those bytes
 func (route *Route) GetBodyParams() (io.Reader, error) {
-	for _, param := range route.State {
+	for _, param := range route.Params {
 		if param.In == "body" {
 			if param.Next == nil {
 				err := fmt.Errorf("param %v is nil", param.Name)

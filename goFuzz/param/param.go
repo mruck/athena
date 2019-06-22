@@ -5,8 +5,8 @@ import (
 	"github.com/mruck/athena/goFuzz/swagger"
 )
 
-// State for mutating a parameter
-type State struct {
+// Param state for mutating a parameter
+type Param struct {
 	// We need a way of mapping a parameter to its state
 	// so embed the swagger parameter metadata
 	spec.Parameter
@@ -22,15 +22,15 @@ type State struct {
 }
 
 // New allocates a new parameter state object
-func New(param spec.Parameter) *State {
-	return &State{Parameter: param}
+func New(param spec.Parameter) *Param {
+	return &Param{Parameter: param}
 }
 
 // InitializeParamState takes a list of spec.Parameter objects and returns
 // a list of *State objects for each parameter
-func InitializeParamState(params []spec.Parameter) []*State {
+func InitializeParamState(params []spec.Parameter) []*Param {
 	// Allocate our list
-	state := make([]*State, len(params))
+	state := make([]*Param, len(params))
 	for i, param := range params {
 		state[i] = New(param)
 	}
@@ -42,6 +42,6 @@ func InitializeParamState(params []spec.Parameter) []*State {
 // TODO: how to handle random values for array type for path params, etc
 // Add a test for this
 // TODO: store previous value
-func (param *State) Mutate() {
+func (param *Param) Mutate() {
 	param.Next = swagger.GenerateAny(&param.Parameter)
 }
