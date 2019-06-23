@@ -15,6 +15,20 @@ func ReadSwagger(path string) *spec.Swagger {
 	return swagger
 }
 
+// Expand takes a spec, expands it, and writes it to dst
+func Expand(spec string, dst string) error {
+	doc, err := loads.Spec(spec)
+	if err != nil {
+		return err
+	}
+	newDoc, err := doc.Expanded()
+	if err != nil {
+		return err
+	}
+	swag := newDoc.Spec()
+	return util.MarshalToFile(swag, dst)
+}
+
 // findOperation searches a swagger spec for the match path and method, and returns the spec.Operation
 func findOperation(swagger *spec.Swagger, key string, method string) (*spec.Operation, error) {
 	for path, pathItem := range swagger.Paths.Paths {
@@ -41,20 +55,6 @@ func findOperation(swagger *spec.Swagger, key string, method string) (*spec.Oper
 	}
 	err := fmt.Errorf("failed to find %v %v in swagger spec", method, key)
 	return nil, err
-}
-
-// Expand takes a spec, expands it, and writes it to dst
-func Expand(spec string, dst string) error {
-	doc, err := loads.Spec(spec)
-	if err != nil {
-		return err
-	}
-	newDoc, err := doc.Expanded()
-	if err != nil {
-		return err
-	}
-	swag := newDoc.Spec()
-	return util.MarshalToFile(swag, dst)
 }
 
 // For testing only.  Load a swagger file and retrieve a parameter
