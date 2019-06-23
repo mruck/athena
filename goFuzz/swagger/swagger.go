@@ -8,15 +8,48 @@ package swagger
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/go-openapi/spec"
 	"github.com/google/uuid"
+	"github.com/mruck/athena/lib/log"
 	"github.com/mruck/athena/lib/util"
 	"github.com/pkg/errors"
 )
 
-const object string = "object"
+const object = "object"
+
+const xmetadata = "x-metadata"
+
+// custom metadata obj to embed in the leaf node of a swagger parameter
+type metadata struct {
+	Values []interface{}
+	// tainted queries
+}
+
+// Allocate a new metadata object
+func newMetadata() *metadata {
+	return &metadata{Values: []interface{}{}}
+}
+
+// Read most recently stored value
+func readNewestValue(vendorExtensible *spec.VendorExtensible) interface{} {
+	metadata := vendorExtensible.Extensions[xmetadata].(*metadata)
+	return metadata.Values[0]
+}
+
+// update metadata struct in leaf node of swagger parameter
+func updateMetadata(vendorExtensible *spec.VendorExtensible, newVal interface{}) {
+	if _, ok := vendorExtensible.Extensions[xmetadata]; !ok {
+		// Allocate metadata struct
+		vendorExtensible.AddExtension(xmetadata, newMetadata())
+	}
+
+	// Cast to a metadata struct
+	metadata := vendorExtensible.Extensions[xmetadata].(*metadata)
+
+	// Prepend the new value
+	metadata.Values = append([]interface{}{newVal}, metadata.Values...)
+}
 
 // GenerateEnum returns a valid enum for the given schema
 func GenerateEnum(enum []interface{}) interface{} {
@@ -43,6 +76,7 @@ func GenerateArray(items *spec.SchemaOrArray) []interface{} {
 	obj := make([]interface{}, 1)
 	if schema.Enum != nil {
 		obj[0] = GenerateEnum(schema.Enum)
+		updateMetadata(&schema.VendorExtensible, obj)
 		return obj
 	}
 	if schema.Type[0] == object {
@@ -54,12 +88,13 @@ func GenerateArray(items *spec.SchemaOrArray) []interface{} {
 
 }
 
-// GeneratePrimitiveArray generates an array with only primitive elemenets
+// GeneratePrimitiveArray generates an array with only primitive elements
 // Query, header, etc params are only allowed arrays with primitives.
 func GeneratePrimitiveArray(items *spec.Items) interface{} {
 	obj := make([]interface{}, 1)
 	if items.Enum != nil {
 		obj[0] = GenerateEnum(items.Enum)
+		updateMetadata(&items.VendorExtensible, obj)
 		return obj
 	}
 	if items.Type == object {
@@ -74,7 +109,9 @@ func GeneratePrimitiveArray(items *spec.Items) interface{} {
 // (i.e. in: body)
 func GenerateSchema(schema spec.Schema) interface{} {
 	if schema.Enum != nil {
-		return GenerateEnum(schema.Enum)
+		enum := GenerateEnum(schema.Enum)
+		updateMetadata(&schema.VendorExtensible, enum)
+		return enum
 	}
 	if schema.Type[0] == "object" {
 		return GenerateObj(schema.Properties)
@@ -111,7 +148,7 @@ func GenerateAny(param *spec.Parameter) interface{} {
 	return GenerateParam(param)
 }
 
-// Generate generates fake parameter data for the first paramater of the given path and method
+// Generate fake parameter data for the first paramater of the given path and method
 func Generate(swaggerPath string, path string, method string) (map[string]interface{}, error) {
 	swagger := ReadSwagger(swaggerPath)
 	op, err := findOperation(swagger, path, method)
@@ -124,4 +161,19 @@ func Generate(swaggerPath string, path string, method string) (map[string]interf
 	final := map[string]interface{}{}
 	final[op.Parameters[0].Name] = obj
 	return final, nil
+}
+
+// For testing only.  Load a swagger file and retrieve a parameter
+func getParam(swaggerPath string, path string, method string, paramName string) (*spec.Parameter, error) {
+	swagger := ReadSwagger(swaggerPath)
+	op, err := findOperation(swagger, path, method)
+	if err != nil {
+		return nil, err
+	}
+	for i, param := range op.Parameters {
+		if param.Name == paramName {
+			return &op.Parameters[i], nil
+		}
+	}
+	return nil, nil
 }

@@ -1,11 +1,7 @@
 package util
 
 import (
-	"fmt"
-
 	"github.com/google/uuid"
-	"github.com/mruck/athena/lib/log"
-	"github.com/pkg/errors"
 )
 
 // RandInt returns a truncated uuid
@@ -50,7 +46,7 @@ func Rand(dataType string) interface{} {
 	if dataType == "decimal" {
 		return RandDecimal()
 	}
-	err := fmt.Errorf("util.Rand() called on unsupport data type: %s", dataType)
-	log.Errorf("%+v", errors.WithStack(err))
+	//	err := fmt.Errorf("util.Rand() called on unsupport data type: %s", dataType)
+	//	log.Errorf("%+v", errors.WithStack(err))
 	return RandString()
 }

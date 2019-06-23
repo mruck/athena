@@ -13,6 +13,16 @@ import (
 const PetStoreExpanded = "test/petstore_expanded.json"
 const PetStore = "test/petstore.json"
 
+// Test JSON marshaling lowercase fields, doesn't work cause
+// JSON package can't inspect the fields since they aren't exported
+//func TestJSONMarshal(t *testing.T) {
+//	data := newMetadata()
+//	data.Values = []interface{}{"hello"}
+//	bytes, _ := json.Marshal(data)
+//	log.Info("Printing marshaled")
+//	log.Info(string(bytes))
+//}
+
 // TestPathParam tests a path parameter
 func TestPathParam(t *testing.T) {
 	path := "/pet/{petId}"
@@ -35,6 +45,23 @@ func TestStruct(t *testing.T) {
 	require.True(t, ok)
 	_, ok = dict2["complete"]
 	require.True(t, ok)
+}
+
+// Test setting metadata for primitive array
+func TestArrayWithPrimativeMetadata(t *testing.T) {
+	// Get a parameter
+	path := "/pet/findByStatus"
+	method := "get"
+	paramName := "status"
+	param, err := getParam(PetStoreExpanded, path, method, paramName)
+	require.NoError(t, err)
+	// Val is the newly generated value
+	val := GenerateAny(param)
+	// Stored is the stored newly generated value
+	stored := readNewestValue(&param.Items.VendorExtensible)
+	// Make sure the recently generated value is equal to the most recently
+	// stored value
+	require.Equal(t, val, stored)
 }
 
 func TestArrayWithPrimative(t *testing.T) {
