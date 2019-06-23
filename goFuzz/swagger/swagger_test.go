@@ -13,15 +13,9 @@ import (
 const PetStoreExpanded = "test/petstore_expanded.json"
 const PetStore = "test/petstore.json"
 
-// Test JSON marshaling lowercase fields, doesn't work cause
-// JSON package can't inspect the fields since they aren't exported
-//func TestJSONMarshal(t *testing.T) {
-//	data := newMetadata()
-//	data.Values = []interface{}{"hello"}
-//	bytes, _ := json.Marshal(data)
-//	log.Info("Printing marshaled")
-//	log.Info(string(bytes))
-//}
+func change(val *string) {
+	*val = "new"
+}
 
 // TestPathParam tests a path parameter
 func TestPathParam(t *testing.T) {
@@ -61,6 +55,27 @@ func TestStruct(t *testing.T) {
 	require.True(t, ok)
 	_, ok = dict2["complete"]
 	require.True(t, ok)
+}
+
+// Test storing a struct as metadata
+func TestMetaStruct(t *testing.T) {
+
+	// Generate param data
+	path := "/store/order"
+	method := "post"
+	paramName := "body"
+	param, err := getParam(PetStoreExpanded, path, method, paramName)
+	require.NoError(t, err)
+	val := GenerateAny(param)
+
+	// Check the entire body stored vs generated
+	stored := readNewestValue(&param.Schema.VendorExtensible)
+	require.Equal(t, val, stored)
+
+	// Check one of the stored leaf nodes
+	schema := param.Schema.Properties["complete"]
+	val = readNewestValue(&schema.VendorExtensible)
+	require.NotNil(t, val)
 }
 
 // Test setting metadata for primitive array
@@ -159,6 +174,7 @@ func tryOp(op *spec.Operation, method string, path string) {
 	//log.Infof("**************************************")
 	//log.Infof("Trying %s %s\n", method, path)
 	for _, param := range op.Parameters {
+		//log.Info(param.Name)
 		data[param.Name] = GenerateAny(&param)
 	}
 }

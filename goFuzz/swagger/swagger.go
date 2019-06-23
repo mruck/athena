@@ -58,11 +58,21 @@ func GenerateEnum(enum []interface{}) interface{} {
 }
 
 // GenerateObj generates an object
-func GenerateObj(properties map[string]spec.Schema) map[string]interface{} {
+func GenerateObj(properties *map[string]spec.Schema) map[string]interface{} {
+	// Allocate object for storing newly generated data
 	obj := map[string]interface{}{}
-	for key, schema := range properties {
-		obj[key] = GenerateSchema(schema)
+
+	// We are also storing results to the schema.  Since we can't modify the properties
+	// map, allocate a new one
+	propertiesPrime := map[string]spec.Schema{}
+
+	for key, schema := range *properties {
+		obj[key] = GenerateSchema(&schema)
+		propertiesPrime[key] = schema
 	}
+
+	*properties = propertiesPrime
+
 	return obj
 }
 
@@ -80,7 +90,7 @@ func GenerateArray(items *spec.SchemaOrArray) []interface{} {
 		return obj
 	}
 	if schema.Type[0] == object {
-		obj[0] = GenerateObj(schema.Properties)
+		obj[0] = GenerateObj(&schema.Properties)
 		return obj
 	}
 	obj[0] = util.Rand(schema.Type[0])
@@ -107,11 +117,11 @@ func GeneratePrimitiveArray(items *spec.Items) interface{} {
 
 // GenerateSchema generates fake data for body parameters
 // (i.e. in: body)
-func GenerateSchema(schema spec.Schema) interface{} {
+func GenerateSchema(schema *spec.Schema) interface{} {
 	var val interface{}
 	switch schema.Type[0] {
 	case "object":
-		val = GenerateObj(schema.Properties)
+		val = GenerateObj(&schema.Properties)
 	case "array":
 		val = GenerateArray(schema.Items)
 	default:
@@ -122,12 +132,15 @@ func GenerateSchema(schema spec.Schema) interface{} {
 		}
 	}
 	updateMetadata(&schema.VendorExtensible, val)
+	//util.PrettyPrintStruct(schema, nil)
 	return val
 }
 
 // GenerateParam runs on all param types except body params
 func GenerateParam(param *spec.Parameter) interface{} {
 	// We weren't expecting this
+	// Note: param.Type should never equal "" but sometimes it does cause swagger
+	// is human generated
 	if param.Type == "object" {
 		err := fmt.Errorf("unhandled: object in query/header/form data param")
 		log.Fatalf("%+v\n", errors.WithStack(err))
@@ -154,7 +167,7 @@ func GenerateParam(param *spec.Parameter) interface{} {
 func GenerateAny(param *spec.Parameter) interface{} {
 	// Handle body
 	if param.In == "body" {
-		return GenerateSchema(*param.Schema)
+		return GenerateSchema(param.Schema)
 	}
 	// Handle path, header, query, form data
 	return GenerateParam(param)
