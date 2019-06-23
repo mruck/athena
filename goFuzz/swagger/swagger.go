@@ -108,36 +108,44 @@ func GeneratePrimitiveArray(items *spec.Items) interface{} {
 // GenerateSchema generates fake data for body parameters
 // (i.e. in: body)
 func GenerateSchema(schema spec.Schema) interface{} {
-	if schema.Enum != nil {
-		enum := GenerateEnum(schema.Enum)
-		updateMetadata(&schema.VendorExtensible, enum)
-		return enum
+	var val interface{}
+	switch schema.Type[0] {
+	case "object":
+		val = GenerateObj(schema.Properties)
+	case "array":
+		val = GenerateArray(schema.Items)
+	default:
+		if schema.Enum != nil {
+			val = GenerateEnum(schema.Enum)
+		} else {
+			val = util.Rand(schema.Type[0])
+		}
 	}
-	if schema.Type[0] == "object" {
-		return GenerateObj(schema.Properties)
-	}
-	if schema.Type[0] == "array" {
-		return GenerateArray(schema.Items)
-	}
-	return util.Rand(schema.Type[0])
+	updateMetadata(&schema.VendorExtensible, val)
+	return val
 }
 
 // GenerateParam runs on all param types except body params
 func GenerateParam(param *spec.Parameter) interface{} {
-	if param.Enum != nil {
-		enum := GenerateEnum(param.Enum)
-		updateMetadata(&param.VendorExtensible, enum)
-		return enum
-	}
+	// We weren't expecting this
 	if param.Type == "object" {
-		// TODO: Does this make sense for an obj to be in a header/query/etc?
 		err := fmt.Errorf("unhandled: object in query/header/form data param")
 		log.Fatalf("%+v\n", errors.WithStack(err))
 	}
+
+	// Generate a value
+	var val interface{}
 	if param.Type == "array" {
-		return GeneratePrimitiveArray(param.Items)
+		val = GeneratePrimitiveArray(param.Items)
+	} else {
+		if param.Enum != nil {
+			val = GenerateEnum(param.Enum)
+		} else {
+			val = util.Rand(param.Type)
+		}
 	}
-	val := util.Rand(param.Type)
+
+	// Store the value
 	updateMetadata(&param.VendorExtensible, val)
 	return val
 }
