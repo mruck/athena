@@ -33,6 +33,22 @@ func TestPathParam(t *testing.T) {
 	require.True(t, ok)
 }
 
+func TestMetaPrimitive(t *testing.T) {
+	// Get the param obj
+	path := "/pet/{petId}"
+	method := "get"
+	paramName := "petId"
+	param, err := getParam(PetStoreExpanded, path, method, paramName)
+	require.NoError(t, err)
+
+	// Generate an arbitrary value
+	value := GenerateParam(param)
+
+	// Make sure it matches the value we stored
+	stored := readNewestValue(&param.VendorExtensible)
+	require.Equal(t, value, stored)
+}
+
 // TestObj tests generating a random object for body parameters
 func TestStruct(t *testing.T) {
 	path := "/store/order"

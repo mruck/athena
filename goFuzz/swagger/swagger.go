@@ -125,7 +125,9 @@ func GenerateSchema(schema spec.Schema) interface{} {
 // GenerateParam runs on all param types except body params
 func GenerateParam(param *spec.Parameter) interface{} {
 	if param.Enum != nil {
-		return GenerateEnum(param.Enum)
+		enum := GenerateEnum(param.Enum)
+		updateMetadata(&param.VendorExtensible, enum)
+		return enum
 	}
 	if param.Type == "object" {
 		// TODO: Does this make sense for an obj to be in a header/query/etc?
@@ -135,7 +137,9 @@ func GenerateParam(param *spec.Parameter) interface{} {
 	if param.Type == "array" {
 		return GeneratePrimitiveArray(param.Items)
 	}
-	return util.Rand(param.Type)
+	val := util.Rand(param.Type)
+	updateMetadata(&param.VendorExtensible, val)
+	return val
 }
 
 // GenerateAny generates fake data for all param types
