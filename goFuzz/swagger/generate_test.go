@@ -37,60 +37,6 @@ func TestStruct(t *testing.T) {
 	require.True(t, ok)
 }
 
-//func TestMetaPrimitive(t *testing.T) {
-//	// Get the param obj
-//	path := "/pet/{petId}"
-//	method := "get"
-//	paramName := "petId"
-//	param, err := getParam(PetStoreExpanded, path, method, paramName)
-//	require.NoError(t, err)
-//
-//	// Generate an arbitrary value
-//	value := generateParam(param)
-//
-//	// Make sure it matches the value we stored
-//	stored := readNewestValue(&param.VendorExtensible)
-//	require.Equal(t, value, stored)
-//}
-//
-//// Test storing a struct as metadata
-//func TestMetaStruct(t *testing.T) {
-//
-//	// Generate param data
-//	path := "/store/order"
-//	method := "post"
-//	paramName := "body"
-//	param, err := getParam(PetStoreExpanded, path, method, paramName)
-//	require.NoError(t, err)
-//	val := GenerateAny(param)
-//
-//	// Check the entire body stored vs generated
-//	stored := readNewestValue(&param.Schema.VendorExtensible)
-//	require.Equal(t, val, stored)
-//
-//	// Check one of the stored leaf nodes
-//	schema := param.Schema.Properties["complete"]
-//	val = readNewestValue(&schema.VendorExtensible)
-//	require.NotNil(t, val)
-//}
-//
-//// Test setting metadata for primitive array
-//func TestArrayWithPrimativeMetadata(t *testing.T) {
-//	// Get a parameter
-//	path := "/pet/findByStatus"
-//	method := "get"
-//	paramName := "status"
-//	param, err := getParam(PetStoreExpanded, path, method, paramName)
-//	require.NoError(t, err)
-//	// Val is the newly generated value
-//	val := GenerateAny(param)
-//	// Stored is the stored newly generated value
-//	stored := readNewestValue(&param.Items.VendorExtensible)
-//	// Make sure the recently generated value is equal to the most recently
-//	// stored value
-//	require.Equal(t, val, stored)
-//}
-
 func TestArrayWithPrimative(t *testing.T) {
 	path := "/pet/findByStatus"
 	method := "get"

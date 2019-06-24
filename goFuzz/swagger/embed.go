@@ -16,7 +16,7 @@ const array = "array"
 
 func embedLeaf(schema *spec.Schema) []*metadata {
 	data := newMetadata(*schema)
-	storeSelfReferentialPtr(schema, data)
+	//storeSelfReferentialPtr(schema, data)
 	return []*metadata{data}
 }
 
@@ -77,7 +77,7 @@ func traverseSchema(schema *spec.Schema) []*metadata {
 }
 
 // Manipulate a parameter
-func manipulateParam(param *spec.Parameter) {
+func embedParam(param *spec.Parameter) {
 	// Handle body
 	if param.In == "body" {
 		// Allocate a metadata object for each leaf, and embed a pointer to it
@@ -97,7 +97,7 @@ func traverseOp(op *spec.Operation) {
 		return
 	}
 	for i := range op.Parameters {
-		manipulateParam(&op.Parameters[i])
+		embedParam(&op.Parameters[i])
 	}
 }
 

@@ -11,7 +11,8 @@ const xreferential = "x-self-referential"
 type metadata struct {
 	// Store past and present values
 	Values []interface{}
-	// Store a copy of the leaf for multi level data structures
+	// Store a copy of the leaf for multi level data structures.
+	// Ignore this for primitive params i.e. path, query
 	Schema spec.Schema
 	// tainted queries
 }
@@ -39,8 +40,12 @@ func storeSelfReferentialPtr(schema *spec.Schema, ptr *metadata) {
 //	// Prepend the new value
 //	metadata.Values = append([]interface{}{newVal}, metadata.Values...)
 //}
-//// Read most recently stored value
-//func readNewestValue(vendorExtensible *spec.VendorExtensible) interface{} {
-//	metadata := vendorExtensible.Extensions[xmetadata].(*metadata)
-//	return metadata.Values[0]
-//}
+
+// Read most recently stored value
+func readValues(param *spec.Parameter) []interface{} {
+	metadata := param.VendorExtensible.Extensions[xmetadata].(*metadata)
+	return metadata.Values
+}
+func readMetadata(param *spec.Parameter) []*metadata {
+	return param.VendorExtensible.Extensions[xmetadata].([]*metadata)
+}
