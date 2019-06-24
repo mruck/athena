@@ -16,8 +16,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-const object = "object"
-
 // generateSchema generates fake data for body parameters
 // (i.e. in: body)
 func generateSchema(schema *spec.Schema) interface{} {
@@ -119,7 +117,6 @@ func generateParam(param *spec.Parameter) interface{} {
 			val = util.Rand(param.Type)
 		}
 	}
-
 	return val
 }
 
