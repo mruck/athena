@@ -16,7 +16,7 @@ const array = "array"
 
 func embedLeaf(schema *spec.Schema) []*metadata {
 	data := newMetadata(*schema)
-	//storeSelfReferentialPtr(schema, data)
+	storeSelfReferentialPtr(schema, data)
 	return []*metadata{data}
 }
 

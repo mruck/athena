@@ -1,6 +1,7 @@
 package swagger
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/mruck/athena/lib/util"
@@ -57,29 +58,27 @@ func TestBodyObj(t *testing.T) {
 	for _, leaf := range leaves {
 		found := false
 		for _, correctData := range data {
-			if *leaf == correctData {
+			if reflect.DeepEqual(*leaf, correctData) {
 				found = true
 			}
 		}
 		require.True(t, found)
 	}
 
-	//require.Equal(t, leaves, data)
-	//util.PrettyPrintStruct(param, nil)
-
-	// Check that the metadata leaves stored in the top level are correct
-
 	// Check that the self referential pointers are updated when we modify
-	// the metada leaves
+	// the metadata leaves
+	for _, leaf := range leaves {
+		// Set an arbitrary value
+		if leaf.Schema.Description != "" {
+			leaf.Values = append(leaf.Values, "hello")
+		}
+	}
 
-	//// Check the entire body stored vs generated
-	//stored := readNewestValue(&param.Schema.VendorExtensible)
-	//require.Equal(t, val, stored)
-
-	//// Check one of the stored leaf nodes
-	//schema := param.Schema.Properties["complete"]
-	//val = readNewestValue(&schema.VendorExtensible)
-	//require.NotNil(t, val)
+	extensions := param.Schema.Properties["status"].VendorExtensible.Extensions
+	metadata := extensions[xreferential].(*metadata)
+	val := metadata.Values[0].(string)
+	// Make sure the leaf points to the new value
+	require.Equal(t, "hello", val)
 }
 
 //// Test setting metadata for primitive array
