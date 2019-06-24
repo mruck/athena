@@ -18,18 +18,18 @@ import (
 
 const object = "object"
 
-// GenerateSchema generates fake data for body parameters
+// generateSchema generates fake data for body parameters
 // (i.e. in: body)
-func GenerateSchema(schema *spec.Schema) interface{} {
+func generateSchema(schema *spec.Schema) interface{} {
 	var val interface{}
 	switch schema.Type[0] {
 	case "object":
-		val = GenerateObj(&schema.Properties)
+		val = generateObj(&schema.Properties)
 	case "array":
-		val = GenerateArray(schema.Items)
+		val = generateArray(schema.Items)
 	default:
 		if schema.Enum != nil {
-			val = GenerateEnum(schema.Enum)
+			val = generateEnum(schema.Enum)
 		} else {
 			val = util.Rand(schema.Type[0])
 		}
@@ -37,8 +37,8 @@ func GenerateSchema(schema *spec.Schema) interface{} {
 	return val
 }
 
-// GenerateObj generates an object
-func GenerateObj(properties *map[string]spec.Schema) map[string]interface{} {
+// generateObj generates an object
+func generateObj(properties *map[string]spec.Schema) map[string]interface{} {
 	// Allocate object for storing newly generated data
 	obj := map[string]interface{}{}
 
@@ -47,7 +47,7 @@ func GenerateObj(properties *map[string]spec.Schema) map[string]interface{} {
 	propertiesPrime := map[string]spec.Schema{}
 
 	for key, schema := range *properties {
-		obj[key] = GenerateSchema(&schema)
+		obj[key] = generateSchema(&schema)
 		propertiesPrime[key] = schema
 	}
 
@@ -56,8 +56,8 @@ func GenerateObj(properties *map[string]spec.Schema) map[string]interface{} {
 	return obj
 }
 
-// GenerateArray generates an array of any type (including object)
-func GenerateArray(items *spec.SchemaOrArray) []interface{} {
+// generateArray generates an array of any type (including object)
+func generateArray(items *spec.SchemaOrArray) []interface{} {
 	schema := items.Schema
 	if schema == nil {
 		err := fmt.Errorf("unhandled: SchemaOrArray is array")
@@ -65,11 +65,11 @@ func GenerateArray(items *spec.SchemaOrArray) []interface{} {
 	}
 	obj := make([]interface{}, 1)
 	if schema.Enum != nil {
-		obj[0] = GenerateEnum(schema.Enum)
+		obj[0] = generateEnum(schema.Enum)
 		return obj
 	}
 	if schema.Type[0] == object {
-		obj[0] = GenerateObj(&schema.Properties)
+		obj[0] = generateObj(&schema.Properties)
 		return obj
 	}
 	obj[0] = util.Rand(schema.Type[0])
@@ -77,18 +77,18 @@ func GenerateArray(items *spec.SchemaOrArray) []interface{} {
 
 }
 
-// GenerateEnum returns a valid enum for the given schema
-func GenerateEnum(enum []interface{}) interface{} {
+// generateEnum returns a valid enum for the given schema
+func generateEnum(enum []interface{}) interface{} {
 	randIndex := int(uuid.New().ID()) % len(enum)
 	return enum[randIndex]
 }
 
-// GeneratePrimitiveArray generates an array with only primitive elements
+// generatePrimitiveArray generates an array with only primitive elements
 // Query, header, etc params are only allowed arrays with primitives.
-func GeneratePrimitiveArray(items *spec.Items) interface{} {
+func generatePrimitiveArray(items *spec.Items) interface{} {
 	obj := make([]interface{}, 1)
 	if items.Enum != nil {
-		obj[0] = GenerateEnum(items.Enum)
+		obj[0] = generateEnum(items.Enum)
 		return obj
 	}
 	if items.Type == object {
@@ -99,8 +99,8 @@ func GeneratePrimitiveArray(items *spec.Items) interface{} {
 	return obj
 }
 
-// GenerateParam runs on all param types except body params
-func GenerateParam(param *spec.Parameter) interface{} {
+// generateParam runs on all param types except body params
+func generateParam(param *spec.Parameter) interface{} {
 	// Note: param.Type should never equal "" but sometimes it does cause swagger
 	// is human generated
 	if param.Type == "object" {
@@ -111,10 +111,10 @@ func GenerateParam(param *spec.Parameter) interface{} {
 	// Generate a value
 	var val interface{}
 	if param.Type == "array" {
-		val = GeneratePrimitiveArray(param.Items)
+		val = generatePrimitiveArray(param.Items)
 	} else {
 		if param.Enum != nil {
-			val = GenerateEnum(param.Enum)
+			val = generateEnum(param.Enum)
 		} else {
 			val = util.Rand(param.Type)
 		}
@@ -127,8 +127,8 @@ func GenerateParam(param *spec.Parameter) interface{} {
 func GenerateAny(param *spec.Parameter) interface{} {
 	// Handle body
 	if param.In == "body" {
-		return GenerateSchema(param.Schema)
+		return generateSchema(param.Schema)
 	}
 	// Handle path, header, query, form data
-	return GenerateParam(param)
+	return generateParam(param)
 }

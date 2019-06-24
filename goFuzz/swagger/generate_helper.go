@@ -7,6 +7,8 @@ import (
 	"github.com/mruck/athena/lib/util"
 )
 
+// Helper functions for testing swagger
+
 // findOperation searches a swagger spec for the match path and method, and returns the spec.Operation
 func findOperation(swagger *spec.Swagger, key string, method string) (*spec.Operation, error) {
 	for path, pathItem := range swagger.Paths.Paths {
@@ -51,7 +53,7 @@ func getParam(swaggerPath string, path string, method string, paramName string) 
 }
 
 // For testing only. Generate fake parameter data for the first paramater of the given path and method
-func Generate(swaggerPath string, path string, method string) (map[string]interface{}, error) {
+func generate(swaggerPath string, path string, method string) (map[string]interface{}, error) {
 	swagger := ReadSwagger(swaggerPath)
 	op, err := findOperation(swagger, path, method)
 	if err != nil {

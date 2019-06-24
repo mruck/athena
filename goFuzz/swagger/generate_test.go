@@ -17,7 +17,7 @@ const PetStore = "test/petstore.json"
 func TestPathParam(t *testing.T) {
 	path := "/pet/{petId}"
 	method := "get"
-	obj, err := Generate(PetStoreExpanded, path, method)
+	obj, err := generate(PetStoreExpanded, path, method)
 	require.NoError(t, err)
 	_, ok := obj["petId"]
 	require.True(t, ok)
@@ -27,7 +27,7 @@ func TestPathParam(t *testing.T) {
 func TestStruct(t *testing.T) {
 	path := "/store/order"
 	method := "post"
-	obj, err := Generate(PetStoreExpanded, path, method)
+	obj, err := generate(PetStoreExpanded, path, method)
 	require.NoError(t, err)
 	dict, ok := obj["body"]
 	require.True(t, ok)
@@ -46,7 +46,7 @@ func TestStruct(t *testing.T) {
 //	require.NoError(t, err)
 //
 //	// Generate an arbitrary value
-//	value := GenerateParam(param)
+//	value := generateParam(param)
 //
 //	// Make sure it matches the value we stored
 //	stored := readNewestValue(&param.VendorExtensible)
@@ -94,7 +94,7 @@ func TestStruct(t *testing.T) {
 func TestArrayWithPrimative(t *testing.T) {
 	path := "/pet/findByStatus"
 	method := "get"
-	obj, err := Generate(PetStoreExpanded, path, method)
+	obj, err := generate(PetStoreExpanded, path, method)
 	require.NoError(t, err)
 	_, ok := obj["status"]
 	require.True(t, ok)
@@ -103,7 +103,7 @@ func TestArrayWithPrimative(t *testing.T) {
 func TestArrayWithObj(t *testing.T) {
 	path := "/user/createWithArray"
 	method := "post"
-	obj, err := Generate(PetStoreExpanded, path, method)
+	obj, err := generate(PetStoreExpanded, path, method)
 	require.NoError(t, err)
 	// obj =
 	//	{
