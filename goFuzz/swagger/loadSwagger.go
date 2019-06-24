@@ -1,8 +1,6 @@
 package swagger
 
 import (
-	"fmt"
-
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/spec"
 	"github.com/mruck/athena/lib/util"
