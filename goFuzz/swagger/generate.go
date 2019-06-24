@@ -34,8 +34,6 @@ func GenerateSchema(schema *spec.Schema) interface{} {
 			val = util.Rand(schema.Type[0])
 		}
 	}
-	updateMetadata(&schema.VendorExtensible, val)
-	//util.PrettyPrintStruct(schema, nil)
 	return val
 }
 
@@ -68,7 +66,6 @@ func GenerateArray(items *spec.SchemaOrArray) []interface{} {
 	obj := make([]interface{}, 1)
 	if schema.Enum != nil {
 		obj[0] = GenerateEnum(schema.Enum)
-		updateMetadata(&schema.VendorExtensible, obj)
 		return obj
 	}
 	if schema.Type[0] == object {
@@ -92,7 +89,6 @@ func GeneratePrimitiveArray(items *spec.Items) interface{} {
 	obj := make([]interface{}, 1)
 	if items.Enum != nil {
 		obj[0] = GenerateEnum(items.Enum)
-		updateMetadata(&items.VendorExtensible, obj)
 		return obj
 	}
 	if items.Type == object {
@@ -124,8 +120,6 @@ func GenerateParam(param *spec.Parameter) interface{} {
 		}
 	}
 
-	// Store the value
-	updateMetadata(&param.VendorExtensible, val)
 	return val
 }
 
