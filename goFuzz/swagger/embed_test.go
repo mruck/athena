@@ -15,7 +15,7 @@ func TestPrimitive(t *testing.T) {
 	path := "/pet/{petId}"
 	method := "get"
 	paramName := "petId"
-	param, err := getParam(PetStoreExpanded, path, method, paramName)
+	param, err := MockParam(PetStoreExpanded, path, method, paramName)
 	require.NoError(t, err)
 
 	// Embed
@@ -32,7 +32,7 @@ func TestBodyObj(t *testing.T) {
 	path := "/store/order"
 	method := "post"
 	paramName := "body"
-	param, err := getParam(PetStoreExpanded, path, method, paramName)
+	param, err := MockParam(PetStoreExpanded, path, method, paramName)
 	require.NoError(t, err)
 
 	EmbedParam(param)
@@ -79,7 +79,7 @@ func TestArrayWithPrimativeMetadata(t *testing.T) {
 	path := "/pet/findByStatus"
 	method := "get"
 	paramName := "status"
-	param, err := getParam(PetStoreExpanded, path, method, paramName)
+	param, err := MockParam(PetStoreExpanded, path, method, paramName)
 	require.NoError(t, err)
 
 	// Embed our param
@@ -99,7 +99,7 @@ func TestMetaArrayWithObj(t *testing.T) {
 	path := "/user/createWithArray"
 	method := "post"
 	paramName := "body"
-	param, err := getParam(PetStoreExpanded, path, method, paramName)
+	param, err := MockParam(PetStoreExpanded, path, method, paramName)
 	require.NoError(t, err)
 
 	// Embed our param

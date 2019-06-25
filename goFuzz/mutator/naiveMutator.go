@@ -5,7 +5,6 @@ import (
 
 	"github.com/go-openapi/spec"
 	"github.com/google/uuid"
-	"github.com/mruck/athena/goFuzz/param"
 	"github.com/mruck/athena/goFuzz/route"
 	"github.com/mruck/athena/goFuzz/swagger"
 	"github.com/mruck/athena/lib/log"
@@ -18,7 +17,10 @@ import (
 // be sent
 func (mutator *Mutator) MutateRoute(route *route.Route) {
 	for _, param := range route.Params {
-		mutateParam(param)
+		mutateParam(&param.Parameter)
+		// Correctly format the data (i.e. into json)
+		param.Next = swagger.Format(&param.Parameter)
+
 	}
 }
 
@@ -45,7 +47,7 @@ func mutatePrimitiveArray(items *spec.Items) interface{} {
 }
 
 // Mutate a primitive parameter (path, query)
-func mutatePrimitive(param *param.Param) {
+func mutatePrimitive(param *spec.Parameter) {
 	// Mutate our value
 	var val interface{}
 	if param.Type == "array" {
@@ -57,7 +59,7 @@ func mutatePrimitive(param *param.Param) {
 	}
 
 	// Store this in the list of values
-	param.StoreValue(val)
+	swagger.StoreValue(param, val)
 }
 
 func mutatePrimitiveSchema(schema spec.Schema) interface{} {
@@ -88,22 +90,19 @@ func mutateSchema(metadata *swagger.Metadata) {
 
 // Mutate a body parameter.  At the top level *spec.Parameter, we have a list
 // of custom *swagger.Metadata, each representing a leaf in the body.
-func mutateBody(param *param.Param) {
-	metadatas := param.ReadMetadata()
+func mutateBody(param *spec.Parameter) {
+	metadatas := swagger.ReadAllMetadata(param)
 	for _, metadata := range metadatas {
 		// Mutate
 		mutateSchema(metadata)
 	}
 }
 
-func mutateParam(param *param.Param) {
+func mutateParam(param *spec.Parameter) {
 	// This is a multi level object. Mutate the leafs individually.
 	if param.In == "body" {
 		mutateBody(param)
 	} else {
 		mutatePrimitive(param)
 	}
-	// Correctly format the data (i.e. into json)
-	param.Next = swagger.Format(&param.Parameter)
-
 }

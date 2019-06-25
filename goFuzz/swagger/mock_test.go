@@ -10,7 +10,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const PetStoreExpanded = "test/petstore_expanded.json"
+// PetStoreExpanded is path to pet store swagger with refs expanded (for testing)
+const PetStoreExpanded = "../tests/petstore_expanded.json"
+
+// PetStore is path to pet store swagger (for testing)
 const PetStore = "test/petstore.json"
 
 // TestPathParam tests a path parameter

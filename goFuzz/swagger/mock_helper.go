@@ -37,8 +37,9 @@ func findOperation(swagger *spec.Swagger, key string, method string) (*spec.Oper
 	return nil, err
 }
 
-// For testing only.  Load a swagger file and retrieve a parameter
-func getParam(swaggerPath string, path string, method string, paramName string) (*spec.Parameter, error) {
+// MockParam reads in a spec.Param given the provided criteria.
+// For testing only.
+func MockParam(swaggerPath string, path string, method string, paramName string) (*spec.Parameter, error) {
 	swagger := ReadSwagger(swaggerPath)
 	op, err := findOperation(swagger, path, method)
 	if err != nil {

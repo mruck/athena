@@ -12,7 +12,9 @@ package swagger
 // That way, on muation, the leaf node reads the next values from this mutated
 // copy of itself.
 
-import "github.com/go-openapi/spec"
+import (
+	"github.com/go-openapi/spec"
+)
 
 const xmetadata = "x-metadata"
 const xreferential = "x-self-referential"
@@ -27,6 +29,16 @@ type Metadata struct {
 	// Ignore this for primitive params i.e. path, query
 	Schema spec.Schema
 	// tainted queries
+}
+
+// StoreValue stores a single value in the metadata object embedded
+// in spec.Parameter
+func StoreValue(param *spec.Parameter, val interface{}) {
+	// Extract the embedded metadata struct
+	metadata := ReadOneMetadata(param)
+	// Insert the new value into index 0.  This is a pointer so the update
+	// is done in place.
+	metadata.Values = append([]interface{}{val}, metadata.Values...)
 }
 
 // ReadOneMetadata a single Metadata object.
