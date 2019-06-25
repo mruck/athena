@@ -14,7 +14,7 @@ import (
 const PetStoreExpanded = "../tests/petstore_expanded.json"
 
 // PetStore is path to pet store swagger (for testing)
-const PetStore = "test/petstore.json"
+const PetStore = "../tests/petstore.json"
 
 // TestPathParam tests a path parameter
 func TestPathParam(t *testing.T) {
