@@ -83,12 +83,11 @@ func embedParam(param *spec.Parameter) {
 		// Allocate a metadata object for each leaf, and embed a pointer to it
 		metadataLeaves := traverseSchema(param.Schema)
 		// Store in a list because its easier to manipulate
-		param.VendorExtensible.AddExtension(xmetadata, metadataLeaves)
+		embedMetadata(param, metadataLeaves)
 		return
 	}
 	// Handle path, header, query, form data.
-	// Embed an "x-values" field for storing past values.
-	param.VendorExtensible.AddExtension(xmetadata, newMetadata(spec.Schema{}))
+	embedMetadata(param, nil)
 }
 
 // Traverse all parameters by operation (i.e. get, put)

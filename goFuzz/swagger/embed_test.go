@@ -22,18 +22,8 @@ func TestPrimitive(t *testing.T) {
 	embedParam(param)
 
 	// Check we actually embedded something
-	values := readValues(param)
-	require.Equal(t, []interface{}{}, values)
-}
-
-// Test by iterating through all routes
-func TestFromRoutes(t *testing.T) {
-
-}
-
-// Test from our athena defined parameter obj
-func TestFromParam(t *testing.T) {
-
+	meta := readOneMetadata(param)
+	require.Equal(t, []interface{}{}, meta.Values)
 }
 
 // Test emedding for a body with an object
@@ -74,26 +64,46 @@ func TestBodyObj(t *testing.T) {
 		}
 	}
 
+	// Read the leaf value
 	extensions := param.Schema.Properties["status"].VendorExtensible.Extensions
 	metadata := extensions[xreferential].(*metadata)
 	val := metadata.Values[0].(string)
+
 	// Make sure the leaf points to the new value
 	require.Equal(t, "hello", val)
 }
 
-//// Test setting metadata for primitive array
-//func TestArrayWithPrimativeMetadata(t *testing.T) {
-//	// Get a parameter
-//	path := "/pet/findByStatus"
-//	method := "get"
-//	paramName := "status"
-//	param, err := getParam(PetStoreExpanded, path, method, paramName)
-//	require.NoError(t, err)
-//	// Val is the newly generated value
-//	val := GenerateAny(param)
-//	// Stored is the stored newly generated value
-//	stored := readNewestValue(&param.Items.VendorExtensible)
-//	// Make sure the recently generated value is equal to the most recently
-//	// stored value
-//	require.Equal(t, val, stored)
-//}
+// Test setting metadata for primitive array for query param
+func TestArrayWithPrimativeMetadata(t *testing.T) {
+	// Get a parameter
+	path := "/pet/findByStatus"
+	method := "get"
+	paramName := "status"
+	param, err := getParam(PetStoreExpanded, path, method, paramName)
+	require.NoError(t, err)
+
+	// Embed our param
+	embedParam(param)
+
+	// Check that our metadata is present.  This is a query parameter, so it's
+	// single level so we don't need to embed the schema
+	// Check we actually embedded something
+	meta := readOneMetadata(param)
+	require.Equal(t, []interface{}{}, meta.Values)
+}
+
+// Test storing metadata for an array storing complex objs.
+// This can only be present in a body param
+func TestMetaArrayWithObj(t *testing.T) {
+
+}
+
+// Test by iterating through all routes
+func TestFromRoutes(t *testing.T) {
+
+}
+
+// Test from our athena defined parameter obj
+func TestFromParam(t *testing.T) {
+
+}

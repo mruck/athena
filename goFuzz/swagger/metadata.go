@@ -23,29 +23,47 @@ func newMetadata(schema spec.Schema) *metadata {
 		Schema: schema}
 }
 
+// Embed metadata in top level parameter.  If metadataLeaves is nil,
+// this is a query/path param so initialize an empty metadata struct
+// for storing stuff later
+func embedMetadata(param *spec.Parameter, metadataLeaves []*metadata) {
+	if metadataLeaves == nil {
+		// Allocate an empty meta data obj
+		meta := newMetadata(spec.Schema{})
+		metadataLeaves = []*metadata{meta}
+	}
+	param.VendorExtensible.AddExtension(xmetadata, metadataLeaves)
+}
+
+// Embed a pointer to metadata obj in the leaf node.  The metadata obj is
+// mutated and read from during data generation.  The tree structure
+// is only preserved for structuring the data correctly.
 func storeSelfReferentialPtr(schema *spec.Schema, ptr *metadata) {
 	schema.VendorExtensible.AddExtension(xreferential, ptr)
 }
 
-//func storeSelfReferentialPtr(vendorExtensible *spec.VendorExtensible, ptr *metadata) {
-//	vendorExtensible.AddExtension(xmetadata, newMetadata(nil))
-//	if _, ok := vendorExtensible.Extensions[xmetadata]; !ok {
-//		// Allocate metadata struct
-//		vendorExtensible.AddExtension(xmetadata, newMetadata(nil))
-//	}
-//
-//	// Cast to a metadata struct
-//	metadata := vendorExtensible.Extensions[xmetadata].(*metadata)
-//
-//	// Prepend the new value
-//	metadata.Values = append([]interface{}{newVal}, metadata.Values...)
-//}
-
-// Read most recently stored value
+// Read past values
 func readValues(param *spec.Parameter) []interface{} {
 	metadata := param.VendorExtensible.Extensions[xmetadata].(*metadata)
 	return metadata.Values
 }
+
+// Read metadata extension in the top level parameter.  This contains
+// metadata objects for every leaf node. For non-body params, this is a
+// singleton list
 func readMetadata(param *spec.Parameter) []*metadata {
 	return param.VendorExtensible.Extensions[xmetadata].([]*metadata)
+}
+
+// Read a single metadata object.  This should be called for query/path params
+// where we only have one metadata obj
+func readOneMetadata(param *spec.Parameter) *metadata {
+	return param.VendorExtensible.Extensions[xmetadata].([]*metadata)[0]
+}
+
+// Read the most recent value from the leaf node.  This is to be called
+// when traversing the tree from the leaf node to get the next value.
+func readNextValue(schema *spec.Schema) interface{} {
+	meta := schema.VendorExtensible.Extensions[xreferential].(*metadata)
+	return meta.Values[0]
 }
