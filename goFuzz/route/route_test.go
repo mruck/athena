@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/mruck/athena/goFuzz/swagger"
-	"github.com/mruck/athena/lib/util"
 	"github.com/stretchr/testify/require"
 )
 
@@ -36,14 +35,8 @@ func TestFromSwagger(t *testing.T) {
 	routes := FromSwagger("../tests/dummySwagger.json")
 	// Check a random field
 	require.Equal(t, routes[0].Method, "GET")
-}
 
-func TestEmdbed(t *testing.T) {
-	routes := FromSwagger("../tests/discourseSwagger.json")
-	for _, route := range routes {
-		for _, param := range route.Params {
-			swagger.EmbedParam(&param.Parameter)
-		}
-	}
-	util.PrettyPrintStruct(routes, nil)
+	// Check we actually embedded something
+	meta := swagger.ReadOneMetadata(&routes[1].Params[0].Parameter)
+	require.Equal(t, []interface{}{}, meta.Values)
 }

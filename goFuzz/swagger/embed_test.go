@@ -22,7 +22,7 @@ func TestPrimitive(t *testing.T) {
 	EmbedParam(param)
 
 	// Check we actually embedded something
-	meta := readOneMetadata(param)
+	meta := ReadOneMetadata(param)
 	require.Equal(t, []interface{}{}, meta.Values)
 }
 
@@ -88,7 +88,7 @@ func TestArrayWithPrimativeMetadata(t *testing.T) {
 	// Check that our metadata is present.  This is a query parameter, so it's
 	// single level so we don't need to embed the schema
 	// Check we actually embedded something
-	meta := readOneMetadata(param)
+	meta := ReadOneMetadata(param)
 	require.Equal(t, []interface{}{}, meta.Values)
 }
 

@@ -42,10 +42,10 @@ func blacklisted(path string) bool {
 
 // FromSwagger loads routes from swagger file
 func FromSwagger(path string) []*Route {
-	swagger := swagger.ReadSwagger(path)
+	swag := swagger.ReadSwagger(path)
 	// All routes
 	routes := []*Route{}
-	for path, operations := range swagger.Paths.Paths {
+	for path, operations := range swag.Paths.Paths {
 		// This path is blacklisted
 		if ok := blacklisted(path); ok {
 			continue
@@ -81,6 +81,13 @@ func FromSwagger(path string) []*Route {
 		if operations.Patch != nil {
 			route := New(path, "PATCH", operations.Patch, siblingMethods)
 			routes = append(routes, route)
+		}
+	}
+
+	// Embed metadata in each parameter and collect leaf nodes
+	for _, route := range routes {
+		for _, param := range route.Params {
+			swagger.EmbedParam(&param.Parameter)
 		}
 	}
 

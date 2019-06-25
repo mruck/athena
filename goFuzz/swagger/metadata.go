@@ -65,9 +65,9 @@ func readMetadata(param *spec.Parameter) []*metadata {
 	return param.VendorExtensible.Extensions[xmetadata].([]*metadata)
 }
 
-// Read a single metadata object.  This should be called for query/path params
+// ReadOneMetadata a single metadata object.  This should be called for query/path params
 // where we only have one metadata obj
-func readOneMetadata(param *spec.Parameter) *metadata {
+func ReadOneMetadata(param *spec.Parameter) *metadata {
 	return param.VendorExtensible.Extensions[xmetadata].([]*metadata)[0]
 }
 
