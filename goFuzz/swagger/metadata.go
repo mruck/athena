@@ -1,6 +1,6 @@
 package swagger
 
-// The metadata struct is the solution to giving granular control over complex
+// The Metadata struct is the solution to giving granular control over complex
 // body params.  Path/query params can be trivially mutated because they are
 // only a single level deep.  But body params can be complex json blobs, and
 // we want to have the ability to mutate each leaf node individually.  Originally,
@@ -22,7 +22,7 @@ const xreferential = "x-self-referential"
 // Metadata obj to embed at the top level of a parameter.  This is used
 // to set next values and store past values.  Multi level parameters
 // store pointers to this at the leaf level and read the next value from here
-type metadata struct {
+type Metadata struct {
 	// Store past and present values
 	Values []interface{}
 	// Store a copy of the leaf for multi level data structures.
@@ -31,49 +31,49 @@ type metadata struct {
 	// tainted queries
 }
 
-// Allocate a new metadata object
-func newMetadata(schema spec.Schema) *metadata {
-	return &metadata{
+// Allocate a new Metadata object
+func newMetadata(schema spec.Schema) *Metadata {
+	return &Metadata{
 		Values: []interface{}{},
 		Schema: schema,
 	}
 }
 
-// Embed metadata in top level parameter.  If metadataLeaves is nil,
-// this is a query/path param so initialize an empty metadata struct
+// Embed Metadata in top level parameter.  If MetadataLeaves is nil,
+// this is a query/path param so initialize an empty Metadata struct
 // for storing stuff later
-func embedMetadata(param *spec.Parameter, metadataLeaves []*metadata) {
-	if metadataLeaves == nil {
+func embedMetadata(param *spec.Parameter, MetadataLeaves []*Metadata) {
+	if MetadataLeaves == nil {
 		// Allocate an empty meta data obj
 		meta := newMetadata(spec.Schema{})
-		metadataLeaves = []*metadata{meta}
+		MetadataLeaves = []*Metadata{meta}
 	}
-	param.VendorExtensible.AddExtension(xmetadata, metadataLeaves)
+	param.VendorExtensible.AddExtension(xmetadata, MetadataLeaves)
 }
 
-// Embed a pointer to metadata obj in the leaf node.  The metadata obj is
+// Embed a pointer to Metadata obj in the leaf node.  The Metadata obj is
 // mutated and read from during data generation.  The tree structure
 // is only preserved for structuring the data correctly.
-func embedSelfReferentialPtr(schema *spec.Schema, ptr *metadata) {
+func embedSelfReferentialPtr(schema *spec.Schema, ptr *Metadata) {
 	schema.VendorExtensible.AddExtension(xreferential, ptr)
 }
 
-// Read metadata extension in the top level parameter.  This contains
-// metadata objects for every leaf node. For non-body params, this is a
+// Read Metadata extension in the top level parameter.  This contains
+// Metadata objects for every leaf node. For non-body params, this is a
 // singleton list
-func readMetadata(param *spec.Parameter) []*metadata {
-	return param.VendorExtensible.Extensions[xmetadata].([]*metadata)
+func readMetadata(param *spec.Parameter) []*Metadata {
+	return param.VendorExtensible.Extensions[xmetadata].([]*Metadata)
 }
 
-// ReadOneMetadata a single metadata object.  This should be called for query/path params
-// where we only have one metadata obj
-func ReadOneMetadata(param *spec.Parameter) *metadata {
-	return param.VendorExtensible.Extensions[xmetadata].([]*metadata)[0]
+// ReadOneMetadata a single Metadata object.  This should be called for query/path params
+// where we only have one Metadata obj
+func ReadOneMetadata(param *spec.Parameter) *Metadata {
+	return param.VendorExtensible.Extensions[xmetadata].([]*Metadata)[0]
 }
 
 // Read the most recent value from the leaf node.  This is to be called
 // when traversing the tree from the leaf node to get the next value.
 func readNextValue(schema *spec.Schema) interface{} {
-	meta := schema.VendorExtensible.Extensions[xreferential].(*metadata)
+	meta := schema.VendorExtensible.Extensions[xreferential].(*Metadata)
 	return meta.Values[0]
 }

@@ -11,18 +11,18 @@ import (
 const object = "object"
 const array = "array"
 
-func embedLeaf(schema *spec.Schema) []*metadata {
+func embedLeaf(schema *spec.Schema) []*Metadata {
 	data := newMetadata(*schema)
 	embedSelfReferentialPtr(schema, data)
-	return []*metadata{data}
+	return []*Metadata{data}
 }
 
-func embedObj(properties *map[string]spec.Schema) []*metadata {
+func embedObj(properties *map[string]spec.Schema) []*Metadata {
 	// We are also storing results to the schema.  Since we can't modify the
 	// properties map, allocate a new one
 	propertiesPrime := make(map[string]spec.Schema, len(*properties))
-	// Keep track of each metadata leaf
-	metadataLeaves := []*metadata{}
+	// Keep track of each Metadata leaf
+	MetadataLeaves := []*Metadata{}
 
 	for key, schema := range *properties {
 		// Explore the children.
@@ -31,8 +31,8 @@ func embedObj(properties *map[string]spec.Schema) []*metadata {
 		// in a newly generated spec.Properties map
 		leaves := embedSchema(&schema)
 
-		// Store the metadata for each child
-		metadataLeaves = append(metadataLeaves, leaves...)
+		// Store the Metadata for each child
+		MetadataLeaves = append(MetadataLeaves, leaves...)
 
 		// Create a copy of the new schema since we can't modify the
 		// spec.Properties map values
@@ -43,10 +43,10 @@ func embedObj(properties *map[string]spec.Schema) []*metadata {
 	// pointers
 	*properties = propertiesPrime
 
-	return metadataLeaves
+	return MetadataLeaves
 }
 
-func embedArray(items *spec.SchemaOrArray) []*metadata {
+func embedArray(items *spec.SchemaOrArray) []*Metadata {
 	schema := items.Schema
 	if schema == nil {
 		err := fmt.Errorf("unhandled: SchemaOrArray is array")
@@ -62,7 +62,7 @@ func embedArray(items *spec.SchemaOrArray) []*metadata {
 	return embedLeaf(schema)
 }
 
-func embedSchema(schema *spec.Schema) []*metadata {
+func embedSchema(schema *spec.Schema) []*Metadata {
 	if schema.Type[0] == object {
 		return embedObj(&schema.Properties)
 	}
@@ -73,8 +73,8 @@ func embedSchema(schema *spec.Schema) []*metadata {
 	return embedLeaf(schema)
 }
 
-// EmbedParam embeds a list of metadata objects inside a
-// top level parameter.  Each metadata object contains
+// EmbedParam embeds a list of Metadata objects inside a
+// top level parameter.  Each Metadata object contains
 // past values of a leaf node, and a copy of a leaf node.
 // If this is a path/query param, this is a singleton
 // list and there's no copy of the leaf node because
@@ -82,10 +82,10 @@ func embedSchema(schema *spec.Schema) []*metadata {
 func EmbedParam(param *spec.Parameter) {
 	// Handle body
 	if param.In == "body" {
-		// Allocate a metadata object for each leaf, and embed a pointer to it
-		metadataLeaves := embedSchema(param.Schema)
+		// Allocate a Metadata object for each leaf, and embed a pointer to it
+		MetadataLeaves := embedSchema(param.Schema)
 		// Store in a list because its easier to manipulate
-		embedMetadata(param, metadataLeaves)
+		embedMetadata(param, MetadataLeaves)
 		return
 	}
 	// Handle path, header, query, form data.

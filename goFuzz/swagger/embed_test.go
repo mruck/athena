@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// Ensure we embed metadata correctly for primitive parameters.
+// Ensure we embed Metadata correctly for primitive parameters.
 // In this case the primitive parameter is a path parameter.
 func TestPrimitive(t *testing.T) {
 	// Get the param obj
@@ -38,8 +38,8 @@ func TestBodyObj(t *testing.T) {
 	EmbedParam(param)
 
 	// Read what the leaves should contain
-	data := []metadata{}
-	util.MustUnmarshalFile("test/body.metadata", &data)
+	data := []Metadata{}
+	util.MustUnmarshalFile("test/body.Metadata", &data)
 
 	// Read the leaves we collected
 	leaves := readMetadata(param)
@@ -56,7 +56,7 @@ func TestBodyObj(t *testing.T) {
 	}
 
 	// Check that the self referential pointers are updated when we modify
-	// the metadata leaves
+	// the Metadata leaves
 	for _, leaf := range leaves {
 		// Set an arbitrary value
 		if leaf.Schema.Description != "" {
@@ -66,14 +66,14 @@ func TestBodyObj(t *testing.T) {
 
 	// Read the leaf value
 	extensions := param.Schema.Properties["status"].VendorExtensible.Extensions
-	metadata := extensions[xreferential].(*metadata)
-	val := metadata.Values[0].(string)
+	Metadata := extensions[xreferential].(*Metadata)
+	val := Metadata.Values[0].(string)
 
 	// Make sure the leaf points to the new value
 	require.Equal(t, "hello", val)
 }
 
-// Test setting metadata for primitive array for query param
+// Test setting Metadata for primitive array for query param
 func TestArrayWithPrimativeMetadata(t *testing.T) {
 	// Get a parameter
 	path := "/pet/findByStatus"
@@ -85,14 +85,14 @@ func TestArrayWithPrimativeMetadata(t *testing.T) {
 	// Embed our param
 	EmbedParam(param)
 
-	// Check that our metadata is present.  This is a query parameter, so it's
+	// Check that our Metadata is present.  This is a query parameter, so it's
 	// single level so we don't need to embed the schema
 	// Check we actually embedded something
 	meta := ReadOneMetadata(param)
 	require.Equal(t, []interface{}{}, meta.Values)
 }
 
-// Test storing metadata for an array storing complex objs.
+// Test storing Metadata for an array storing complex objs.
 // This can only be present in a body param
 func TestMetaArrayWithObj(t *testing.T) {
 	// Get a parameter
@@ -106,8 +106,8 @@ func TestMetaArrayWithObj(t *testing.T) {
 	EmbedParam(param)
 
 	// Read what the leaves should contain
-	data := []metadata{}
-	util.MustUnmarshalFile("test/body_array.metadata", &data)
+	data := []Metadata{}
+	util.MustUnmarshalFile("test/body_array.Metadata", &data)
 
 	// Read the leaves we collected
 	leaves := readMetadata(param)
