@@ -41,3 +41,18 @@ func InitializeParamState(params []spec.Parameter) []*Param {
 func (param *Param) MockData() {
 	param.Next = swagger.MockAny(&param.Parameter)
 }
+
+// ReadMetadata reads the metadata objects embedded in the parameter
+func (param *Param) ReadMetadata() []*swagger.Metadata {
+	return swagger.ReadAllMetadata(&param.Parameter)
+}
+
+// StoreValue stores a single in the metadata object embedded
+// in spec.Parameter
+func (param *Param) StoreValue(val interface{}) {
+	// Extract the embedded metadata struct
+	metadata := swagger.ReadOneMetadata(&param.Parameter)
+	// Insert the new value into index 0.  This is a pointer so the update
+	// is done in place.
+	metadata.Values = append([]interface{}{val}, metadata.Values...)
+}

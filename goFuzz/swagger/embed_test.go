@@ -42,7 +42,7 @@ func TestBodyObj(t *testing.T) {
 	util.MustUnmarshalFile("test/body.Metadata", &data)
 
 	// Read the leaves we collected
-	leaves := readMetadata(param)
+	leaves := ReadAllMetadata(param)
 
 	// Compare the 2
 	for _, leaf := range leaves {
@@ -110,7 +110,7 @@ func TestMetaArrayWithObj(t *testing.T) {
 	util.MustUnmarshalFile("test/body_array.Metadata", &data)
 
 	// Read the leaves we collected
-	leaves := readMetadata(param)
+	leaves := ReadAllMetadata(param)
 
 	// Compare the 2
 	for _, leaf := range leaves {

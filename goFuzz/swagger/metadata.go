@@ -17,8 +17,6 @@ import "github.com/go-openapi/spec"
 const xmetadata = "x-metadata"
 const xreferential = "x-self-referential"
 
-// TODO: Maybe all these functions should be methods on our custom param object?
-
 // Metadata obj to embed at the top level of a parameter.  This is used
 // to set next values and store past values.  Multi level parameters
 // store pointers to this at the leaf level and read the next value from here
@@ -29,6 +27,25 @@ type Metadata struct {
 	// Ignore this for primitive params i.e. path, query
 	Schema spec.Schema
 	// tainted queries
+}
+
+// ReadOneMetadata a single Metadata object.
+// This should be called for query/path params where we only have one Metadata obj
+func ReadOneMetadata(param *spec.Parameter) *Metadata {
+	return param.VendorExtensible.Extensions[xmetadata].([]*Metadata)[0]
+}
+
+// ReadAllMetadata reads the metadata extension in the top level parameter.
+// This contains metadata objects for every leaf node.
+// For non-body params, this is a singleton list
+func ReadAllMetadata(param *spec.Parameter) []*Metadata {
+	return param.VendorExtensible.Extensions[xmetadata].([]*Metadata)
+}
+
+// UpdateMetadata inside spec.Parameter.  The metadata object is stored in a map
+// so the only way to update it is by overwriting the old one.
+func UpdateMetadata(param *spec.Parameter, metadata *Metadata) {
+	param.VendorExtensible.AddExtension(xmetadata, metadata)
 }
 
 // Allocate a new Metadata object
@@ -56,19 +73,6 @@ func embedMetadata(param *spec.Parameter, MetadataLeaves []*Metadata) {
 // is only preserved for structuring the data correctly.
 func embedSelfReferentialPtr(schema *spec.Schema, ptr *Metadata) {
 	schema.VendorExtensible.AddExtension(xreferential, ptr)
-}
-
-// Read Metadata extension in the top level parameter.  This contains
-// Metadata objects for every leaf node. For non-body params, this is a
-// singleton list
-func readMetadata(param *spec.Parameter) []*Metadata {
-	return param.VendorExtensible.Extensions[xmetadata].([]*Metadata)
-}
-
-// ReadOneMetadata a single Metadata object.  This should be called for query/path params
-// where we only have one Metadata obj
-func ReadOneMetadata(param *spec.Parameter) *Metadata {
-	return param.VendorExtensible.Extensions[xmetadata].([]*Metadata)[0]
 }
 
 // Read the most recent value from the leaf node.  This is to be called
