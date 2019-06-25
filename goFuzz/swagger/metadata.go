@@ -1,9 +1,23 @@
 package swagger
 
+// The metadata struct is the solution to giving granular control over complex
+// body params.  Path/query params can be trivially mutated because they are
+// only a single level deep.  But body params can be complex json blobs, and
+// we want to have the ability to mutate each leaf node individually.  Originally,
+// I wanted to store a list of pointers to leaf nodes and mutate those.
+// However, we can't have pointers to values in maps and the spec.Schema objects
+// are usually values in the spec.Properties map.  So instead, at the top level
+// spec.Parameter we keep a list that contains a copy of each leaf node and we
+// mutate those.  We embed a pointer inside each leaf node to point to this copy.
+// That way, on muation, the leaf node reads the next values from this mutated
+// copy of itself.
+
 import "github.com/go-openapi/spec"
 
 const xmetadata = "x-metadata"
 const xreferential = "x-self-referential"
+
+// TODO: Maybe all these functions should be methods on our custom param object?
 
 // Metadata obj to embed at the top level of a parameter.  This is used
 // to set next values and store past values.  Multi level parameters
@@ -42,7 +56,7 @@ func storeSelfReferentialPtr(schema *spec.Schema, ptr *metadata) {
 	schema.VendorExtensible.AddExtension(xreferential, ptr)
 }
 
-// Read past values
+// Read all past values
 func readValues(param *spec.Parameter) []interface{} {
 	metadata := param.VendorExtensible.Extensions[xmetadata].(*metadata)
 	return metadata.Values
