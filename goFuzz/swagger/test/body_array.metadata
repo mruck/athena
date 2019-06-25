@@ -1,0 +1,53 @@
+[
+  {
+    "Values": [],
+    "Schema": {
+      "type": "integer",
+      "format": "int64"
+    }
+  },
+  {
+    "Values": [],
+    "Schema": {
+      "type": "string"
+    }
+  },
+  {
+    "Values": [],
+    "Schema": {
+      "type": "string"
+    }
+  },
+  {
+    "Values": [],
+    "Schema": {
+      "type": "string"
+    }
+  },
+  {
+    "Values": [],
+    "Schema": {
+      "description": "User Status",
+      "type": "integer",
+      "format": "int32"
+    }
+  },
+  {
+    "Values": [],
+    "Schema": {
+      "type": "string"
+    }
+  },
+  {
+    "Values": [],
+    "Schema": {
+      "type": "string"
+    }
+  },
+  {
+    "Values": [],
+    "Schema": {
+      "type": "string"
+    }
+  }
+]

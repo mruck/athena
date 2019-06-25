@@ -95,6 +95,33 @@ func TestArrayWithPrimativeMetadata(t *testing.T) {
 // Test storing metadata for an array storing complex objs.
 // This can only be present in a body param
 func TestMetaArrayWithObj(t *testing.T) {
+	// Get a parameter
+	path := "/user/createWithArray"
+	method := "post"
+	paramName := "body"
+	param, err := getParam(PetStoreExpanded, path, method, paramName)
+	require.NoError(t, err)
+
+	// Embed our param
+	embedParam(param)
+
+	// Read what the leaves should contain
+	data := []metadata{}
+	util.MustUnmarshalFile("test/body_array.metadata", &data)
+
+	// Read the leaves we collected
+	leaves := readMetadata(param)
+
+	// Compare the 2
+	for _, leaf := range leaves {
+		found := false
+		for _, correctData := range data {
+			if reflect.DeepEqual(*leaf, correctData) {
+				found = true
+			}
+		}
+		require.True(t, found)
+	}
 
 }
 
