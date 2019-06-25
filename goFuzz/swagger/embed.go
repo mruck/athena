@@ -1,8 +1,5 @@
 package swagger
 
-// EmbedMetadata embeds metadata object inside top level spec.Parameters,
-// with pointers to leaves
-
 import (
 	"fmt"
 
@@ -16,11 +13,11 @@ const array = "array"
 
 func embedLeaf(schema *spec.Schema) []*metadata {
 	data := newMetadata(*schema)
-	storeSelfReferentialPtr(schema, data)
+	embedSelfReferentialPtr(schema, data)
 	return []*metadata{data}
 }
 
-func traverseObj(properties *map[string]spec.Schema) []*metadata {
+func embedObj(properties *map[string]spec.Schema) []*metadata {
 	// We are also storing results to the schema.  Since we can't modify the
 	// properties map, allocate a new one
 	propertiesPrime := make(map[string]spec.Schema, len(*properties))
@@ -32,7 +29,7 @@ func traverseObj(properties *map[string]spec.Schema) []*metadata {
 		// Hack: pass schema by reference even though its scope is limited to
 		// the for loop so that we can modify in place and store shortly after
 		// in a newly generated spec.Properties map
-		leaves := traverseSchema(&schema)
+		leaves := embedSchema(&schema)
 
 		// Store the metadata for each child
 		metadataLeaves = append(metadataLeaves, leaves...)
@@ -49,7 +46,7 @@ func traverseObj(properties *map[string]spec.Schema) []*metadata {
 	return metadataLeaves
 }
 
-func traverseArray(items *spec.SchemaOrArray) []*metadata {
+func embedArray(items *spec.SchemaOrArray) []*metadata {
 	schema := items.Schema
 	if schema == nil {
 		err := fmt.Errorf("unhandled: SchemaOrArray is array")
@@ -58,57 +55,39 @@ func traverseArray(items *spec.SchemaOrArray) []*metadata {
 
 	// Array elements are objects
 	if schema.Type[0] == object {
-		return traverseObj(&schema.Properties)
+		return embedObj(&schema.Properties)
 	}
 
 	// Array elements are primitive, we are in the base case
 	return embedLeaf(schema)
 }
 
-func traverseSchema(schema *spec.Schema) []*metadata {
+func embedSchema(schema *spec.Schema) []*metadata {
 	if schema.Type[0] == object {
-		return traverseObj(&schema.Properties)
+		return embedObj(&schema.Properties)
 	}
 	if schema.Type[0] == array {
-		return traverseArray(schema.Items)
+		return embedArray(schema.Items)
 	}
 	// This is a leaf
 	return embedLeaf(schema)
 }
 
-// Manipulate a parameter
-func embedParam(param *spec.Parameter) {
+// EmbedParam embeds a list of metadata objects inside a
+// top level parameter.  Each metadata object contains
+// past values of a leaf node, and a copy of a leaf node.
+// If this is a path/query param, this is a singleton
+// list and there's no copy of the leaf node because
+// the top level parameter is the leaf node.
+func EmbedParam(param *spec.Parameter) {
 	// Handle body
 	if param.In == "body" {
 		// Allocate a metadata object for each leaf, and embed a pointer to it
-		metadataLeaves := traverseSchema(param.Schema)
+		metadataLeaves := embedSchema(param.Schema)
 		// Store in a list because its easier to manipulate
 		embedMetadata(param, metadataLeaves)
 		return
 	}
 	// Handle path, header, query, form data.
 	embedMetadata(param, nil)
-}
-
-// Traverse all parameters by operation (i.e. get, put)
-func traverseOp(op *spec.Operation) {
-	if op == nil {
-		return
-	}
-	for i := range op.Parameters {
-		embedParam(&op.Parameters[i])
-	}
-}
-
-// TraverseSwagger traverse swagger by operation
-func TraverseSwagger(swagger *spec.Swagger) {
-	for _, pathItem := range swagger.Paths.Paths {
-		traverseOp(pathItem.Get)
-		traverseOp(pathItem.Delete)
-		traverseOp(pathItem.Put)
-		traverseOp(pathItem.Patch)
-		traverseOp(pathItem.Post)
-		traverseOp(pathItem.Head)
-	}
-
 }

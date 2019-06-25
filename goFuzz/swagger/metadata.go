@@ -33,8 +33,10 @@ type metadata struct {
 
 // Allocate a new metadata object
 func newMetadata(schema spec.Schema) *metadata {
-	return &metadata{Values: []interface{}{},
-		Schema: schema}
+	return &metadata{
+		Values: []interface{}{},
+		Schema: schema,
+	}
 }
 
 // Embed metadata in top level parameter.  If metadataLeaves is nil,
@@ -52,14 +54,8 @@ func embedMetadata(param *spec.Parameter, metadataLeaves []*metadata) {
 // Embed a pointer to metadata obj in the leaf node.  The metadata obj is
 // mutated and read from during data generation.  The tree structure
 // is only preserved for structuring the data correctly.
-func storeSelfReferentialPtr(schema *spec.Schema, ptr *metadata) {
+func embedSelfReferentialPtr(schema *spec.Schema, ptr *metadata) {
 	schema.VendorExtensible.AddExtension(xreferential, ptr)
-}
-
-// Read all past values
-func readValues(param *spec.Parameter) []interface{} {
-	metadata := param.VendorExtensible.Extensions[xmetadata].(*metadata)
-	return metadata.Values
 }
 
 // Read metadata extension in the top level parameter.  This contains

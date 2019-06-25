@@ -19,7 +19,7 @@ func TestPrimitive(t *testing.T) {
 	require.NoError(t, err)
 
 	// Embed
-	embedParam(param)
+	EmbedParam(param)
 
 	// Check we actually embedded something
 	meta := readOneMetadata(param)
@@ -35,7 +35,7 @@ func TestBodyObj(t *testing.T) {
 	param, err := getParam(PetStoreExpanded, path, method, paramName)
 	require.NoError(t, err)
 
-	embedParam(param)
+	EmbedParam(param)
 
 	// Read what the leaves should contain
 	data := []metadata{}
@@ -83,7 +83,7 @@ func TestArrayWithPrimativeMetadata(t *testing.T) {
 	require.NoError(t, err)
 
 	// Embed our param
-	embedParam(param)
+	EmbedParam(param)
 
 	// Check that our metadata is present.  This is a query parameter, so it's
 	// single level so we don't need to embed the schema
@@ -103,7 +103,7 @@ func TestMetaArrayWithObj(t *testing.T) {
 	require.NoError(t, err)
 
 	// Embed our param
-	embedParam(param)
+	EmbedParam(param)
 
 	// Read what the leaves should contain
 	data := []metadata{}
@@ -122,15 +122,5 @@ func TestMetaArrayWithObj(t *testing.T) {
 		}
 		require.True(t, found)
 	}
-
-}
-
-// Test by iterating through all routes
-func TestFromRoutes(t *testing.T) {
-
-}
-
-// Test from our athena defined parameter obj
-func TestFromParam(t *testing.T) {
 
 }
