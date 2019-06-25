@@ -39,6 +39,6 @@ func mutateParam(param *param.Param) {
 		mutatePrimitive(param)
 	}
 	// Correctly format the data (i.e. into json)
-	param.Next = swagger.GenerateAny(&param.Parameter)
+	param.Next = swagger.MockAny(&param.Parameter)
 
 }

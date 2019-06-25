@@ -39,5 +39,5 @@ func InitializeParamState(params []spec.Parameter) []*Param {
 
 // MockData generates dummy data for testing only
 func (param *Param) MockData() {
-	param.Next = swagger.GenerateAny(&param.Parameter)
+	param.Next = swagger.MockAny(&param.Parameter)
 }

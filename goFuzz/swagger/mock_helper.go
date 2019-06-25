@@ -52,15 +52,15 @@ func getParam(swaggerPath string, path string, method string, paramName string) 
 	return nil, nil
 }
 
-// For testing only. Generate fake parameter data for the first paramater of the given path and method
-func generate(swaggerPath string, path string, method string) (map[string]interface{}, error) {
+// For testing only. Mock fake parameter data for the first paramater of the given path and method
+func mock(swaggerPath string, path string, method string) (map[string]interface{}, error) {
 	swagger := ReadSwagger(swaggerPath)
 	op, err := findOperation(swagger, path, method)
 	if err != nil {
 		return nil, err
 	}
 
-	obj := GenerateAny(&op.Parameters[0])
+	obj := MockAny(&op.Parameters[0])
 
 	final := map[string]interface{}{}
 	final[op.Parameters[0].Name] = obj

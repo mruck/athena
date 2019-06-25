@@ -28,7 +28,7 @@ func embedObj(properties *map[string]spec.Schema) []*Metadata {
 		// Explore the children.
 		// Hack: pass schema by reference even though its scope is limited to
 		// the for loop so that we can modify in place and store shortly after
-		// in a newly generated spec.Properties map
+		// in a newly mockd spec.Properties map
 		leaves := embedSchema(&schema)
 
 		// Store the Metadata for each child

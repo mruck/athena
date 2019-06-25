@@ -16,18 +16,18 @@ import (
 	"github.com/pkg/errors"
 )
 
-// generateSchema generates fake data for body parameters
+// mockSchema generates fake data for body parameters
 // (i.e. in: body)
-func generateSchema(schema *spec.Schema) interface{} {
+func mockSchema(schema *spec.Schema) interface{} {
 	var val interface{}
 	switch schema.Type[0] {
 	case "object":
-		val = generateObj(&schema.Properties)
+		val = mockObj(&schema.Properties)
 	case "array":
-		val = generateArray(schema.Items)
+		val = mockArray(schema.Items)
 	default:
 		if schema.Enum != nil {
-			val = generateEnum(schema.Enum)
+			val = mockEnum(schema.Enum)
 		} else {
 			val = util.Rand(schema.Type[0])
 		}
@@ -35,9 +35,9 @@ func generateSchema(schema *spec.Schema) interface{} {
 	return val
 }
 
-// generateObj generates an object
-func generateObj(properties *map[string]spec.Schema) map[string]interface{} {
-	// Allocate object for storing newly generated data
+// mockObj generates an object
+func mockObj(properties *map[string]spec.Schema) map[string]interface{} {
+	// Allocate object for storing newly mockd data
 	obj := map[string]interface{}{}
 
 	// We are also storing results to the schema.  Since we can't modify the properties
@@ -45,7 +45,7 @@ func generateObj(properties *map[string]spec.Schema) map[string]interface{} {
 	propertiesPrime := map[string]spec.Schema{}
 
 	for key, schema := range *properties {
-		obj[key] = generateSchema(&schema)
+		obj[key] = mockSchema(&schema)
 		propertiesPrime[key] = schema
 	}
 
@@ -54,8 +54,8 @@ func generateObj(properties *map[string]spec.Schema) map[string]interface{} {
 	return obj
 }
 
-// generateArray generates an array of any type (including object)
-func generateArray(items *spec.SchemaOrArray) []interface{} {
+// mockArray generates an array of any type (including object)
+func mockArray(items *spec.SchemaOrArray) []interface{} {
 	schema := items.Schema
 	if schema == nil {
 		err := fmt.Errorf("unhandled: SchemaOrArray is array")
@@ -63,11 +63,11 @@ func generateArray(items *spec.SchemaOrArray) []interface{} {
 	}
 	obj := make([]interface{}, 1)
 	if schema.Enum != nil {
-		obj[0] = generateEnum(schema.Enum)
+		obj[0] = mockEnum(schema.Enum)
 		return obj
 	}
 	if schema.Type[0] == object {
-		obj[0] = generateObj(&schema.Properties)
+		obj[0] = mockObj(&schema.Properties)
 		return obj
 	}
 	obj[0] = util.Rand(schema.Type[0])
@@ -75,18 +75,18 @@ func generateArray(items *spec.SchemaOrArray) []interface{} {
 
 }
 
-// generateEnum returns a valid enum for the given schema
-func generateEnum(enum []interface{}) interface{} {
+// mockEnum returns a valid enum for the given schema
+func mockEnum(enum []interface{}) interface{} {
 	randIndex := int(uuid.New().ID()) % len(enum)
 	return enum[randIndex]
 }
 
-// generatePrimitiveArray generates an array with only primitive elements
+// mockPrimitiveArray generates an array with only primitive elements
 // Query, header, etc params are only allowed arrays with primitives.
-func generatePrimitiveArray(items *spec.Items) interface{} {
+func mockPrimitiveArray(items *spec.Items) interface{} {
 	obj := make([]interface{}, 1)
 	if items.Enum != nil {
-		obj[0] = generateEnum(items.Enum)
+		obj[0] = mockEnum(items.Enum)
 		return obj
 	}
 	if items.Type == object {
@@ -97,30 +97,30 @@ func generatePrimitiveArray(items *spec.Items) interface{} {
 	return obj
 }
 
-// generateParam runs on all param types except body params
-func generateParam(param *spec.Parameter) interface{} {
+// mockParam runs on all param types except body params
+func mockParam(param *spec.Parameter) interface{} {
 	// Note: param.Type should never equal "" but sometimes it does cause swagger
-	// is human generated
+	// is human mockd
 	if param.Type == "object" {
 		err := fmt.Errorf("unhandled: object in query/header/form data param")
 		log.Fatalf("%+v\n", errors.WithStack(err))
 	}
 
 	if param.Type == "array" {
-		return generatePrimitiveArray(param.Items)
+		return mockPrimitiveArray(param.Items)
 	}
 	if param.Enum != nil {
-		return generateEnum(param.Enum)
+		return mockEnum(param.Enum)
 	}
 	return util.Rand(param.Type)
 }
 
-// GenerateAny generates fake data for all param types
-func GenerateAny(param *spec.Parameter) interface{} {
+// MockAny mocks fake data for all param types
+func MockAny(param *spec.Parameter) interface{} {
 	// Handle body
 	if param.In == "body" {
-		return generateSchema(param.Schema)
+		return mockSchema(param.Schema)
 	}
 	// Handle path, header, query, form data
-	return generateParam(param)
+	return mockParam(param)
 }

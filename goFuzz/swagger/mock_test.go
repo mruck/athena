@@ -17,7 +17,7 @@ const PetStore = "test/petstore.json"
 func TestPathParam(t *testing.T) {
 	path := "/pet/{petId}"
 	method := "get"
-	obj, err := generate(PetStoreExpanded, path, method)
+	obj, err := mock(PetStoreExpanded, path, method)
 	require.NoError(t, err)
 	_, ok := obj["petId"]
 	require.True(t, ok)
@@ -27,7 +27,7 @@ func TestPathParam(t *testing.T) {
 func TestStruct(t *testing.T) {
 	path := "/store/order"
 	method := "post"
-	obj, err := generate(PetStoreExpanded, path, method)
+	obj, err := mock(PetStoreExpanded, path, method)
 	require.NoError(t, err)
 	dict, ok := obj["body"]
 	require.True(t, ok)
@@ -40,7 +40,7 @@ func TestStruct(t *testing.T) {
 func TestArrayWithPrimative(t *testing.T) {
 	path := "/pet/findByStatus"
 	method := "get"
-	obj, err := generate(PetStoreExpanded, path, method)
+	obj, err := mock(PetStoreExpanded, path, method)
 	require.NoError(t, err)
 	_, ok := obj["status"]
 	require.True(t, ok)
@@ -49,7 +49,7 @@ func TestArrayWithPrimative(t *testing.T) {
 func TestArrayWithObj(t *testing.T) {
 	path := "/user/createWithArray"
 	method := "post"
-	obj, err := generate(PetStoreExpanded, path, method)
+	obj, err := mock(PetStoreExpanded, path, method)
 	require.NoError(t, err)
 	// obj =
 	//	{
@@ -117,11 +117,11 @@ func tryOp(op *spec.Operation, method string, path string) {
 	//log.Infof("Trying %s %s\n", method, path)
 	for _, param := range op.Parameters {
 		//log.Info(param.Name)
-		data[param.Name] = GenerateAny(&param)
+		data[param.Name] = MockAny(&param)
 	}
 }
 
-// TestPetStore generates params for all of pet store
+// TestPetStore mocks params for all of pet store
 func TestPetStore(t *testing.T) {
 	swagger := ReadSwagger(PetStoreExpanded)
 	for path, pathItem := range swagger.Paths.Paths {
@@ -136,7 +136,7 @@ func TestPetStore(t *testing.T) {
 
 const discourseSwagger = "test/discourseSwagger.json"
 
-// TestDiscourse generates params for all of discourse
+// TestDiscourse mocks params for all of discourse
 func TestDiscourse(t *testing.T) {
 	swagger := ReadSwagger(discourseSwagger)
 	for path, pathItem := range swagger.Paths.Paths {
