@@ -37,11 +37,7 @@ func InitializeParamState(params []spec.Parameter) []*Param {
 	return state
 }
 
-// Mutate sets State.Next based on the information provided in
-// spec.Schema
-// TODO: how to handle random values for array type for path params, etc
-// Add a test for this
-// TODO: store previous value
-func (param *Param) Mutate() {
+// MockData generates dummy data for testing only
+func (param *Param) MockData() {
 	param.Next = swagger.GenerateAny(&param.Parameter)
 }

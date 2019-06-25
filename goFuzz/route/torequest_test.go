@@ -24,7 +24,7 @@ const queryTestfile = "test/query.json"
 // so param.Next is populated
 func getRoute(path string) *Route {
 	routes := FromSwagger(path)
-	routes[0].Mutate()
+	routes[0].MockData()
 	return routes[0]
 }
 

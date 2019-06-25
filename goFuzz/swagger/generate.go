@@ -106,18 +106,13 @@ func generateParam(param *spec.Parameter) interface{} {
 		log.Fatalf("%+v\n", errors.WithStack(err))
 	}
 
-	// Generate a value
-	var val interface{}
 	if param.Type == "array" {
-		val = generatePrimitiveArray(param.Items)
-	} else {
-		if param.Enum != nil {
-			val = generateEnum(param.Enum)
-		} else {
-			val = util.Rand(param.Type)
-		}
+		return generatePrimitiveArray(param.Items)
 	}
-	return val
+	if param.Enum != nil {
+		return generateEnum(param.Enum)
+	}
+	return util.Rand(param.Type)
 }
 
 // GenerateAny generates fake data for all param types

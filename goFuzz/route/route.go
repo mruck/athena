@@ -61,14 +61,6 @@ func New(path string, method string, meta *spec.Operation, siblingMethods *[]*Si
 		Params: params, Re: re, Entries: entries}
 }
 
-// Mutate mutates parameters in a route, setting param.Next
-// for each parameter, or nil if the paramater shouldn't be sent
-func (route *Route) Mutate() {
-	for _, param := range route.Params {
-		param.Mutate()
-	}
-}
-
 // UpdateQueries updates each parameter with the tainted queries
 func (route *Route) UpdateQueries(queries []sql.TaintedQuery) {
 }
@@ -134,4 +126,11 @@ func (route *Route) LogError(traceback error) {
 
 	// Log original error
 	log.Error(traceback)
+}
+
+// Testing only: generate dummy data
+func (route *Route) MockData() {
+	for _, param := range route.Params {
+		param.MockData()
+	}
 }

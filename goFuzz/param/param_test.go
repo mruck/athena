@@ -16,7 +16,7 @@ func TestMutate(t *testing.T) {
 	// Create an obj for tracking state
 	state := New(param)
 	// Mutate
-	state.Mutate()
+	state.MockData()
 	// Check
 	casted, ok := state.Next.(map[string]interface{})
 	require.True(t, ok)
