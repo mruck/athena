@@ -61,8 +61,19 @@ func New(path string, method string, meta *spec.Operation, siblingMethods *[]*Si
 		Params: params, Re: re, Entries: entries}
 }
 
-// UpdateQueries updates each parameter with the tainted queries
+// UpdateQueries maps each tainted query to a parameter
 func (route *Route) UpdateQueries(queries []sql.TaintedQuery) {
+	for _, query := range queries {
+		for _, param := range route.Params {
+			for _, metadata := range param.GetMetadata() {
+				if metadata.Values[0] == query.Param {
+					metadata.TaintedQuery = query
+				}
+			}
+		}
+	}
+	// TODO: keep track of tainted query/general sql queries at a high level
+	// for coverage
 }
 
 // CurrentParams stringifies the most recent params sent and returns them as a list

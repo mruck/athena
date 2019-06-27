@@ -1,7 +1,7 @@
 package exception
 
 // To run this test you need mongo up and running:
-// docker run -p 27017:27017 mongo
+// docker run -d  -p 27017:27017 mongo
 
 import (
 	"io/ioutil"

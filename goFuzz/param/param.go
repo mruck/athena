@@ -41,3 +41,9 @@ func InitializeParamState(params []spec.Parameter) []*Param {
 func (param *Param) MockData() {
 	param.Next = swagger.MockAny(&param.Parameter)
 }
+
+// GetMetadata returns a list of metadata objects embedded in the
+// top leevl parameter
+func (param *Param) GetMetadata() []*swagger.Metadata {
+	return swagger.ReadAllMetadata(&param.Parameter)
+}

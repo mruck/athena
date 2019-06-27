@@ -20,7 +20,6 @@ func (mutator *Mutator) MutateRoute(route *route.Route) {
 		mutateParam(&param.Parameter)
 		// Correctly format the data (i.e. into json)
 		param.Next = swagger.Format(&param.Parameter)
-
 	}
 }
 

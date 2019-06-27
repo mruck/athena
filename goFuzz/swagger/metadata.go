@@ -14,6 +14,7 @@ package swagger
 
 import (
 	"github.com/go-openapi/spec"
+	"github.com/mruck/athena/goFuzz/sql"
 )
 
 const xmetadata = "x-metadata"
@@ -28,7 +29,9 @@ type Metadata struct {
 	// Store a copy of the leaf for multi level data structures.
 	// Ignore this for primitive params i.e. path, query
 	Schema spec.Schema
-	// tainted queries
+	// For now, only support one query per param, but eventually we should
+	// either intelligently merge queries or support multiple queries
+	TaintedQuery sql.TaintedQuery
 }
 
 // ReadSchemaValue extract the metadata ptr embedded in the schema and reads
