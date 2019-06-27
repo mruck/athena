@@ -99,8 +99,8 @@ func (mutator *Mutator) Mutate() *route.Route {
 	route := mutator.Routes[mutator.routeIndex]
 
 	// Mutate each parameter
-	//	mutator.MutateRoute(route)
-	route.MockData()
+	mutator.MutateRoute(route)
+	//route.MockData()
 	return route
 }
 
