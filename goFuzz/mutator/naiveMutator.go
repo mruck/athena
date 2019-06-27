@@ -37,6 +37,8 @@ func mutatePrimitiveArray(items *spec.Items) interface{} {
 		err := fmt.Errorf("objects in arrays only allowed in body parameters")
 		log.Fatalf("%+v\n", errors.WithStack(err))
 	}
+	// For primitive arrays, these are leaf nodes so we control the number of
+	// items in the array
 	obj := make([]interface{}, 1)
 	if items.Enum != nil {
 		obj[0] = mutateEnum(items.Enum)

@@ -50,6 +50,10 @@ func formatArray(items *spec.SchemaOrArray) []interface{} {
 		err := fmt.Errorf("unhandled: SchemaOrArray is array")
 		log.Fatalf("%+v\n", errors.WithStack(err))
 	}
+	// Arrays with objects as elements are never leaf nodes, so
+	// format controls the number of items in the elements.  Default
+	// to 1 element. Eventually we should do a second pass for array
+	// sizing.
 	obj := make([]interface{}, 1)
 	if schema.Type[0] == object {
 		obj[0] = formatObj(schema.Properties)
@@ -67,10 +71,6 @@ func formatParam(param *spec.Parameter) interface{} {
 	if param.Type == object {
 		err := fmt.Errorf("unhandled: object in query/header/form data param")
 		log.Fatalf("%+v\n", errors.WithStack(err))
-	}
-
-	if param.Type == array {
-		return ReadParamValue(param)
 	}
 	return ReadParamValue(param)
 }

@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/mruck/athena/goFuzz/swagger"
-	"github.com/mruck/athena/lib/util"
 	"github.com/stretchr/testify/require"
 )
 
@@ -130,7 +129,14 @@ func TestMetaArrayWithObj(t *testing.T) {
 
 	// Format the data
 	val := swagger.Format(param)
-	util.PrettyPrintStruct(val, nil)
+
+	// Check that we were given an array of objects (specifically
+	// each object is a map[string]interface{}
+	array, ok := val.([]interface{})
+	require.True(t, ok)
+
+	_, ok = array[0].(map[string]interface{})
+	require.True(t, ok)
 }
 
 func TestNestedDict(t *testing.T) {
