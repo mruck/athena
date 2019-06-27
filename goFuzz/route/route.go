@@ -63,6 +63,10 @@ func New(path string, method string, meta *spec.Operation, siblingMethods *[]*Si
 
 // UpdateQueries maps each tainted query to a parameter
 func (route *Route) UpdateQueries(queries []sql.TaintedQuery) {
+	if len(queries) > 0 {
+		util.PrettyPrintStruct(queries, nil)
+		panic("We got tainted queries")
+	}
 	for _, query := range queries {
 		for _, param := range route.Params {
 			for _, metadata := range param.GetMetadata() {
@@ -84,14 +88,8 @@ func (route *Route) CurrentParams() []string {
 		if param.Next == nil {
 			continue
 		}
-		// This is a query or path parameter
-		if param.In == "query" || param.In == "path" {
-			stringified := util.Stringify(param.Next)
-			params = append(params, stringified)
-			continue
-		}
-		// This is a body parameter
-		// Unhandled
+		latest := param.LatestValues()
+		params = append(params, latest...)
 	}
 	return params
 }
