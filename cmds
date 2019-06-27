@@ -1,0 +1,3 @@
+k exec -it $(kpod discourse) -c sidecar-athena bash
+~/acropolis/athena (goFuzz*) KUBECTL_FLAGS="-c=sidecar-athena"  k_git_sync discourse /athena 2b9991f76a26c4f60261b2c000360ed580b2ff7b
+stop commenting out error: /Users/marli/acropolis/athena/lib/util/rand.go
