@@ -70,9 +70,7 @@ func formatParam(param *spec.Parameter) interface{} {
 	}
 
 	if param.Type == array {
-		obj := make([]interface{}, 1)
-		obj[0] = ReadParamValue(param)
-		return obj
+		return ReadParamValue(param)
 	}
 	return ReadParamValue(param)
 }

@@ -31,7 +31,8 @@ type Metadata struct {
 	// tainted queries
 }
 
-// ReadSchemaValue reads the most recently stored value in the metadata object
+// ReadSchemaValue extract the metadata ptr embedded in the schema and reads
+// the most recently stored value
 // embedded in a schema
 func ReadSchemaValue(schema spec.Schema) interface{} {
 	// Extract the embedded metadata struct
@@ -39,11 +40,12 @@ func ReadSchemaValue(schema spec.Schema) interface{} {
 	return metadata.Values[0]
 }
 
-// ReadParamValue reads the most recently stored value in the metadata object
-// embedded in a param
+// ReadParamValue reads the most recently stored value in the first metadata object
+// embedded in a param.  This is to be called on path/query params only.
+// Body params will return a list of values for each leaf node.
 func ReadParamValue(param *spec.Parameter) interface{} {
 	// Extract the embedded metadata struct
-	metadata := param.VendorExtensible.Extensions[xreferential].(*Metadata)
+	metadata := param.VendorExtensible.Extensions[xmetadata].([]*Metadata)[0]
 	return metadata.Values[0]
 }
 
