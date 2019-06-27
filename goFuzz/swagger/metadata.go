@@ -31,8 +31,25 @@ type Metadata struct {
 	// tainted queries
 }
 
-// StoreValue stores a single value in the metadata object embedded
-// in spec.Parameter
+// ReadSchemaValue reads the most recently stored value in the metadata object
+// embedded in a schema
+func ReadSchemaValue(schema spec.Schema) interface{} {
+	// Extract the embedded metadata struct
+	metadata := schema.VendorExtensible.Extensions[xreferential].(*Metadata)
+	return metadata.Values[0]
+}
+
+// ReadParamValue reads the most recently stored value in the metadata object
+// embedded in a param
+func ReadParamValue(param *spec.Parameter) interface{} {
+	// Extract the embedded metadata struct
+	metadata := param.VendorExtensible.Extensions[xreferential].(*Metadata)
+	return metadata.Values[0]
+}
+
+// StoreValue stores a single value in the metadata object embedded.  Stores
+// should only ever be done from top level spec.Paramter.  The pointer
+// to the embedded metadata struct in the leaf nodes is read only.
 func StoreValue(param *spec.Parameter, val interface{}) {
 	// Extract the embedded metadata struct
 	metadata := ReadOneMetadata(param)
@@ -41,7 +58,7 @@ func StoreValue(param *spec.Parameter, val interface{}) {
 	metadata.Values = append([]interface{}{val}, metadata.Values...)
 }
 
-// ReadOneMetadata a single Metadata object.
+// ReadOneMetadata reads a single Metadata object.
 // This should be called for query/path params where we only have one Metadata obj
 func ReadOneMetadata(param *spec.Parameter) *Metadata {
 	return param.VendorExtensible.Extensions[xmetadata].([]*Metadata)[0]

@@ -16,6 +16,16 @@ import (
 	"github.com/pkg/errors"
 )
 
+// MockAny mocks fake data for all param types
+func MockAny(param *spec.Parameter) interface{} {
+	// Handle body
+	if param.In == "body" {
+		return mockSchema(param.Schema)
+	}
+	// Handle path, header, query, form data
+	return mockParam(param)
+}
+
 // mockSchema generates fake data for body parameters
 // (i.e. in: body)
 func mockSchema(schema *spec.Schema) interface{} {
@@ -113,14 +123,4 @@ func mockParam(param *spec.Parameter) interface{} {
 		return mockEnum(param.Enum)
 	}
 	return util.Rand(param.Type)
-}
-
-// MockAny mocks fake data for all param types
-func MockAny(param *spec.Parameter) interface{} {
-	// Handle body
-	if param.In == "body" {
-		return mockSchema(param.Schema)
-	}
-	// Handle path, header, query, form data
-	return mockParam(param)
 }
