@@ -89,6 +89,7 @@ func (cli *Client) updateStatusCodes(code int) {
 // that the client points to. All other fields of the request
 // remain intact.
 func (cli *Client) Do(req *http.Request) (*http.Response, error) {
+	req.Header.Add("Content-type", "application/json")
 	req.Host = cli.URL.Host
 	req.URL.Host = cli.URL.Host
 	resp, err := cli.Client.Do(req)

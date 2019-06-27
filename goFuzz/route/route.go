@@ -63,10 +63,10 @@ func New(path string, method string, meta *spec.Operation, siblingMethods *[]*Si
 
 // UpdateQueries maps each tainted query to a parameter
 func (route *Route) UpdateQueries(queries []sql.TaintedQuery) {
-	if len(queries) > 0 {
-		util.PrettyPrintStruct(queries, nil)
-		panic("We got tainted queries")
-	}
+	//if len(queries) > 0 {
+	//	util.PrettyPrintStruct(queries, nil)
+	//	panic("We got tainted queries")
+	//}
 	for _, query := range queries {
 		for _, param := range route.Params {
 			for _, metadata := range param.GetMetadata() {

@@ -3,6 +3,7 @@ package mutator
 import (
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/mruck/athena/goFuzz/coverage"
 	"github.com/mruck/athena/goFuzz/route"
@@ -66,8 +67,8 @@ func (mutator *Mutator) getUserRoute() {
 	}
 
 	for i, route := range mutator.Routes {
-		if route.Path == routeEnvVar {
-			if route.Method == method {
+		if strings.EqualFold(route.Path, routeEnvVar) {
+			if strings.EqualFold(route.Method, method) {
 				// On mutator we increment the index, so start at -1
 				mutator.routeIndex = i - 1
 				mutator.userRoute = route
