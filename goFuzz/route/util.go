@@ -37,7 +37,10 @@ func blacklisted(path string) bool {
 	return strings.Contains(path, "readonly") ||
 		strings.Contains(path, "logout") ||
 		// This swagger is broken
-		strings.Contains(path, "/admin/api/web_hooks")
+		strings.Contains(path, "/admin/api/web_hooks") ||
+		// Back up does weird stuff.  This could be a good fuzz target, but
+		// blacklist for now
+		strings.Contains(path, "backup")
 }
 
 // FromSwagger loads routes from swagger file

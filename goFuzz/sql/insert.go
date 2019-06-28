@@ -12,9 +12,13 @@ import (
 // the index into the row
 func parseRow(exprs sqlparser.Exprs, param string) int {
 	for i, expr := range exprs {
-		sqlVal := expr.(*sqlparser.SQLVal)
-		if string(sqlVal.Val) == param {
-			return i
+		switch node := expr.(type) {
+		case *sqlparser.SQLVal:
+			if string(node.Val) == param {
+				return i
+			}
+		// TODO: unimplemented
+		case *sqlparser.OrExpr:
 		}
 	}
 	return -1
@@ -32,7 +36,6 @@ func parseRows(insertRows sqlparser.InsertRows, param string) (int, error) {
 		}
 	}
 	err := fmt.Errorf("failed to find param in list of inserted values")
-	log.Fatal(err)
 	return -1, errors.WithStack(err)
 }
 

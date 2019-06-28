@@ -25,7 +25,7 @@ var whitelistErrors = []string{"COPY", "CREATE TABLE", "COMMENT ON COLUMN"}
 func triageError(err error) error {
 	// This is whitelisted, only emit warning
 	if util.StringInSlice(err.Error(), whitelistErrors) {
-		log.Warn(err)
+		//log.Warn(err)
 		return nil
 	}
 	return err

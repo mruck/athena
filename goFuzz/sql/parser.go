@@ -206,7 +206,7 @@ func parseDelete(stmt *sqlparser.Delete, param string) (*TaintedQuery, error) {
 func parseQuery(query string, param string) (*TaintedQuery, error) {
 	// TODO: log to a file in case we segfault parsing, then we can unit test
 	// broken query
-	log.Info(query)
+	//log.Info(query)
 	stmt, err := sqlparser.ParseStrictDDL(query)
 	if err != nil {
 		return nil, errors.WithStack(err)
