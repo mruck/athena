@@ -8,8 +8,8 @@ import (
 	"github.com/xwb1989/sqlparser"
 )
 
-// parseRow searches each val in a row for a parameter. If it's found, return
-// the index into the row
+// parseRow searches each column in a row for a parameter. If it's found, return
+// the index into the row which is the column the parameter maps to
 func parseRow(exprs sqlparser.Exprs, param string) int {
 	for i, expr := range exprs {
 		switch node := expr.(type) {
@@ -24,7 +24,8 @@ func parseRow(exprs sqlparser.Exprs, param string) int {
 	return -1
 }
 
-// This query inserts multiple rows, search each row for our param
+// This query inserts multiple rows, search each row for our param.  Returns
+// the column's index into the row if there's a match, otherwise -1
 func parseRows(insertRows sqlparser.InsertRows, param string) (int, error) {
 	rows := insertRows.(sqlparser.Values)
 	for _, row := range rows {
@@ -41,7 +42,7 @@ func parseRows(insertRows sqlparser.InsertRows, param string) (int, error) {
 
 // Iterate through columns and return the column name at the given index.  This allows
 // us to map a value inserted to a column
-func iterateColumns(index int, columns sqlparser.Columns) (string, error) {
+func columnAtIndex(index int, columns sqlparser.Columns) (string, error) {
 	if len(columns) == 0 {
 		err := "unhandled: insert with no columns provided"
 		log.Fatal(err)
@@ -57,22 +58,31 @@ func iterateColumns(index int, columns sqlparser.Columns) (string, error) {
 }
 
 func parseInsert(stmt *sqlparser.Insert, param string) (*TaintedQuery, error) {
-	index, err := parseRows(stmt.Rows, param)
-	if err != nil {
-		return nil, err
+	switch node := stmt.Rows.(type) {
+	// Raw records are being inserted
+	case *sqlparser.Values:
+		index, err := parseRows(node, param)
+		if err != nil {
+			return nil, err
+		}
+		// TODO: columns will not always be present! If not then I need to connect
+		// to db to see what cols are then cache
+		column, err := columnAtIndex(index, stmt.Columns)
+		if err != nil {
+			return nil, err
+		}
+		table := stmt.Table.Name.String()
+		tainted := &TaintedQuery{
+			Column: column,
+			Param:  param,
+			Table:  table,
+			Action: Insert,
+		}
+		return tainted, nil
+	// This insert is a more complex query so strip away the insert and parse the next
+	// query
+	default:
+		// TODO: untested!
+		return parseNode(node, param)
 	}
-	// TODO: columns will not always be present! If not then I need to connect
-	// to db to see what cols are then cache
-	column, err := iterateColumns(index, stmt.Columns)
-	if err != nil {
-		return nil, err
-	}
-	table := stmt.Table.Name.String()
-	tainted := &TaintedQuery{
-		Column: column,
-		Param:  param,
-		Table:  table,
-		Action: Insert,
-	}
-	return tainted, nil
 }
