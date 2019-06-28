@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/mruck/athena/lib/log"
-	"github.com/mruck/athena/lib/util"
 	"github.com/pkg/errors"
 	"github.com/xwb1989/sqlparser"
 )
@@ -73,7 +72,7 @@ func parseNode(node sqlparser.SQLNode, param string) (*TaintedQuery, error) {
 		return parseDDL(node, param)
 	}
 	err := fmt.Errorf("searching for param %q and hit unhandled node type: %T", param, node)
-	util.PrettyPrintStruct(node, log.Errorf)
+	//util.PrettyPrintStruct(node, log.Errorf)
 	return nil, errors.WithStack(err)
 }
 
@@ -99,7 +98,7 @@ func parseDDL(ddl *sqlparser.DDL, param string) (*TaintedQuery, error) {
 		action = Alter
 	default:
 		err := fmt.Errorf("failed to match ddl.Action = %s", ddl.Action)
-		log.Error(errors.WithStack(err))
+		//log.Error(errors.WithStack(err))
 		return nil, err
 	}
 	query := &TaintedQuery{Param: param, Table: param, Action: action}
@@ -203,13 +202,17 @@ func parseDelete(stmt *sqlparser.Delete, param string) (*TaintedQuery, error) {
 	return match, nil
 }
 
+// LibErr is a parsing error raised by "github.com/xwb1989/sqlparser"
+const LibErr = "SQLParser library error"
+
 func parseQuery(query string, param string) (*TaintedQuery, error) {
 	// TODO: log to a file in case we segfault parsing, then we can unit test
 	// broken query
 	//log.Info(query)
 	stmt, err := sqlparser.ParseStrictDDL(query)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		err = fmt.Errorf("%s:\n%v", LibErr, err)
+		return nil, err
 	}
 	return parseNode(stmt, param)
 }

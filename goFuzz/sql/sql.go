@@ -2,6 +2,7 @@ package sql
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/mruck/athena/lib/log"
@@ -19,20 +20,35 @@ var whitelistErrors = []string{"COPY", "CREATE TABLE", "COMMENT ON COLUMN"}
 
 //var whitelistErrors = []string{}
 
-// triageError checks if the error is in our whitelist of acceptable errors,
-// emitting a warning if it's not severe, otherwise returning the err so it can
-// be bubbled up
-func triageError(err error) error {
-	// This is whitelisted, only emit warning
-	if util.StringInSlice(err.Error(), whitelistErrors) {
-		//log.Warn(err)
-		return nil
-	}
-	return err
+// Parser contains global state about the sql parser
+type Parser struct {
+	TaintedQueries []*TaintedQuery
+	// Total queries we attempted to parse
+	TotalQueries int
+	// Total number of queries sqlparser library failed on
+	LibError int
+	// Total number of queries Athena failed to handle
+	AthenaError int
+	// Log of queries Athena failed to handle
+	AthenaErrorLog *os.File
+	// Log of queries sqlparser errored on
+	ParsingErrorLog *os.File
+}
+
+// NewParser returns a new parsing instance
+func NewParser() *Parser {
+	return &Parser{}
+}
+
+func (parser *Parser) PrettyPrint() {
+	log.Infof("Total queries attempted to parse: %d", parser.TotalQueries)
+	log.Infof("Queries sqlparser library failed: %d", parser.LibError)
+	log.Infof("Queries athena failed: %d", parser.AthenaError)
+	log.Infof("Tainted queries: %d", len(parser.TaintedQueries))
 }
 
 // Search for user tainted queries
-func Search(queries []string, params []string) ([]TaintedQuery, error) {
+func (parser *Parser) Search(queries []string, params []string) ([]TaintedQuery, error) {
 	errs := utils.NewMultiErrors()
 	if len(queries) == 0 || len(params) == 0 {
 		return nil, nil
@@ -46,16 +62,14 @@ func Search(queries []string, params []string) ([]TaintedQuery, error) {
 			}
 			//log.Infof("Matched param \"%s\" with value \"%s\" in query:\n%v", name, val, query)
 			taintedQuery, err := parseQuery(query, param)
+			parser.TotalQueries++
 			if err != nil {
-				err = fmt.Errorf("error searching for param value %v in query:\n%s\n%+v", param, query, err)
-				err = triageError(err)
-				if err != nil {
-					errs.Add(err)
-				}
+				_ = parser.triageError(err, query, param)
 				// We can't parse this query so don't bother
 				break
 			}
 			if taintedQuery != nil {
+				parser.TaintedQueries = append(parser.TaintedQueries, taintedQuery)
 				log.Infof("Tainted query:")
 				util.PrettyPrintStruct(taintedQuery, nil)
 				taintedQueries = append(taintedQueries, *taintedQuery)
@@ -63,4 +77,18 @@ func Search(queries []string, params []string) ([]TaintedQuery, error) {
 		}
 	}
 	return taintedQueries, errs.Collect()
+}
+
+// triageError checks if the error is in our whitelist of acceptable errors,
+// emitting a warning if it's not severe, otherwise returning the err so it can
+// be bubbled up
+func (parser *Parser) triageError(err error, query string, param string) error {
+	// This is an error in the library we are using
+	if strings.Contains(err.Error(), LibErr) {
+		parser.LibError++
+	} else {
+		parser.AthenaError++
+	}
+	err = fmt.Errorf("error searching for param value %v in query:\n%s\n%+v", param, query, err)
+	return err
 }

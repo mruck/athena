@@ -17,6 +17,7 @@ import (
 
 // Mutator contains state for mutating
 type Mutator struct {
+	SQLParser         *sql.Parser
 	Routes            []*route.Route
 	routeIndex        int
 	Coverage          *coverage.Coverage
@@ -47,6 +48,7 @@ func New(routes []*route.Route, corpus []*route.Route) *Mutator {
 		ExceptionsManager: manager,
 		TargetID:          util.MustGetTargetID(),
 		DBLog:             pgLog,
+		SQLParser:         sql.NewParser(),
 	}
 
 	// Check if user specified route, and if so update our mutator to reflect that
@@ -153,10 +155,12 @@ func (mutator *Mutator) UpdateState(resp *http.Response) error {
 	// Search for params present in queries
 	// TODO: current params should return map[string]string
 	params := route.CurrentParams()
-	taintedQueries, err := sql.Search(queries, params)
+	taintedQueries, err := mutator.SQLParser.Search(queries, params)
 	if err != nil {
 		return err
 	}
+
+	mutator.SQLParser.PrettyPrint()
 
 	// Update route with tainted queries
 	route.UpdateQueries(taintedQueries)
