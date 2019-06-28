@@ -12,6 +12,8 @@ import (
 	"github.com/mruck/athena/lib/util"
 )
 
+const path = "path"
+
 // SiblingMethod contains mutation state for sibling methods
 // on the same path
 type SiblingMethod struct {
@@ -41,6 +43,9 @@ type Route struct {
 func New(path string, method string, meta *spec.Operation, siblingMethods *[]*SiblingMethod) *Route {
 	// Initialize object to keep track of state for each param
 	params := param.InitializeParamState(meta.Parameters)
+
+	// Discourse swagger didn't enumerate all path params, so manually check and add if necessary
+	param.CheckForPathParams(path, &params)
 
 	// Allocate an object to keep track of har entries for the route
 	entries := &[]har.Entry{}

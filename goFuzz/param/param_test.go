@@ -27,3 +27,13 @@ func TestMutate(t *testing.T) {
 	_, ok = casted["text_color"]
 	require.True(t, ok)
 }
+
+func TestGetPathParams(t *testing.T) {
+	path := "/users/{username}/preferences/avatar/pick/{id}"
+	paramUser := New(*spec.PathParam("username"))
+	paramID := New(*spec.PathParam("id"))
+
+	params := getPathParams(path)
+	require.Equal(t, paramUser, params[0])
+	require.Equal(t, paramID, params[1])
+}

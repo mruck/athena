@@ -2,9 +2,11 @@ package param
 
 import (
 	"fmt"
+	"regexp"
 
 	"github.com/go-openapi/spec"
 	"github.com/mruck/athena/goFuzz/swagger"
+	"github.com/mruck/athena/lib/log"
 )
 
 // Param state for mutating a parameter
@@ -66,4 +68,39 @@ func (param *Param) LatestValues() []string {
 	}
 
 	return latest
+}
+
+// Given a path, return the first path parameter found
+func getPathParams(path string) []*Param {
+	re := regexp.MustCompile(`\{(.*?)\}`)
+	matches := re.FindAllStringSubmatch(path, -1)
+	// No match
+	if len(matches) == 0 {
+		return nil
+	}
+	log.Info(len(matches))
+	params := make([]*Param, len(matches))
+	for i, match := range matches {
+		// Param name is the 2nd group matched
+		specParam := spec.PathParam(match[1])
+		param := New(*specParam)
+		params[i] = param
+	}
+	return params
+}
+
+// CheckForPathParams takes a path and checks that the parameter
+// list contains all path parameters.  If they are missing, add them
+func CheckForPathParams(path string, params *[]*Param) {
+	for _, param := range *params {
+		// Path parameters have been identified, we are done here
+		if param.In == path {
+			return
+		}
+	}
+	pathParams := getPathParams(path)
+	// We found a path parameter, append it
+	if pathParams != nil {
+		*params = append(*params, pathParams...)
+	}
 }
