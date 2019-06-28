@@ -32,7 +32,8 @@ func RandDecimal() float32 {
 func Rand(dataType string) interface{} {
 	// TODO: use a rng seeded with 0 for reproducability?
 	if dataType == "string" {
-		return RandString()
+		// TODO: will want to play around with string truncation length
+		return RandString()[:6]
 	}
 	if dataType == "integer" {
 		return RandInt()
@@ -48,5 +49,5 @@ func Rand(dataType string) interface{} {
 	}
 	//	err := fmt.Errorf("util.Rand() called on unsupport data type: %s", dataType)
 	//	log.Errorf("%+v", errors.WithStack(err))
-	return RandString()
+	return RandString()[:6]
 }

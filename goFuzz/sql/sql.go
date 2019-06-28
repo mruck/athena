@@ -40,6 +40,7 @@ func NewParser() *Parser {
 	return &Parser{}
 }
 
+// PrettyPrint parser stats
 func (parser *Parser) PrettyPrint() {
 	log.Infof("Total queries attempted to parse: %d", parser.TotalQueries)
 	log.Infof("Queries sqlparser library failed: %d", parser.LibError)
