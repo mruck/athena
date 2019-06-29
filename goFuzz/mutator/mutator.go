@@ -82,8 +82,22 @@ func (mutator *Mutator) getUserRoute() {
 	os.Exit(1)
 }
 
+func (mutator *Mutator) exitImmediately() {
+	//  This is our first time calling mutator
+	if mutator.Coverage.Delta == 0 {
+		return
+	}
+	// We've mutated once and want to exit now
+	if os.Getenv("EXIT") == "1" {
+		os.Exit(0)
+	}
+}
+
 // Mutate picks the next route and mutates the parameters
 func (mutator *Mutator) Mutate() *route.Route {
+	// Exit after 1 request
+	mutator.exitImmediately()
+
 	// We didn't get new coverage, next route
 	if mutator.Coverage.Delta == 0 {
 		mutator.routeIndex++
