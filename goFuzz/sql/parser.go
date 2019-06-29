@@ -33,9 +33,17 @@ func parseNode(node sqlparser.SQLNode, param string) (*TaintedQuery, error) {
 			if match == nil {
 				return nil, nil
 			}
-			col := node.Left.(*sqlparser.ColName).Name.String()
-			match.Column = col
-			return match, nil
+			switch node := node.Left.(type) {
+			case *sqlparser.ColName:
+				col := node.Name.String()
+				match.Column = col
+				return match, nil
+			// TODO: i.e. WHERE 1=0
+			case *sqlparser.SQLVal:
+				return nil, nil
+			default:
+				return nil, nil
+			}
 		default:
 			err := fmt.Errorf("unhandled operator: %v", node.Operator)
 			return nil, errors.WithStack(err)
