@@ -67,22 +67,23 @@ func New(path string, method string, meta *spec.Operation, siblingMethods *[]*Si
 }
 
 // UpdateQueries maps each tainted query to a parameter
-func (route *Route) UpdateQueries(queries []sqlparser.TaintedQuery) {
-	//if len(queries) > 0 {
-	//	util.PrettyPrintStruct(queries, nil)
-	//	panic("We got tainted queries")
-	//}
-	for _, query := range queries {
+func (route *Route) UpdateQueries(queries []sqlparser.TaintedQuery) bool {
+	newQueries := false
+	for i, query := range queries {
 		for _, param := range route.Params {
 			for _, metadata := range param.GetMetadata() {
+				// Found a match
 				if metadata.Values[0] == query.Param {
-					metadata.TaintedQuery = query
+					// This is the first time seeing this query, we got new coverage
+					if metadata.TaintedQuery == nil {
+						newQueries = true
+						metadata.TaintedQuery = &queries[i]
+					}
 				}
 			}
 		}
 	}
-	// TODO: keep track of tainted query/general sql queries at a high level
-	// for coverage
+	return newQueries
 }
 
 // CurrentParams stringifies the most recent params sent and returns them as a list

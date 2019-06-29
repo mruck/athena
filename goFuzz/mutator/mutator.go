@@ -17,10 +17,13 @@ import (
 
 // Mutator contains state for mutating
 type Mutator struct {
-	SQLParser         *sqlparser.Parser
-	Routes            []*route.Route
-	routeIndex        int
-	Coverage          *coverage.Coverage
+	SQLParser  *sqlparser.Parser
+	Routes     []*route.Route
+	routeIndex int
+	// Source code coverage
+	SrcCoverage *coverage.Coverage
+	// Did we get new query coverage?
+	QueryDelta        bool
 	ExceptionsManager *exception.ExceptionsManager
 	TargetID          string
 	DBLog             *postgres.PGLog
@@ -44,7 +47,7 @@ func New(routes []*route.Route, corpus []*route.Route) *Mutator {
 	mutator := &Mutator{
 		Routes:            routes,
 		routeIndex:        -1,
-		Coverage:          coverage.New(coverage.Path),
+		SrcCoverage:       coverage.New(coverage.Path),
 		ExceptionsManager: manager,
 		TargetID:          util.MustGetTargetID(),
 		DBLog:             pgLog,
@@ -84,7 +87,7 @@ func (mutator *Mutator) getUserRoute() {
 
 func (mutator *Mutator) exitImmediately() {
 	//  This is our first time calling mutator
-	if mutator.Coverage.Delta == 0 {
+	if mutator.SrcCoverage.Delta == 0 {
 		return
 	}
 	// We've mutated once and want to exit now
@@ -99,7 +102,7 @@ func (mutator *Mutator) Mutate() *route.Route {
 	mutator.exitImmediately()
 
 	// We didn't get new coverage, next route
-	if mutator.Coverage.Delta == 0 {
+	if mutator.SrcCoverage.Delta == 0 && !mutator.QueryDelta {
 		mutator.routeIndex++
 		// A user specified route was provided
 		if mutator.userRoute != nil {
@@ -142,17 +145,21 @@ func (mutator *Mutator) currentRoute() *route.Route {
 	return mutator.Routes[mutator.routeIndex]
 }
 
+func (mutator *Mutator) logStats(route *route.Route) {
+	route.PrettyPrint(nil)
+	log.Infof("Delta: %v", mutator.SrcCoverage.Delta)
+	log.Infof("Cumulative: %v", mutator.SrcCoverage.Cumulative)
+	mutator.SQLParser.PrettyPrint()
+}
+
 // UpdateState parses the response and updates source code, parameter and
 // query coverage
 func (mutator *Mutator) UpdateState(resp *http.Response) error {
 	// Get current route
 	route := mutator.currentRoute()
 
-	// Update coverage
-	err := mutator.Coverage.Update()
-	route.PrettyPrint(nil)
-	log.Infof("Delta: %v", mutator.Coverage.Delta)
-	log.Infof("Cumulative: %v", mutator.Coverage.Cumulative)
+	// Update source code coverage
+	err := mutator.SrcCoverage.Update()
 	if err != nil {
 		return err
 	}
@@ -167,17 +174,19 @@ func (mutator *Mutator) UpdateState(resp *http.Response) error {
 	mutator.DBLog.Triage()
 
 	// Search for params present in queries
-	// TODO: current params should return map[string]string
 	params := route.CurrentParams()
 	taintedQueries, err := mutator.SQLParser.Search(queries, params)
 	if err != nil {
 		return err
 	}
 
-	mutator.SQLParser.PrettyPrint()
+	// Log various stats above cov, queries, etc
+	mutator.logStats(route)
 
-	// Update route with tainted queries
-	route.UpdateQueries(taintedQueries)
+	// Update route with queries...new queries count as coverage
+	// TODO: queries will need to be canonicalized. For now lets just
+	// compare tainted queries cause we can just use the struct to compare
+	mutator.QueryDelta = route.UpdateQueries(taintedQueries)
 
 	// Check for sql inj
 	sqlparser.CheckForSQLInj(queries, params)

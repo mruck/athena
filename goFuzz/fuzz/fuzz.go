@@ -29,7 +29,7 @@ func logStats(client *httpclient.Client, mutator *mutator.Mutator) {
 	util.Must(err == nil, "%+v\n", errors.WithStack(err))
 
 	fmt.Printf("Code Counts: %s\n", string(codes))
-	fmt.Printf("Final Coverage: %v\n", mutator.Coverage.Cumulative)
+	fmt.Printf("Final Coverage: %v\n", mutator.SrcCoverage.Cumulative)
 	fmt.Printf("Success Ratio: %v\n", successRatio)
 	fmt.Printf("Total Requests: %v\n", totalRequests)
 	// TODO: figure out how to parse this in bash because right now messes up sanity.sh

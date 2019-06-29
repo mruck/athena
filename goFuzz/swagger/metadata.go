@@ -31,7 +31,7 @@ type Metadata struct {
 	Schema spec.Schema
 	// For now, only support one query per param, but eventually we should
 	// either intelligently merge queries or support multiple queries
-	TaintedQuery sqlparser.TaintedQuery
+	TaintedQuery *sqlparser.TaintedQuery
 }
 
 // ReadSchemaValue extract the metadata ptr embedded in the schema and reads
