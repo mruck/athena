@@ -47,9 +47,9 @@ func TestNextRealLog(t *testing.T) {
 	rawQueries, err := pgReader.Next()
 	require.NoError(t, err)
 
-	correct := []string{" COMMIT",
-		" SELECT  \"users\".* FROM \"users\" WHERE \"users\".\"id\" = 2 LIMIT 1",
-		" SELECT  \"users\".* FROM \"users\" WHERE \"users\".\"username_lower\" = 'd0f815' LIMIT 1"}
+	correct := []string{"COMMIT",
+		"SELECT  users.* FROM users WHERE users.id = 2 LIMIT 1",
+		"SELECT  users.* FROM users WHERE users.username_lower = 'd0f815' LIMIT 1"}
 	require.Equal(t, correct, rawQueries)
 }
 

@@ -167,6 +167,29 @@ func (pglog *PGLog) Triage() {
 	}
 }
 
+// Sanitize the query emitted by postgres log.
+// Postgres logs queries with leading characters and double quotes like:
+// "statement: SELECT  \"users\".* FROM \"users\" WHERE \"users\".\"username_lower\" = 'd0f815' LIMIT 1"
+// This causes the sql parser to return an error.  Sanitize so that it looks like:
+// "SELECT  users.* FROM users WHERE users.username_lower = 'd0f815' LIMIT 1"
+func sanitize(query string) string {
+	// Trim leading prefix up to semicolon
+	trimmed := strings.SplitN(query, ":", 2)
+	if len(trimmed) == 2 {
+		// There was something to trim and the query is the 2nd element
+		query = trimmed[1]
+	} else {
+		// There was nothing to trim
+		query = trimmed[0]
+	}
+
+	// Remove double quotes
+	query = strings.Replace(query, "\"", "", -1)
+
+	// Trim leading/trailing whitespace
+	return strings.Trim(query, " ")
+}
+
 // extractRawQueries extracts the raw sql queries from the `message` field of
 // each query metadata object.
 // messages that are not queries) and queries that errored out.  All queries are
@@ -181,17 +204,7 @@ func (pglog *PGLog) extractRawQueries() []string {
 		if isPostgresError(query[ErrorSeverity]) {
 			continue
 		}
-
-		// Trim leading prefix up to semicolon, ie:
-		// "statement: create table cities (name varchar(80), temp int);"
-		trimmed := strings.SplitN(query[Message], ":", 2)
-		if len(trimmed) == 2 {
-			// There was something to trim and the query is the 2nd element
-			rawQueries = append(rawQueries, trimmed[1])
-		} else {
-			// There was nothing to trim
-			rawQueries = append(rawQueries, trimmed[0])
-		}
+		rawQueries = append(rawQueries, sanitize(query[Message]))
 	}
 	return rawQueries
 }
