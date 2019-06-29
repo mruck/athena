@@ -1,4 +1,4 @@
-package sql
+package sqlparser
 
 // Action on database
 type Action int

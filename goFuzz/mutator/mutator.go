@@ -7,8 +7,8 @@ import (
 
 	"github.com/mruck/athena/goFuzz/coverage"
 	"github.com/mruck/athena/goFuzz/route"
-	"github.com/mruck/athena/goFuzz/sql"
 	"github.com/mruck/athena/goFuzz/sql/postgres"
+	"github.com/mruck/athena/goFuzz/sql/sqlparser"
 	"github.com/mruck/athena/lib/database"
 	"github.com/mruck/athena/lib/exception"
 	"github.com/mruck/athena/lib/log"
@@ -17,7 +17,7 @@ import (
 
 // Mutator contains state for mutating
 type Mutator struct {
-	SQLParser         *sql.Parser
+	SQLParser         *sqlparser.Parser
 	Routes            []*route.Route
 	routeIndex        int
 	Coverage          *coverage.Coverage
@@ -48,7 +48,7 @@ func New(routes []*route.Route, corpus []*route.Route) *Mutator {
 		ExceptionsManager: manager,
 		TargetID:          util.MustGetTargetID(),
 		DBLog:             pgLog,
-		SQLParser:         sql.NewParser(),
+		SQLParser:         sqlparser.NewParser(),
 	}
 
 	// Check if user specified route, and if so update our mutator to reflect that
@@ -180,7 +180,7 @@ func (mutator *Mutator) UpdateState(resp *http.Response) error {
 	route.UpdateQueries(taintedQueries)
 
 	// Check for sql inj
-	sql.CheckForSQLInj(queries, params)
+	sqlparser.CheckForSQLInj(queries, params)
 
 	// Store any new exceptions
 	return mutator.ExceptionsManager.Update(route.Path, route.Method, mutator.TargetID)

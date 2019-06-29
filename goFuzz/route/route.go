@@ -7,7 +7,7 @@ import (
 	"github.com/mruck/athena/goFuzz/har"
 	"github.com/mruck/athena/goFuzz/httpclient"
 	"github.com/mruck/athena/goFuzz/param"
-	"github.com/mruck/athena/goFuzz/sql"
+	"github.com/mruck/athena/goFuzz/sql/sqlparser"
 	"github.com/mruck/athena/lib/log"
 	"github.com/mruck/athena/lib/util"
 )
@@ -67,7 +67,7 @@ func New(path string, method string, meta *spec.Operation, siblingMethods *[]*Si
 }
 
 // UpdateQueries maps each tainted query to a parameter
-func (route *Route) UpdateQueries(queries []sql.TaintedQuery) {
+func (route *Route) UpdateQueries(queries []sqlparser.TaintedQuery) {
 	//if len(queries) > 0 {
 	//	util.PrettyPrintStruct(queries, nil)
 	//	panic("We got tainted queries")

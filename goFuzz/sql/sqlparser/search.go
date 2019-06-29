@@ -1,4 +1,4 @@
-package sql
+package sqlparser
 
 import (
 	"fmt"
@@ -17,8 +17,6 @@ func CheckForSQLInj(queries []string, params []string) {
 
 // whitelistErrors contains acceptable sql parsing errors
 var whitelistErrors = []string{"COPY", "CREATE TABLE", "COMMENT ON COLUMN"}
-
-//var whitelistErrors = []string{}
 
 // Parser contains global state about the sql parser
 type Parser struct {

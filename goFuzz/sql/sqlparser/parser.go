@@ -1,4 +1,4 @@
-package sql
+package sqlparser
 
 import (
 	"fmt"
