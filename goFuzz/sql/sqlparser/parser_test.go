@@ -15,6 +15,7 @@ func TestSelect(t *testing.T) {
 }
 
 func TestInsertOneRow(t *testing.T) {
+	t.Skip("Skipping insert")
 	sql := "insert into cities (name, temp) values ('san jose', 67);"
 	match, err := parseQuery(sql, "san jose")
 	require.NoError(t, err)
@@ -25,7 +26,7 @@ func TestInsertOneRow(t *testing.T) {
 // TODO:
 // Test insertion with no columns specified (see if we fail gracefully)
 func TestInsertNoCol(t *testing.T) {
-	return
+	t.Skip("Skipping insert")
 	sql := "insert into cities values ('san jose', 67);"
 	match, err := parseQuery(sql, "san jose")
 	require.NoError(t, err)
@@ -41,6 +42,7 @@ func TestTypes(t *testing.T) {
 }
 
 func TestInsertManyRows(t *testing.T) {
+	t.Skip("Skipping insert")
 	sql := "insert into cities (name, temp) values ('san jose', 67), ('sunnyvale', 60), " +
 		"('palo alto', 58);"
 	match, err := parseQuery(sql, "sunnyvale")
