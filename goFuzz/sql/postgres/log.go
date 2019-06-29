@@ -12,7 +12,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// For indexing into postgres csv, taken from:
+// For indexing into postgres csv:
 // https://www.postgresql.org/docs/9.2/runtime-config-logging.html#RUNTIME-CONFIG-LOGGING-WHERE
 const (
 	LogTime       = 0
@@ -115,8 +115,7 @@ func (pglog *PGLog) Next() ([]string, error) {
 
 	// We read something new, update latest timestamp
 	if truncated != nil {
-		last := len(truncated) - 1
-		pglog.lastTimeStamp = records[last][LogTime]
+		pglog.lastTimeStamp = records[len(truncated)-1][LogTime]
 	}
 
 	// Extract raw queries
@@ -169,7 +168,7 @@ func (pglog *PGLog) Triage() {
 }
 
 // extractRawQueries extracts the raw sql queries from the `message` field of
-// each query metadata object.  Skip information messages (i.e. postgres start up
+// each query metadata object.
 // messages that are not queries) and queries that errored out.  All queries are
 // prefixed with `statement`, so be sure to remove that, i.e.:
 // "statement: create table cities (name varchar(80), temp int);"
@@ -178,20 +177,21 @@ func (pglog *PGLog) extractRawQueries() []string {
 
 	// Extract the raw query
 	for _, query := range pglog.queryMetadata {
-
 		// Query errored out
 		if isPostgresError(query[ErrorSeverity]) {
 			continue
 		}
 
-		// This is an informational message, not a query
-		if !strings.HasPrefix(query[Message], "statement:") {
-			continue
+		// Trim leading prefix up to semicolon, ie:
+		// "statement: create table cities (name varchar(80), temp int);"
+		trimmed := strings.SplitN(query[Message], ":", 2)
+		if len(trimmed) == 2 {
+			// There was something to trim and the query is the 2nd element
+			rawQueries = append(rawQueries, trimmed[1])
+		} else {
+			// There was nothing to trim
+			rawQueries = append(rawQueries, trimmed[0])
 		}
-
-		// Remove prefix
-		trimmed := strings.TrimPrefix(query[Message], "statement: ")
-		rawQueries = append(rawQueries, trimmed)
 	}
 	return rawQueries
 }

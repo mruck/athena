@@ -13,6 +13,8 @@ import (
 const cities1 = "test/cities1.csv"
 const cities2 = "test/cities2.csv"
 
+const discourseLogShort = "test/discourse_short.csv"
+
 // Warning: if you get a file pointer, delete the file, then write to the
 // file pointer, it doesn't error out!
 func TestRm(t *testing.T) {
@@ -26,8 +28,33 @@ func TestRm(t *testing.T) {
 	//fmt.Printf("%v bytes written\n", n)
 }
 
+// Test Next() on a postgres log that we are breaking on when fuzzing
+func TestNextRealLog(t *testing.T) {
+	// Create a tmp file for the csv reader
+	tmp, err := ioutil.TempFile("/tmp", "")
+	require.NoError(t, err)
+	defer os.Remove(tmp.Name())
+
+	// Copy csv contents into it
+	err = util.CopyFile(tmp.Name(), discourseLogShort)
+	require.NoError(t, err)
+
+	// Set postgres log path in env
+	os.Setenv(LogPathEnvVar, tmp.Name())
+	pgReader := NewLog()
+
+	// Read in all records with no time stamp
+	rawQueries, err := pgReader.Next()
+	require.NoError(t, err)
+
+	correct := []string{" COMMIT",
+		" SELECT  \"users\".* FROM \"users\" WHERE \"users\".\"id\" = 2 LIMIT 1",
+		" SELECT  \"users\".* FROM \"users\" WHERE \"users\".\"username_lower\" = 'd0f815' LIMIT 1"}
+	require.Equal(t, correct, rawQueries)
+}
+
 func TestNext(t *testing.T) {
-	// Remove stale triaging files
+	// Remove stale file that triages pg errors
 	path := "/tmp/" + triagedLogFile
 	os.Remove(path)
 
