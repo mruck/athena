@@ -25,7 +25,7 @@
     "initContainers": [
       {
         "name": "rails-fork",
-        "image": "gcr.io/athena-fuzzer/rails:e92f4f05a5",
+        "image": "gcr.io/athena-fuzzer/rails:f8a7a579fe09ac56279d",
         "resources": {
           "requests": {
             "cpu": "0m",
