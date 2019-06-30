@@ -17,7 +17,7 @@ import (
 // be sent
 func (mutator *Mutator) MutateRoute(route *route.Route) {
 	for _, param := range route.Params {
-		mutateParam(&param.Parameter)
+		mutator.mutateParam(&param.Parameter)
 
 		// Correctly format the data (i.e. into json)
 		param.Next = swagger.Format(&param.Parameter)
@@ -71,17 +71,21 @@ func mutateSchema(metadata *swagger.Metadata) interface{} {
 	return val
 }
 
-func mutateTaintedQuery(metadata *swagger.Metadata) interface{} {
+func (mutator *Mutator) mutateTaintedQuery(metadata *swagger.Metadata) interface{} {
+	// No queries associated with this param
+	if metadata.TaintedQuery == nil {
+		return nil
+	}
 	return nil
 }
 
 // Mutate a body parameter.  At the top level *spec.Parameter, we have a list
 // of custom *swagger.Metadata, each representing a leaf in the body.
-func mutateBody(param *spec.Parameter) {
+func (mutator *Mutator) mutateBody(param *spec.Parameter) {
 	metadatas := swagger.ReadAllMetadata(param)
 	for _, metadata := range metadatas {
 		// Try query based mutation
-		val := mutateTaintedQuery(metadata)
+		val := mutator.mutateTaintedQuery(metadata)
 
 		// Query based mutation failed
 		if val == nil {
@@ -96,12 +100,12 @@ func mutateBody(param *spec.Parameter) {
 }
 
 // Mutate a primitive parameter (path, query)
-func mutatePrimitive(param *spec.Parameter) {
+func (mutator *Mutator) mutatePrimitive(param *spec.Parameter) {
 	var val interface{}
 
 	// Try query based mutation
 	metadata := swagger.ReadOneMetadata(param)
-	val = mutateTaintedQuery(metadata)
+	val = mutator.mutateTaintedQuery(metadata)
 
 	// We failed to use query based mutation
 	if val == nil {
@@ -119,11 +123,11 @@ func mutatePrimitive(param *spec.Parameter) {
 	metadata.Values = append([]interface{}{val}, metadata.Values...)
 }
 
-func mutateParam(param *spec.Parameter) {
+func (mutator *Mutator) mutateParam(param *spec.Parameter) {
 	// This is a multi level object. Mutate the leafs individually.
 	if param.In == "body" {
-		mutateBody(param)
+		mutator.mutateBody(param)
 	} else {
-		mutatePrimitive(param)
+		mutator.mutatePrimitive(param)
 	}
 }

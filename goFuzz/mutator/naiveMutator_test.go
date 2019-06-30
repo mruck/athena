@@ -22,8 +22,11 @@ func TestPathParam(t *testing.T) {
 	// Embed a metadata obj
 	swagger.EmbedParam(param)
 
+	// Mock the mutator obj
+	mutator := mock()
+
 	// Mutate the leaf nodes
-	mutateParam(param)
+	mutator.mutateParam(param)
 
 	// Check that metadata.Values for each leaf node has
 	// valid data from our mutation
@@ -49,8 +52,11 @@ func TestBody(t *testing.T) {
 	// Embed a metadata obj
 	swagger.EmbedParam(param)
 
+	// Mock the mutator obj
+	mutator := mock()
+
 	// Mutate the leaf nodes
-	mutateParam(param)
+	mutator.mutateParam(param)
 
 	// Check that metadata.Values for each leaf node has
 	// valid data from our mutation
@@ -88,8 +94,11 @@ func TestArrayWithPrimativeMetadata(t *testing.T) {
 	// Embed our param
 	swagger.EmbedParam(param)
 
+	// Mock the mutator obj
+	mutator := mock()
+
 	// Mutate the leaf nodes
-	mutateParam(param)
+	mutator.mutateParam(param)
 
 	// Check that metadata.Values for each leaf node has
 	// valid data from our mutation
@@ -117,8 +126,11 @@ func TestMetaArrayWithObj(t *testing.T) {
 	// Embed our param
 	swagger.EmbedParam(param)
 
+	// Mock the mutator obj
+	mutator := mock()
+
 	// Mutate the leaf nodes
-	mutateParam(param)
+	mutator.mutateParam(param)
 
 	// Check that metadata.Values for each leaf node has
 	// valid data from our mutation
@@ -150,8 +162,11 @@ func TestNestedDict(t *testing.T) {
 	// Embed a metadata obj
 	swagger.EmbedParam(param)
 
+	// Mock the mutator obj
+	mutator := mock()
+
 	// Mutate the leaf nodes
-	mutateParam(param)
+	mutator.mutateParam(param)
 
 	// Check that metadata.Values for each leaf node has
 	// valid data from our mutation

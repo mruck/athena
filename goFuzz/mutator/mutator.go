@@ -60,6 +60,11 @@ func New(routes []*route.Route, corpus []*route.Route) *Mutator {
 	return mutator
 }
 
+// Allocate a new dummy mutator.  For testing only.
+func mock() *Mutator {
+	return &Mutator{}
+}
+
 // get user specified route
 func (mutator *Mutator) getUserRoute() {
 	routeEnvVar := os.Getenv("ROUTE")
