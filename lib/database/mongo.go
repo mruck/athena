@@ -29,7 +29,7 @@ func MustGetDatabase(port string, database string) *mgo.Database {
 	if err != nil {
 		err = fmt.Errorf("unable to connect to mongodb server, is it running?\n"+
 			"If testing start a mongo container with:\n"+
-			"docker run -d  -p 27017:27017 mongo\n"+
+			"docker run -d --rm -p 27017:27017 mongo:3.4-xenial\n"+
 			"%v", err)
 		panic(err)
 	}
