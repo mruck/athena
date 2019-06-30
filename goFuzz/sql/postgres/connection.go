@@ -33,7 +33,7 @@ func (conn *Connection) LookUp(table string, col string) interface{} {
 	var val interface{}
 	err := row.Scan(&val)
 	if err != nil {
-		// TODO: log err
+		log.Error(errors.WithStack(err))
 		return nil
 	}
 	return val

@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/mruck/athena/lib/log"
-	"github.com/mruck/athena/lib/util"
 	"github.com/uber/makisu/lib/utils"
 )
 
@@ -68,9 +67,8 @@ func (parser *Parser) Search(queries []string, params []string) ([]TaintedQuery,
 				break
 			}
 			if taintedQuery != nil {
+				// Append for logging puroses
 				parser.TaintedQueries = append(parser.TaintedQueries, taintedQuery)
-				log.Infof("Tainted query:")
-				util.PrettyPrintStruct(taintedQuery, nil)
 				taintedQueries = append(taintedQueries, *taintedQuery)
 			}
 		}
