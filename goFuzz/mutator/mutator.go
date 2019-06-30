@@ -26,7 +26,8 @@ type Mutator struct {
 	QueryDelta        bool
 	ExceptionsManager *exception.ExceptionsManager
 	TargetID          string
-	DBLog             *postgres.PGLog
+	// Target database
+	DB *postgres.Postgres
 	// user specified route via env vars ROUTE and METHOD
 	userRoute *route.Route
 }
@@ -40,9 +41,11 @@ func New(routes []*route.Route, corpus []*route.Route) *Mutator {
 	// Make the order deterministic for debugging.  Order routes alphabetically
 	route.Order(routes)
 
-	// Get a new pg log and seek to the end
-	pgLog := postgres.NewLog()
-	pgLog.Seek()
+	// Connect to the database
+	targetDB := postgres.New()
+
+	// Seek to the end of the db log
+	targetDB.Log.Seek()
 
 	mutator := &Mutator{
 		Routes:            routes,
@@ -50,7 +53,7 @@ func New(routes []*route.Route, corpus []*route.Route) *Mutator {
 		SrcCoverage:       coverage.New(coverage.Path),
 		ExceptionsManager: manager,
 		TargetID:          util.MustGetTargetID(),
-		DBLog:             pgLog,
+		DB:                targetDB,
 		SQLParser:         sqlparser.NewParser(),
 	}
 
@@ -170,13 +173,13 @@ func (mutator *Mutator) UpdateState(resp *http.Response) error {
 	}
 
 	// Read log dumped by postgres
-	queries, err := mutator.DBLog.Next()
+	queries, err := mutator.DB.Log.Next()
 	if err != nil {
 		return err
 	}
 
 	// Triage postgres log for errors, hints, etc
-	mutator.DBLog.Triage()
+	mutator.DB.Log.Triage()
 
 	// Search for params present in queries
 	params := route.CurrentParams()

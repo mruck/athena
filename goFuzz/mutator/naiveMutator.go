@@ -76,7 +76,9 @@ func (mutator *Mutator) mutateTaintedQuery(metadata *swagger.Metadata) interface
 	if metadata.TaintedQuery == nil {
 		return nil
 	}
-	return nil
+
+	// Look up a value
+	return mutator.DB.Conn.LookUp(metadata.TaintedQuery.Table, metadata.TaintedQuery.Column)
 }
 
 // Mutate a body parameter.  At the top level *spec.Parameter, we have a list

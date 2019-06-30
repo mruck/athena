@@ -27,7 +27,10 @@ func MustGetDatabase(port string, database string) *mgo.Database {
 	//TODO: Add context timeout
 	session, err := mgo.Dial(target)
 	if err != nil {
-		err = fmt.Errorf("unable to connect to mongodb server, is it running? %v", err)
+		err = fmt.Errorf("unable to connect to mongodb server, is it running?\n"+
+			"If testing start a mongo container with:\n"+
+			"docker run -d  -p 27017:27017 mongo\n"+
+			"%v", err)
 		panic(err)
 	}
 	// Optional. Switch the session to a monotonic behavior.

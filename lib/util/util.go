@@ -58,6 +58,16 @@ func GetLogPath() string {
 	return path
 }
 
+// DefaultEnv returns the environment variable <key> if it is found,
+// and _default otherwise.
+func DefaultEnv(key string, _default string) string {
+	val, found := os.LookupEnv(key)
+	if !found {
+		return _default
+	}
+	return val
+}
+
 // MustGetTargetID returns the target id or panics
 func MustGetTargetID() string {
 	targetID := os.Getenv("TARGET_ID")
