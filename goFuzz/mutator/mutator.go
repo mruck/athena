@@ -120,7 +120,7 @@ func (mutator *Mutator) Mutate() *route.Route {
 
 	// Mutate each parameter
 	mutator.MutateRoute(route)
-	//route.MockData()
+
 	return route
 }
 

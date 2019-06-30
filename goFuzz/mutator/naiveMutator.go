@@ -18,6 +18,7 @@ import (
 func (mutator *Mutator) MutateRoute(route *route.Route) {
 	for _, param := range route.Params {
 		mutateParam(&param.Parameter)
+
 		// Correctly format the data (i.e. into json)
 		param.Next = swagger.Format(&param.Parameter)
 	}
@@ -47,22 +48,6 @@ func mutatePrimitiveArray(items *spec.Items) interface{} {
 	return obj
 }
 
-// Mutate a primitive parameter (path, query)
-func mutatePrimitive(param *spec.Parameter) {
-	// Mutate our value
-	var val interface{}
-	if param.Type == "array" {
-		val = mutatePrimitiveArray(param.Items)
-	} else if param.Enum != nil {
-		val = mutateEnum(param.Enum)
-	} else {
-		val = util.Rand(param.Type)
-	}
-
-	// Store this in the list of values
-	swagger.StoreValue(param, val)
-}
-
 func mutatePrimitiveSchema(schema spec.Schema) interface{} {
 	if schema.Enum != nil {
 		return mutateEnum(schema.Enum)
@@ -71,7 +56,7 @@ func mutatePrimitiveSchema(schema spec.Schema) interface{} {
 }
 
 // Mutate a schema leaf node
-func mutateSchema(metadata *swagger.Metadata) {
+func mutateSchema(metadata *swagger.Metadata) interface{} {
 	schema := metadata.Schema
 
 	// Mutate our value
@@ -83,10 +68,11 @@ func mutateSchema(metadata *swagger.Metadata) {
 	} else {
 		val = mutatePrimitiveSchema(schema)
 	}
+	return val
+}
 
-	// Update the metadata object.  This is a pointer so the update
-	// is done in place.
-	metadata.Values = append([]interface{}{val}, metadata.Values...)
+func mutateTaintedQuery(metadata *swagger.Metadata) interface{} {
+	return nil
 }
 
 // Mutate a body parameter.  At the top level *spec.Parameter, we have a list
@@ -94,9 +80,43 @@ func mutateSchema(metadata *swagger.Metadata) {
 func mutateBody(param *spec.Parameter) {
 	metadatas := swagger.ReadAllMetadata(param)
 	for _, metadata := range metadatas {
-		// Mutate
-		mutateSchema(metadata)
+		// Try query based mutation
+		val := mutateTaintedQuery(metadata)
+
+		// Query based mutation failed
+		if val == nil {
+			// Mutate
+			val = mutateSchema(metadata)
+		}
+
+		// Update the metadata object.  This is a pointer so the update
+		// is done in place.
+		metadata.Values = append([]interface{}{val}, metadata.Values...)
 	}
+}
+
+// Mutate a primitive parameter (path, query)
+func mutatePrimitive(param *spec.Parameter) {
+	var val interface{}
+
+	// Try query based mutation
+	metadata := swagger.ReadOneMetadata(param)
+	val = mutateTaintedQuery(metadata)
+
+	// We failed to use query based mutation
+	if val == nil {
+		if param.Type == "array" {
+			val = mutatePrimitiveArray(param.Items)
+		} else if param.Enum != nil {
+			val = mutateEnum(param.Enum)
+		} else {
+			val = util.Rand(param.Type)
+		}
+	}
+
+	// Update the metadata object.  This is a pointer so the update
+	// is done in place.
+	metadata.Values = append([]interface{}{val}, metadata.Values...)
 }
 
 func mutateParam(param *spec.Parameter) {
