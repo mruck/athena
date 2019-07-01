@@ -7,10 +7,12 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"runtime"
 	"strings"
 
+	"github.com/moul/http2curl"
 	"github.com/mruck/athena/lib/log"
 	"github.com/pkg/errors"
 )
@@ -216,4 +218,13 @@ func ReadFileLineByLine(path string) ([]string, error) {
 		lines = append(lines, scanner.Text())
 	}
 	return lines, scanner.Err()
+}
+
+// ToCurl logs a request as a curl cmd
+func ToCurl(req *http.Request) (*http2curl.CurlCommand, error) {
+	cmd, err := http2curl.GetCurlCommand(req)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return cmd, nil
 }

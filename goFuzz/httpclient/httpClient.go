@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 
@@ -89,10 +90,23 @@ func (cli *Client) updateStatusCodes(code int) {
 // that the client points to. All other fields of the request
 // remain intact.
 func (cli *Client) Do(req *http.Request) (*http.Response, error) {
+	// Patch headers
 	req.Header.Add("Content-type", "application/json")
 	req.Host = cli.URL.Host
 	req.URL.Host = cli.URL.Host
+
 	resp, err := cli.Client.Do(req)
+
+	// Check if we want to log this as a curl cmd
+	if _, found := os.LookupEnv("CURL"); found {
+		cmd, err := util.ToCurl(req)
+		if err != nil {
+			log.Error(err)
+		} else {
+			log.Info(cmd)
+		}
+	}
+
 	// Only update status codes if we got a response
 	if err == nil {
 		cli.updateStatusCodes(resp.StatusCode)

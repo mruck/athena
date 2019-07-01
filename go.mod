@@ -16,6 +16,7 @@ require (
 	github.com/gorilla/mux v1.7.2
 	github.com/juju/errors v0.0.0-20190207033735-e65537c515d7 // indirect
 	github.com/lib/pq v1.1.1
+	github.com/moul/http2curl v1.0.0
 	github.com/opentracing/opentracing-go v1.1.0 // indirect
 	github.com/pingcap/goleveldb v0.0.0-20171020122428-b9ff6c35079e // indirect
 	github.com/pingcap/tidb v2.0.11+incompatible // indirect
