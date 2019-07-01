@@ -1,6 +1,11 @@
 package exception
 
 import (
+	"io/ioutil"
+	"os"
+
+	"github.com/mruck/athena/lib/database"
+	"github.com/mruck/athena/lib/log"
 	"github.com/mruck/athena/lib/util"
 	"github.com/pkg/errors"
 	"gopkg.in/mgo.v2"
@@ -99,4 +104,36 @@ func (manager *ExceptionsManager) ReadExceptionsFile() (*Exception, error) {
 	exception := &Exception{}
 	err = util.UnmarshalFile(manager.FilePath, exception)
 	return exception, err
+}
+
+// ReadDB connects to athena db and reads the TARGET_ID exceptions table.
+// To be called inside a pod where TARGET_ID is set and there's a running
+// mongo db instance
+func ReadDB() {
+	// Get target id
+	targetID := os.Getenv("TARGET_ID")
+	if targetID == "" {
+		log.Info("TARGET_ID not set.  Are you running inside a pod with athena set up?")
+	}
+
+	// Connect to db
+	db := database.MustGetDatabase(database.MongoDbPort, "athena")
+	manager := NewExceptionsManager(db, Path)
+
+	// Read all exceptions
+	exceptions, err := manager.GetAll(targetID)
+	if err != nil {
+		log.Fatal(errors.WithStack(err))
+	}
+
+	// Log to tmp file
+	tmpfile, err := ioutil.TempFile("", "exceptions_")
+	if err != nil {
+		log.Fatal(errors.WithStack(err))
+	}
+	err = util.MarshalToFile(exceptions, tmpfile.Name())
+	if err != nil {
+		log.Fatal(errors.WithStack(err))
+	}
+	log.Infof("Logged exceptions to %s", tmpfile.Name())
 }

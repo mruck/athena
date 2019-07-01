@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"log"
 	"net/url"
+	"os"
 
 	"github.com/mruck/athena/goFuzz/fuzz"
 	"github.com/mruck/athena/goFuzz/httpclient"
 	"github.com/mruck/athena/goFuzz/preprocess"
 	"github.com/mruck/athena/goFuzz/route"
+	"github.com/mruck/athena/lib/exception"
 	"github.com/mruck/athena/lib/util"
 )
 
@@ -18,7 +20,20 @@ const harLogin = "tests/login_har.json"
 const swaggerPath = "tests/discourseSwagger.json"
 const harCorpus = "tests/corpus_har.json"
 
+func readDB() {
+	_, found := os.LookupEnv("READ_DB")
+	if !found {
+		return
+	}
+	// Read database and exit
+	exception.ReadDB()
+	os.Exit(0)
+}
+
 func main() {
+	// Read the database and exit
+	readDB()
+
 	port := util.MustGetTargetAppPort()
 	host := util.MustGetTargetAppHost()
 

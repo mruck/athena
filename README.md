@@ -1,5 +1,12 @@
 # Fuzzer
 
+## Environment variables
+The fuzzer is configurable via the below environment variables:
+`ROUTE`: Specify the route you want to hit.  For repro purposes only.
+`ROUTE`: Specify the method you want to hit.  For repro purposes only.
+`EXIT`: Exit after sending one request. For repro purposes only.
+`READ_DB`: Read exceptions logged to the database for target `TARGET_ID`.
+
 ## Getting the fuzzer up and running
 `mkdir athena && cd athena`
 `git clone git@github.com:mruck/fuzzer.git`
