@@ -11,6 +11,7 @@ require (
 	github.com/go-openapi/spec v0.19.0
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/go-cmp v0.3.0
+	github.com/google/gofuzz v0.0.0-20170612174753-24818f796faf
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/mux v1.7.2
 	github.com/juju/errors v0.0.0-20190207033735-e65537c515d7 // indirect

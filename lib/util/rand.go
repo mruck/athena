@@ -1,53 +1,42 @@
 package util
 
 import (
+	fuzz "github.com/google/gofuzz"
 	"github.com/google/uuid"
 )
 
-// RandInt returns a truncated uuid
-func RandInt() uint32 {
-	uid := uuid.New()
-	return uid.ID()
-}
-
-// RandString returns a stringified uuid
+// RandString returns a stringified uuid.
+// This data should use a much more normal encoding
+// than go fuzz
 func RandString() string {
 	uid := uuid.New()
-	return uid.String()
-}
-
-// RandBool returns true or false
-// TODO: make this actually random!
-func RandBool() bool {
-	return true
-}
-
-// RandDecimal returns true or false
-func RandDecimal() float32 {
-	return float32(RandInt()) / 100
+	return uid.String()[:4]
 }
 
 // Rand returns a random object of type typ.
 // Returns a random string if the data type doesn't match
 func Rand(dataType string) interface{} {
-	// TODO: use a rng seeded with 0 for reproducability?
-	if dataType == "string" {
-		// TODO: will want to play around with string truncation length
-		return RandString()[:6]
+	f := fuzz.New()
+	switch dataType {
+	case "integer":
+		fallthrough
+	case "number":
+		var val int
+		f.Fuzz(&val)
+		return val
+	case "boolean":
+		var val bool
+		f.Fuzz(&val)
+		return val
+	case "decimal":
+		var val float32
+		f.Fuzz(&val)
+		return val
+	case "string":
+		fallthrough
+	default:
+		var val string
+		f.Fuzz(&val)
+		return val
 	}
-	if dataType == "integer" {
-		return RandInt()
-	}
-	if dataType == "number" {
-		return RandInt()
-	}
-	if dataType == "boolean" {
-		return RandBool()
-	}
-	if dataType == "decimal" {
-		return RandDecimal()
-	}
-	//	err := fmt.Errorf("util.Rand() called on unsupport data type: %s", dataType)
-	//	log.Errorf("%+v", errors.WithStack(err))
-	return RandString()[:6]
 }
