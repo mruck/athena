@@ -31,7 +31,9 @@ kubectl apply -f /tmp/sanity/$POD_NAME/pod.json
 while [ ! "$(__is_pod_ready $POD_NAME)" = "OK" ]; do echo "Polling pod..."; sleep 1; done
 
 echo "Tail logs of client at /tmp/sanity/$POD_NAME/client"
-(kubectl logs -f $POD_NAME athena  2>&1) > /tmp/sanity/$POD_NAME/client
+#times=$(time ((kubectl get pods) > /tmp/hello) 2>&1)
+times=$(time ((kubectl logs -f $POD_NAME athena  2>&1) > /tmp/sanity/$POD_NAME/client) 2>&1)
+
 
 kubectl delete pod $POD_NAME
 
@@ -51,6 +53,7 @@ echo "Code counts: $cnt"
 echo "Cov: $cov"
 echo "Success Rate: $succ"
 echo "Requests: $reqs"
+echo "Time: $times"
 
 echo "{}" | \
     jq ".git_ref = \"$ref\"" | \
