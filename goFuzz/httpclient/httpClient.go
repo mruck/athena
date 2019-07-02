@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
-	"os"
 	"strings"
 	"time"
 
@@ -96,6 +95,8 @@ func (cli *Client) Do(req *http.Request) (*http.Response, error) {
 	req.Header.Add("Content-type", "application/json")
 	req.Host = cli.URL.Host
 	req.URL.Host = cli.URL.Host
+
+	// Tee the body so we can save it as a curl command
 	var buf bytes.Buffer
 	if req.Body != nil {
 		req.Body = ioutil.NopCloser(io.TeeReader(req.Body, &buf))
@@ -103,18 +104,11 @@ func (cli *Client) Do(req *http.Request) (*http.Response, error) {
 
 	resp, err := cli.Client.Do(req)
 
-	// Check if we want to log this as a curl cmd
-	if _, found := os.LookupEnv("CURL"); found {
-		if req.Body != nil {
-			req.Body = ioutil.NopCloser(&buf)
-		}
-		cmd, err := util.ToCurl(req)
-		if err != nil {
-			log.Error(err)
-		} else {
-			log.Info(cmd)
-		}
+	// Body buffer has been read, replenish it
+	if req.Body != nil {
+		req.Body = ioutil.NopCloser(&buf)
 	}
+	util.LogAsCurl(req)
 
 	// Only update status codes if we got a response
 	if err == nil {

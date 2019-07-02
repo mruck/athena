@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"path/filepath"
 	"runtime"
 	"strings"
 
@@ -220,11 +221,29 @@ func ReadFileLineByLine(path string) ([]string, error) {
 	return lines, scanner.Err()
 }
 
-// ToCurl logs a request as a curl cmd
-func ToCurl(req *http.Request) (*http2curl.CurlCommand, error) {
+const curlLogPath = "curl.log"
+
+// LogAsCurl logs a request as a curl command
+func LogAsCurl(req *http.Request) {
 	cmd, err := http2curl.GetCurlCommand(req)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		log.Error(errors.WithStack(err))
+		return
 	}
-	return cmd, nil
+	path := filepath.Join(GetLogPath(), curlLogPath)
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
+	if err != nil {
+		log.Error(errors.WithStack(err))
+		return
+	}
+
+	defer f.Close()
+
+	if _, err = f.WriteString(cmd.String() + "\n"); err != nil {
+		if err != nil {
+			log.Errorf("%+v", errors.WithStack(err))
+			return
+		}
+	}
+
 }
