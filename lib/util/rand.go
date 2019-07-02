@@ -35,8 +35,9 @@ func Rand(dataType string) interface{} {
 	case "string":
 		fallthrough
 	default:
-		var val string
-		f.Fuzz(&val)
-		return val
+		return RandString()
+		//var val string
+		//f.Fuzz(&val)
+		//return val
 	}
 }

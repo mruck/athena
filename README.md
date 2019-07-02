@@ -6,6 +6,7 @@ The fuzzer is configurable via the below environment variables:
 `ROUTE`: Specify the method you want to hit.  For repro purposes only.
 `EXIT`: Exit after sending one request. For repro purposes only.
 `READ_DB`: Read exceptions logged to the database for target `TARGET_ID`.
+`CURL`: Dump request as curl cmd
 
 ## Getting the fuzzer up and running
 `mkdir athena && cd athena`

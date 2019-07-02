@@ -110,7 +110,9 @@ func (mutator *Mutator) Mutate() *route.Route {
 	mutator.exitImmediately()
 
 	// We didn't get new coverage, next route
-	if mutator.SrcCoverage.Delta == 0 && !mutator.QueryDelta {
+	if mutator.SrcCoverage.Delta == 0 &&
+		!mutator.QueryDelta &&
+		!mutator.ExceptionsManager.Delta {
 		mutator.routeIndex++
 		// A user specified route was provided
 		if mutator.userRoute != nil {

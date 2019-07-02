@@ -21,9 +21,14 @@ type Exception struct {
 	TargetID string `bson:"TargetID"`
 }
 
+// ExceptionsManager tracks exceptions in memory and logs them to a db
 type ExceptionsManager struct {
 	collection *mgo.Collection
-	FilePath   string
+	filePath   string
+	// Keep track of exceptions in memory as well
+	uniqueExceptions []*Exception
+	// Did we see a new exception?
+	Delta bool
 }
 
 const Path = "/tmp/results/exceptions.json"
@@ -35,7 +40,7 @@ const Path = "/tmp/results/exceptions.json"
 func NewExceptionsManager(db *mgo.Database, path string) *ExceptionsManager {
 	return &ExceptionsManager{
 		collection: db.C("exceptions"),
-		FilePath:   path,
+		filePath:   path,
 	}
 }
 
@@ -55,10 +60,12 @@ func (manager *ExceptionsManager) ReadOne(targetID string) (Exception, error) {
 	return result, err
 }
 
+// WriteOne writes a single exception
 func (manager *ExceptionsManager) WriteOne(exc Exception) error {
 	return errors.WithStack(manager.collection.Insert(exc))
 }
 
+// Drop a collection
 func (manager *ExceptionsManager) Drop() error {
 	return errors.WithStack(manager.collection.DropCollection())
 }
@@ -68,8 +75,17 @@ func (exception *Exception) benign() bool {
 	return false
 }
 
+func exceptionsEqual(exn1 *Exception, exn2 *Exception) bool {
+	return exn1.Path == exn2.Path &&
+		exn1.Method == exn2.Method &&
+		exn1.Class == exn2.Class
+}
+
 // Update exceptions database from exceptions written by rails
 func (manager *ExceptionsManager) Update(path string, method string, targetid string) error {
+	// Assume we don't see a unique exception
+	manager.Delta = false
+
 	exception, err := manager.ReadExceptionsFile()
 	if err != nil {
 		return err
@@ -81,20 +97,37 @@ func (manager *ExceptionsManager) Update(path string, method string, targetid st
 	if exception.benign() {
 		return nil
 	}
+
+	// Add extra metadata to the exception
 	exception.Path = path
 	exception.Method = method
 	exception.TargetID = targetid
+
+	// Have we seen this exception before?
+	for _, oldException := range manager.uniqueExceptions {
+		// We've already logged this exception
+		if exceptionsEqual(oldException, exception) {
+			return nil
+		}
+
+	}
+
+	// This exception is unique
+	manager.Delta = true
+	manager.uniqueExceptions = append(manager.uniqueExceptions, exception)
+
+	// Log to db
 	return manager.WriteOne(*exception)
 }
 
 // ReadExceptionsFile reads the file written by rails logging exceptions
 func (manager *ExceptionsManager) ReadExceptionsFile() (*Exception, error) {
 	// There's no file to read from
-	if manager.FilePath == "" {
+	if manager.filePath == "" {
 		return nil, nil
 	}
 	// Check if any exceptions were written
-	empty, err := util.FileIsEmpty(manager.FilePath)
+	empty, err := util.FileIsEmpty(manager.filePath)
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +135,7 @@ func (manager *ExceptionsManager) ReadExceptionsFile() (*Exception, error) {
 		return nil, nil
 	}
 	exception := &Exception{}
-	err = util.UnmarshalFile(manager.FilePath, exception)
+	err = util.UnmarshalFile(manager.filePath, exception)
 	return exception, err
 }
 
