@@ -1,8 +1,10 @@
 package httpclient
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
@@ -94,11 +96,18 @@ func (cli *Client) Do(req *http.Request) (*http.Response, error) {
 	req.Header.Add("Content-type", "application/json")
 	req.Host = cli.URL.Host
 	req.URL.Host = cli.URL.Host
+	var buf bytes.Buffer
+	if req.Body != nil {
+		req.Body = ioutil.NopCloser(io.TeeReader(req.Body, &buf))
+	}
 
 	resp, err := cli.Client.Do(req)
 
 	// Check if we want to log this as a curl cmd
 	if _, found := os.LookupEnv("CURL"); found {
+		if req.Body != nil {
+			req.Body = ioutil.NopCloser(&buf)
+		}
 		cmd, err := util.ToCurl(req)
 		if err != nil {
 			log.Error(err)
