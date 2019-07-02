@@ -9,16 +9,12 @@ import (
 )
 
 // Format the swagger tree structure into a blob of data
-func Format(param *spec.Parameter) map[string]interface{} {
-	val := make(map[string]interface{}, 1)
-	// Handle body
+//func Format(param *spec.Parameter) map[string]interface{} {
+func Format(param *spec.Parameter) interface{} {
 	if param.In == "body" {
-		val[param.Name] = formatSchema(*param.Schema)
-	} else {
-		// Handle path, header, query, form data
-		val[param.Name] = formatParam(param)
+		return formatSchema(*param.Schema)
 	}
-	return val
+	return formatParam(param)
 }
 
 // formatSchema generates fake data for body parameters
