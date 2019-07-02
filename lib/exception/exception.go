@@ -45,18 +45,19 @@ func NewExceptionsManager(db *mgo.Database, path string) *ExceptionsManager {
 
 	// We may have run on this target before.  If so, reload the exceptions
 	// that we've seen before
-	targetID := util.DefaultEnv("TARGET_ID", "")
-	if targetID != "" {
-		exceptions, err := manager.GetAll(targetID)
-		if err != nil {
-			log.Fatal(err)
-		}
-		manager.uniqueExceptions = exceptions
-	}
+	//targetID := util.DefaultEnv("TARGET_ID", "")
+	//if targetID != "" {
+	//	exceptions, err := manager.GetAll(targetID)
+	//	if err != nil {
+	//		log.Fatal(err)
+	//	}
+	//	manager.uniqueExceptions = exceptions
+	//}
 	return manager
 
 }
 
+// GetAll returns all exceptions for the given target id
 func (manager *ExceptionsManager) GetAll(targetID string) ([]Exception, error) {
 	var results []Exception
 	query := bson.M{"TargetID": targetID}
@@ -91,7 +92,8 @@ func (exception *Exception) benign() bool {
 func exceptionsEqual(exn1 Exception, exn2 Exception) bool {
 	return exn1.Path == exn2.Path &&
 		exn1.Method == exn2.Method &&
-		exn1.Class == exn2.Class
+		exn1.Class == exn2.Class &&
+		exn1.TargetID == exn2.TargetID
 }
 
 // Update exceptions database from exceptions written by rails
