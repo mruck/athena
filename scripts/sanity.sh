@@ -31,6 +31,7 @@ kubectl apply -f /tmp/sanity/$POD_NAME/pod.json
 while [ ! "$(__is_pod_ready $POD_NAME)" = "OK" ]; do echo "Polling pod..."; sleep 1; done
 
 echo "Tail logs of client at /tmp/sanity/$POD_NAME/client"
+SECONDS=0
 (kubectl logs -f $POD_NAME athena  2>&1) > /tmp/sanity/$POD_NAME/client
 
 kubectl delete pod $POD_NAME
@@ -59,4 +60,5 @@ echo "{}" | \
     jq ".success_rate = $succ" | \
     jq ".total_requests = $reqs" | \
     jq ".status_codes = $cnt" | \
+    jq ".seconds = \"$SECONDS\"" | \
     jq -c '.' | tee -a $output
