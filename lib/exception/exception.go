@@ -31,6 +31,7 @@ type ExceptionsManager struct {
 	Delta bool
 }
 
+// Path to exceptions file dumped by rails
 const Path = "/tmp/results/exceptions.json"
 
 // NewExceptionsManager takes a connection to a mongo db and connects to the
@@ -45,14 +46,14 @@ func NewExceptionsManager(db *mgo.Database, path string) *ExceptionsManager {
 
 	// We may have run on this target before.  If so, reload the exceptions
 	// that we've seen before
-	//targetID := util.DefaultEnv("TARGET_ID", "")
-	//if targetID != "" {
-	//	exceptions, err := manager.GetAll(targetID)
-	//	if err != nil {
-	//		log.Fatal(err)
-	//	}
-	//	manager.uniqueExceptions = exceptions
-	//}
+	targetID := util.DefaultEnv("TARGET_ID", "")
+	if targetID != "" {
+		exceptions, err := manager.GetAll(targetID)
+		if err != nil {
+			log.Fatal(err)
+		}
+		manager.uniqueExceptions = exceptions
+	}
 	return manager
 
 }
