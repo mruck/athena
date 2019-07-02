@@ -118,10 +118,17 @@ func parseTableName(exprs sqlparser.TableExprs) (string, error) {
 		log.Fatal("there was more than 1 table expresion\n")
 		return "", fmt.Errorf("there was more than 1 table expression")
 	}
-	aliasedTableExpr := exprs[0].(*sqlparser.AliasedTableExpr)
-	tableName := aliasedTableExpr.Expr.(sqlparser.TableName)
-	return tableName.Name.String(), nil
-	//log.Infof("Type == %T\n", aliasedTableExpr.Expr)
+
+	switch node := exprs[0].(type) {
+	case *sqlparser.AliasedTableExpr:
+		aliasedTableExpr := exprs[0].(*sqlparser.AliasedTableExpr)
+		tableName := aliasedTableExpr.Expr.(sqlparser.TableName)
+		return tableName.Name.String(), nil
+	default:
+		err := fmt.Errorf("unable to parse table name of type %T", node)
+		return "", errors.WithStack(err)
+	}
+
 }
 
 func parseSelect(stmt *sqlparser.Select, param string) (*TaintedQuery, error) {
@@ -145,7 +152,7 @@ func parseSelect(stmt *sqlparser.Select, param string) (*TaintedQuery, error) {
 		return match, nil
 	}
 
-	// If not, then this is the tainty query so set the table name
+	// If not, then this is the tainted query so set the table name
 	name, err := parseTableName(stmt.From)
 	if err != nil {
 		return nil, err
