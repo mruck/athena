@@ -26,7 +26,7 @@ type ExceptionsManager struct {
 	collection *mgo.Collection
 	filePath   string
 	// Keep track of exceptions in memory as well
-	uniqueExceptions []*Exception
+	uniqueExceptions []Exception
 	// Did we see a new exception?
 	Delta bool
 }
@@ -38,10 +38,23 @@ const Path = "/tmp/results/exceptions.json"
 // write to the db.  If the path is the empty string, nothing shall be written to the db,
 // and it will only be read from.
 func NewExceptionsManager(db *mgo.Database, path string) *ExceptionsManager {
-	return &ExceptionsManager{
+	manager := &ExceptionsManager{
 		collection: db.C("exceptions"),
 		filePath:   path,
 	}
+
+	// We may have run on this target before.  If so, reload the exceptions
+	// that we've seen before
+	targetID := util.DefaultEnv("TARGET_ID", "")
+	if targetID != "" {
+		exceptions, err := manager.GetAll(targetID)
+		if err != nil {
+			log.Fatal(err)
+		}
+		manager.uniqueExceptions = exceptions
+	}
+	return manager
+
 }
 
 func (manager *ExceptionsManager) GetAll(targetID string) ([]Exception, error) {
@@ -49,7 +62,7 @@ func (manager *ExceptionsManager) GetAll(targetID string) ([]Exception, error) {
 	query := bson.M{"TargetID": targetID}
 	iter := manager.collection.Find(query).Limit(100).Iter()
 	err := iter.All(&results)
-	return results, err
+	return results, errors.WithStack(err)
 }
 
 // ReadOne reads a single exception by target id
@@ -75,7 +88,7 @@ func (exception *Exception) benign() bool {
 	return false
 }
 
-func exceptionsEqual(exn1 *Exception, exn2 *Exception) bool {
+func exceptionsEqual(exn1 Exception, exn2 Exception) bool {
 	return exn1.Path == exn2.Path &&
 		exn1.Method == exn2.Method &&
 		exn1.Class == exn2.Class
@@ -106,7 +119,7 @@ func (manager *ExceptionsManager) Update(path string, method string, targetid st
 	// Have we seen this exception before?
 	for _, oldException := range manager.uniqueExceptions {
 		// We've already logged this exception
-		if exceptionsEqual(oldException, exception) {
+		if exceptionsEqual(oldException, *exception) {
 			return nil
 		}
 
@@ -114,7 +127,7 @@ func (manager *ExceptionsManager) Update(path string, method string, targetid st
 
 	// This exception is unique
 	manager.Delta = true
-	manager.uniqueExceptions = append(manager.uniqueExceptions, exception)
+	manager.uniqueExceptions = append(manager.uniqueExceptions, *exception)
 
 	// Log to db
 	return manager.WriteOne(*exception)
