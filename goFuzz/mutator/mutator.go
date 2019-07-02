@@ -157,8 +157,8 @@ func (mutator *Mutator) currentRoute() *route.Route {
 
 func (mutator *Mutator) logStats(route *route.Route) {
 	route.PrettyPrint(nil)
-	log.Infof("Delta: %v", mutator.SrcCoverage.Delta)
-	log.Infof("Cumulative: %v", mutator.SrcCoverage.Cumulative)
+	//log.Infof("Delta: %v", mutator.SrcCoverage.Delta)
+	//log.Infof("Cumulative: %v", mutator.SrcCoverage.Cumulative)
 	//mutator.SQLParser.PrettyPrint()
 }
 
