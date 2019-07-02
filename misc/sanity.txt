@@ -88,3 +88,4 @@
 {"git_ref":"fae9ad9410b03f1efcf34ea1572b1958a10d4ed5","git_branch":"goFuzz","coverage":13.815559579402143,"success_rate":0.8248062015503876,"total_requests":645,"status_codes":{"200":532,"400":16,"403":6,"404":85,"422":6}}
 {"git_ref":"fae9ad9410b03f1efcf34ea1572b1958a10d4ed5","git_branch":"goFuzz","coverage":13.815559579402143,"success_rate":0.8245341614906833,"total_requests":644,"status_codes":{"200":531,"400":16,"403":6,"404":85,"422":6}}
 {"git_ref":"da3f2b58c551369a0d84f1aa35307c9947ebdcdb","git_branch":"goFuzz","coverage":17.800262319655236,"success_rate":0.8895800933125972,"total_requests":643,"status_codes":{"200":572,"400":4,"403":17,"404":41,"422":7,"500":2}}
+{"git_ref":"4471078f8c64a82d33c414f0083d8d97eb871f21","git_branch":"goFuzz","coverage":17.784101569829257,"success_rate":0.8852713178294573,"total_requests":645,"status_codes":{"200":571,"400":6,"403":19,"404":40,"422":7,"500":2}}
