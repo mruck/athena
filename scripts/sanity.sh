@@ -2,7 +2,18 @@
 # Usage:
 #      bash scripts/sanity.sh
 #      bash scripts/sanity.sh all
-set -ex
+
+# Note: turning off set -x because output is clobbered and parsing becomes more annoying.
+# Not sure if this actually makes sense.
+
+set -e
+#times=$((time((kubectl get pods 2>&1) > /tmp/sanity/$POD_NAME/client) 2>&1) | head -n 2)
+#times2=$(echo $times | cut -d ' ' -f 2)
+#echo $times2
+#echo "{}" | \
+#    jq ".times = \"$times2\"" | \
+#    jq -c '.' | tee -a  "/tmp/test"
+#exit
 
 function __is_pod_ready() {
   ready=$(kubectl get po "$1" -o 'jsonpath={.status.conditions[?(@.type=="Ready")].status}')
@@ -31,9 +42,8 @@ kubectl apply -f /tmp/sanity/$POD_NAME/pod.json
 while [ ! "$(__is_pod_ready $POD_NAME)" = "OK" ]; do echo "Polling pod..."; sleep 1; done
 
 echo "Tail logs of client at /tmp/sanity/$POD_NAME/client"
-#times=$(time ((kubectl get pods) > /tmp/hello) 2>&1)
-times=$(time ((kubectl logs -f $POD_NAME athena  2>&1) > /tmp/sanity/$POD_NAME/client) 2>&1)
-
+times=$((time ((kubectl logs -f $POD_NAME athena  2>&1) > /tmp/sanity/$POD_NAME/client) 2>&1) | head -n 2)
+real_time=$(echo $times | cut -d ' ' -f 2)
 
 kubectl delete pod $POD_NAME
 
@@ -53,7 +63,7 @@ echo "Code counts: $cnt"
 echo "Cov: $cov"
 echo "Success Rate: $succ"
 echo "Requests: $reqs"
-echo "Time: $times"
+echo "Time: $real_time"
 
 echo "{}" | \
     jq ".git_ref = \"$ref\"" | \
@@ -62,4 +72,5 @@ echo "{}" | \
     jq ".success_rate = $succ" | \
     jq ".total_requests = $reqs" | \
     jq ".status_codes = $cnt" | \
+    jq ".time = \"$real_time\"" | \
     jq -c '.' | tee -a $output
