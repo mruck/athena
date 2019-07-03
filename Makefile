@@ -15,7 +15,7 @@ rails:
 # Bump images in debug deployment
 discourse-deployment: fuzzer-client
 	mkdir /tmp/deployments || true
-	jq '.spec.template.spec.containers[2].image = "gcr.io/athena-fuzzer/athena:'$(GIT_SHA)'"' pods/discourse.deployment.json > /tmp/deployments/$(GIT_SHA)
+	jq '.spec.template.spec.containers[2].image = "gcr.io/athena-fuzzer/athena:'$(GIT_SHA)'"' pods/discourse.deployment.json | jq '.spec.template.spec.containers[2].env[0].value = "'$(GIT_SHA)'"' > /tmp/deployments/$(GIT_SHA)
 	kubectl apply -f /tmp/deployments/$(GIT_SHA)
 
 postgres-stop:
