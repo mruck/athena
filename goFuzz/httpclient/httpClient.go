@@ -96,6 +96,7 @@ func (cli *Client) updateStatusCodes(code int) {
 func (cli *Client) Do(req *http.Request) (*http.Response, error) {
 	// Patch headers
 	req.Header.Add("Content-type", "application/json")
+	//req.Header.Add("X-Requested-With", "XMLHttpRequest")
 	req.Host = cli.URL.Host
 	req.URL.Host = cli.URL.Host
 

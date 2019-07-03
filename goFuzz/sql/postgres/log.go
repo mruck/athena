@@ -212,10 +212,13 @@ func (pglog *PGLog) extractRawQueries() []string {
 // isPostgresError checks postgres message severity levels
 // and returns whether or not anything errored out
 func isPostgresError(err string) bool {
-	return err == postgresError ||
-		err == postgresPanic ||
-		err == postgresFatal ||
-		err == postgresWarning
+	if err == postgresError || err == postgresWarning {
+		return true
+	}
+	if err == postgresPanic || err == postgresFatal {
+		log.Fatal("Postgres logged panic/fatal error")
+	}
+	return false
 }
 
 // Truncate returns the list of records appended since the
