@@ -16,7 +16,7 @@ func GetLogin(harPath string) ([]*http.Request, error) {
 }
 
 // GetCorpus parses a harfile, initializing relevant data in
-// the list of routes.  It returns the har requests as an ordered list of route.Routes
+// the list of routes.  It returns the har requests as an ordered list of *route.Routes
 func GetCorpus(routes []*route.Route, harPath string) []*route.Route {
 	// Read in our corpus
 	harData := har.UnmarshalHar(harPath)

@@ -39,12 +39,18 @@ func mutatePrimitiveArray(items *spec.Items) interface{} {
 	}
 	// For primitive arrays, these are leaf nodes so we control the number of
 	// items in the array
-	obj := make([]interface{}, 1)
+	maxItems := 100000
+	obj := make([]interface{}, maxItems)
 	if items.Enum != nil {
-		obj[0] = mutateEnum(items.Enum)
-		return obj
+		for i := 0; i < maxItems; i++ {
+			obj[i] = mutateEnum(items.Enum)
+		}
+	} else {
+		for i := 0; i < maxItems; i++ {
+			obj[i] = util.Rand(items.Type)
+		}
 	}
-	obj[0] = util.Rand(items.Type)
+
 	return obj
 }
 
@@ -62,8 +68,11 @@ func mutateSchema(metadata *swagger.Metadata) interface{} {
 	// Mutate our value
 	var val interface{}
 	if schema.Type[0] == "array" {
-		obj := make([]interface{}, 1)
-		obj[0] = mutatePrimitiveSchema(schema)
+		maxItems := 100000
+		obj := make([]interface{}, maxItems)
+		for i := 0; i < maxItems; i++ {
+			obj[i] = mutatePrimitiveSchema(schema)
+		}
 		val = obj
 	} else {
 		val = mutatePrimitiveSchema(schema)

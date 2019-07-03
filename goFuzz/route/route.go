@@ -117,16 +117,16 @@ func (route *Route) PrettyPrint(logFn log.Fn) {
 		logFn = log.Infof
 	}
 
+	if route.hasPathParams() {
+		// Print the canonicalized path i.e. /about/{type}.json
+		logFn("%s %s", route.Method, route.Path)
+	}
+
 	// Get the most recent request sent
 	req, err := route.ToHTTPRequest()
 	if err != nil {
 		log.Warn(err)
 		return
-	}
-
-	if route.hasPathParams() {
-		// Print the canonicalized path i.e. /about/{type}.json
-		logFn("%s %s", route.Method, route.Path)
 	}
 
 	// Pretty print request that was sest
