@@ -34,7 +34,7 @@ echo "Tail logs of client at /tmp/sanity/$POD_NAME/client"
 SECONDS=0
 (kubectl logs -f $POD_NAME athena  2>&1) > /tmp/sanity/$POD_NAME/client
 
-kubectl delete pod $POD_NAME
+#kubectl delete pod $POD_NAME
 
 # Parse the client logs for run info. Info should look like this:
 # Code Counts: {"200": 174, "404": 79, "500": 9}
