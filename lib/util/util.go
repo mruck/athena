@@ -224,17 +224,17 @@ func ReadFileLineByLine(path string) ([]string, error) {
 const curlLogPath = "curl.log"
 
 // LogAsCurl logs a request as a curl command
-func LogAsCurl(req *http.Request) {
+func LogAsCurl(req *http.Request) *http2curl.CurlCommand {
 	cmd, err := http2curl.GetCurlCommand(req)
 	if err != nil {
 		log.Error(errors.WithStack(err))
-		return
+		return nil
 	}
 	path := filepath.Join(GetLogPath(), curlLogPath)
 	f, err := os.OpenFile(path, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
 	if err != nil {
 		log.Error(errors.WithStack(err))
-		return
+		return nil
 	}
 
 	defer f.Close()
@@ -242,8 +242,9 @@ func LogAsCurl(req *http.Request) {
 	if _, err = f.WriteString(cmd.String() + "\n"); err != nil {
 		if err != nil {
 			log.Errorf("%+v", errors.WithStack(err))
-			return
+			return nil
 		}
 	}
 
+	return cmd
 }

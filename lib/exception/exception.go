@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/moul/http2curl"
 	"github.com/mruck/athena/lib/database"
 	"github.com/mruck/athena/lib/log"
 	"github.com/mruck/athena/lib/util"
@@ -19,6 +20,7 @@ type Exception struct {
 	Class    string `bson:"Class"`
 	Message  string `bson:"Message"`
 	TargetID string `bson:"TargetID"`
+	Curl     string `bson:"Curl"`
 }
 
 // ExceptionsManager tracks exceptions in memory and logs them to a db
@@ -98,7 +100,8 @@ func exceptionsEqual(exn1 Exception, exn2 Exception) bool {
 }
 
 // Update exceptions database from exceptions written by rails
-func (manager *ExceptionsManager) Update(path string, method string, targetid string) error {
+func (manager *ExceptionsManager) Update(path string, method string, targetid string,
+	curlCmd *http2curl.CurlCommand) error {
 	// Assume we don't see a unique exception
 	manager.Delta = false
 
@@ -118,6 +121,7 @@ func (manager *ExceptionsManager) Update(path string, method string, targetid st
 	exception.Path = path
 	exception.Method = method
 	exception.TargetID = targetid
+	exception.Curl = curlCmd.String()
 
 	// Have we seen this exception before?
 	for _, oldException := range manager.uniqueExceptions {

@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/moul/http2curl"
 	"github.com/mruck/athena/lib/log"
 	"github.com/mruck/athena/lib/util"
 	"github.com/pkg/errors"
@@ -30,6 +31,8 @@ type Client struct {
 	URL             *url.URL
 	HealthcheckPath string
 	StatusCodes     map[int]int
+	// Latest request as a curl cmd
+	CurlCmd *http2curl.CurlCommand
 }
 
 // New allocates an http client with a cookie jar.
@@ -108,7 +111,7 @@ func (cli *Client) Do(req *http.Request) (*http.Response, error) {
 	if req.Body != nil {
 		req.Body = ioutil.NopCloser(&buf)
 	}
-	util.LogAsCurl(req)
+	cli.CurlCmd = util.LogAsCurl(req)
 
 	// Only update status codes if we got a response
 	if err == nil {

@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/moul/http2curl"
 	"github.com/mruck/athena/goFuzz/coverage"
 	"github.com/mruck/athena/goFuzz/route"
 	"github.com/mruck/athena/goFuzz/sql/postgres"
@@ -164,7 +165,7 @@ func (mutator *Mutator) logStats(route *route.Route) {
 
 // UpdateState parses the response and updates source code, parameter and
 // query coverage
-func (mutator *Mutator) UpdateState(resp *http.Response) error {
+func (mutator *Mutator) UpdateState(resp *http.Response, curlCmd *http2curl.CurlCommand) error {
 	// Get current route
 	route := mutator.currentRoute()
 
@@ -202,7 +203,7 @@ func (mutator *Mutator) UpdateState(resp *http.Response) error {
 	sqlparser.CheckForSQLInj(queries, params)
 
 	// Store any new exceptions
-	return mutator.ExceptionsManager.Update(route.Path, route.Method, mutator.TargetID)
+	return mutator.ExceptionsManager.Update(route.Path, route.Method, mutator.TargetID, curlCmd)
 }
 
 // LogError logs an error with context from the most recent request sent
