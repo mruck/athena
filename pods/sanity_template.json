@@ -4,7 +4,7 @@
   "metadata": {
     "name": "discourse-sanity",
     "labels": {
-      "duo": "true"
+      "sanity": "true"
     }
   },
   "spec": {
