@@ -55,10 +55,10 @@ func (parser *Parser) Search(queries []string, params []string) ([]TaintedQuery,
 	for _, query := range queries {
 		for _, param := range params {
 			// Do a simple string check before searching
-			if !strings.Contains(query, param) {
+			if !matchParam(param, query) {
 				continue
 			}
-			//log.Infof("Matched param \"%s\" with value \"%s\" in query:\n%v", name, val, query)
+			//log.Errorf("Matched value \"%s\" in query:\n%v", param, query)
 			taintedQuery, err := parseQuery(query, param)
 			parser.TotalQueries++
 			if err != nil {
@@ -84,6 +84,7 @@ func (parser *Parser) triageError(err error, query string, param string) error {
 	if strings.Contains(err.Error(), LibErr) {
 		parser.LibError++
 	} else {
+		log.Errorf("Athena failed to parse %s", query)
 		parser.AthenaError++
 	}
 	err = fmt.Errorf("error searching for param value %v in query:\n%s\n%+v", param, query, err)
