@@ -160,7 +160,7 @@ func (mutator *Mutator) logStats(route *route.Route) {
 	route.PrettyPrint(nil)
 	//log.Infof("Delta: %v", mutator.SrcCoverage.Delta)
 	//log.Infof("Cumulative: %v", mutator.SrcCoverage.Cumulative)
-	//mutator.SQLParser.PrettyPrint()
+	mutator.SQLParser.PrettyPrint()
 }
 
 // UpdateState parses the response and updates source code, parameter and

@@ -154,3 +154,12 @@ func TestSetVal(t *testing.T) {
 	_, err := parseQuery(sql, "true")
 	require.Nil(t, err)
 }
+
+func TestAnd(t *testing.T) {
+	sql := "SELECT  categories.* FROM categories WHERE categories.slug = '6977725094619810439' AND " +
+		"categories.parent_category_id IS NULL ORDER BY categories.id ASC LIMIT 1"
+	match, err := parseQuery(sql, "6977725094619810439")
+	require.NoError(t, err)
+	require.Equal(t, "categories", match.Table)
+	require.Equal(t, "slug", match.Column)
+}

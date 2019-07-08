@@ -78,6 +78,15 @@ func parseNode(node sqlparser.SQLNode, param string) (*TaintedQuery, error) {
 		return parseNode(node.Select, param)
 	case *sqlparser.DDL:
 		return parseDDL(node, param)
+	case *sqlparser.AndExpr:
+		// First try the left
+		leftQuery, err := parseNode(node.Left, param)
+		// If we succeeded, we are done
+		if err == nil && leftQuery != nil {
+			return leftQuery, err
+		}
+		// Otherwise search the right
+		return parseNode(node.Right, param)
 	}
 	err := fmt.Errorf("searching for param %q and hit unhandled node type: %T", param, node)
 	//util.PrettyPrintStruct(node, log.Errorf)
@@ -221,9 +230,6 @@ func parseDelete(stmt *sqlparser.Delete, param string) (*TaintedQuery, error) {
 const LibErr = "SQLParser library error"
 
 func parseQuery(query string, param string) (*TaintedQuery, error) {
-	// TODO: log to a file in case we segfault parsing, then we can unit test
-	// broken query
-	//log.Info(query)
 	stmt, err := sqlparser.ParseStrictDDL(query)
 	if err != nil {
 		err = fmt.Errorf("%s:\n%v", LibErr, err)

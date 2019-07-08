@@ -84,7 +84,7 @@ func (parser *Parser) triageError(err error, query string, param string) error {
 	if strings.Contains(err.Error(), LibErr) {
 		parser.LibError++
 	} else {
-		log.Errorf("Athena failed to parse %s", query)
+		//log.Errorf("Searching for param %s but failed to parse %s", param, query)
 		parser.AthenaError++
 	}
 	err = fmt.Errorf("error searching for param value %v in query:\n%s\n%+v", param, query, err)
