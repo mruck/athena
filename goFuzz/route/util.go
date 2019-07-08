@@ -38,6 +38,9 @@ func blacklisted(path string) bool {
 		strings.Contains(path, "logout") ||
 		// This swagger is broken
 		strings.Contains(path, "/admin/api/web_hooks") ||
+		// There are a ton of these routes and i think they are all the same/we don't
+		// do anything interest so skip for now
+		strings.Contains(path, "/admin/site_settings") ||
 		// Back up does weird stuff.  This could be a good fuzz target, but
 		// blacklist for now
 		strings.Contains(path, "backup")
