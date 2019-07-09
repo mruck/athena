@@ -21,7 +21,7 @@ func CheckForSQLInj(queries []string, params []string) {
 			if !matchParam(param, query) {
 				continue
 			}
-			log.Fatalf("Sql inj with param %s in query:\n%s", param, query)
+			log.Errorf("Sql inj with param %s in query:\n%s", param, query)
 		}
 	}
 }
