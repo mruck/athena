@@ -18,6 +18,16 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Contains checks if an element is in a list.
+func Contains(haystack []interface{}, needle interface{}) bool {
+	for _, elem := range haystack {
+		if elem == needle {
+			return true
+		}
+	}
+	return false
+}
+
 // StringInSlice iterates over the list, checking if `a` contains
 // any element from the list. i.e. `a` maybe a full blown error string
 // like `failed to COPY from STDIN` and the list only has keywords

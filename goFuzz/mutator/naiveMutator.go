@@ -87,7 +87,20 @@ func (mutator *Mutator) mutateTaintedQuery(metadata *swagger.Metadata) interface
 	}
 
 	// Look up a value
-	return mutator.DB.Conn.LookUp(metadata.TaintedQuery.Table, metadata.TaintedQuery.Column)
+	val := mutator.DB.Conn.LookUp(metadata.TaintedQuery.Table, metadata.TaintedQuery.Column)
+
+	// We've never sent this value
+	if !util.Contains(metadata.Values, val) {
+		return val
+	}
+
+	// Stringify and concatenate a semicolon
+	stringified := ";" + util.Stringify(val)
+	if !util.Contains(metadata.Values, stringified) {
+		return stringified
+	}
+
+	return val
 }
 
 // Mutate a body parameter.  At the top level *spec.Parameter, we have a list
@@ -129,8 +142,7 @@ func (mutator *Mutator) mutatePrimitive(param *spec.Parameter) {
 		}
 	}
 
-	// Update the metadata object.  This is a pointer so the update
-	// is done in place.
+	// Update the metadata object
 	metadata.Values = append([]interface{}{val}, metadata.Values...)
 }
 

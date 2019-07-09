@@ -42,3 +42,9 @@ func TestReadLineByLine(t *testing.T) {
 		require.Equal(t, correctlines[i], line)
 	}
 }
+
+func TestContains(t *testing.T) {
+	var list []interface{}
+	list = append([]interface{}{"hello"}, list...)
+	require.True(t, Contains(list, "hello"))
+}

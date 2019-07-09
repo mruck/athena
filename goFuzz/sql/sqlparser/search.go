@@ -11,7 +11,19 @@ import (
 
 // CheckForSQLInj updates AnalyzedLog.VulnerableSQL
 func CheckForSQLInj(queries []string, params []string) {
-	// Log to file
+	for _, query := range queries {
+		for _, param := range params {
+			// Check if the param was a sql inj attempt
+			if !strings.Contains(param, ";") {
+				continue
+			}
+			// Check if that param is present in query
+			if !matchParam(param, query) {
+				continue
+			}
+			log.Fatalf("Sql inj with param %s in query:\n%s", param, query)
+		}
+	}
 }
 
 // whitelistErrors contains acceptable sql parsing errors
