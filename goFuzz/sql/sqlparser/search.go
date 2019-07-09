@@ -58,7 +58,6 @@ func (parser *Parser) Search(queries []string, params []string) ([]TaintedQuery,
 			if !matchParam(param, query) {
 				continue
 			}
-			//log.Errorf("Matched value \"%s\" in query:\n%v", param, query)
 			taintedQuery, err := parseQuery(query, param)
 			parser.TotalQueries++
 			if err != nil {
@@ -70,6 +69,10 @@ func (parser *Parser) Search(queries []string, params []string) ([]TaintedQuery,
 				// Append for logging puroses
 				parser.TaintedQueries = append(parser.TaintedQueries, taintedQuery)
 				taintedQueries = append(taintedQueries, *taintedQuery)
+			} else {
+				// If err is nil, there should always be a tainted query, something
+				// went wrong
+				log.Errorf("Tainted query and err are both nil:\n%s", query)
 			}
 		}
 	}
@@ -84,7 +87,8 @@ func (parser *Parser) triageError(err error, query string, param string) error {
 	if strings.Contains(err.Error(), LibErr) {
 		parser.LibError++
 	} else {
-		//log.Errorf("Searching for param %s but failed to parse %s", param, query)
+		log.Warnf("Athena failed to parse query:\n%s", err)
+		//log.Warnf("Searching for param %s but failed to parse %s", param, query)
 		parser.AthenaError++
 	}
 	err = fmt.Errorf("error searching for param value %v in query:\n%s\n%+v", param, query, err)
