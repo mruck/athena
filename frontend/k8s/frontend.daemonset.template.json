@@ -1,40 +1,60 @@
 {
-    "apiVersion": "apps/v1",
-    "kind": "DaemonSet",
-    "metadata": {
-        "name": "frontend-daemonset"
+  "apiVersion": "apps/v1",
+  "kind": "DaemonSet",
+  "metadata": {
+    "name": "frontend"
+  },
+  "spec": {
+    "selector": {
+      "matchLabels": {
+        "frontend": "true"
+      }
     },
-    "spec": {
-        "selector": {
-            "matchLabels": {
-                "frontend": "true"
-            }
-        },
-        "template": {
-            "metadata": {
-                "labels": {
-                    "frontend": "true"
-                }
-            },
-            "spec": {
-                "automountServiceAccountToken": false,
-                "containers": [
-                    {
-                        "name": "frontend",
-                        "image": "gcr.io/athena-fuzzer/frontend:48a081767f",
-                        "env": [
-                            {"name": "ATHENA_IMAGE", "value": ""},
-                            {"name": "KUBECONFIG", "value": "/etc/secrets/kubeconfig/kubeconfig"}
-                        ],
-                        "volumeMounts": [
-                            { "name": "kubeconfig", "mountPath": "/etc/secrets/kubeconfig" }
-                        ]
-                    }
-                ],
-                "volumes": [
-                    { "name": "kubeconfig", "secret": { "secretName": "kubeconfig-frontend" } }
-                ]
-            }
+    "template": {
+      "metadata": {
+        "labels": {
+          "frontend": "true"
         }
+      },
+      "spec": {
+        "automountServiceAccountToken": false,
+        "containers": [
+          {
+            "name": "frontend",
+            "image": "gcr.io/athena-fuzzer/frontend:48a081767f",
+            "env": [
+              {
+                "name": "ATHENA_IMAGE",
+                "value": ""
+              },
+              {
+                "name": "KUBECONFIG",
+                "value": "/etc/secrets/kubeconfig/kubeconfig"
+              }
+            ],
+            "volumeMounts": [
+              {
+                "name": "kubeconfig",
+                "mountPath": "/etc/secrets/kubeconfig"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "0m",
+                "memory": "100Mi"
+              }
+            }
+          }
+        ],
+        "volumes": [
+          {
+            "name": "kubeconfig",
+            "secret": {
+              "secretName": "kubeconfig-frontend"
+            }
+          }
+        ]
+      }
     }
+  }
 }

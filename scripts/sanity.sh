@@ -2,7 +2,7 @@
 # Usage:
 #      bash scripts/sanity.sh
 #      bash scripts/sanity.sh all
-set -e
+set -ex
 
 function __is_pod_ready() {
   ready=$(kubectl get po "$1" -o 'jsonpath={.status.conditions[?(@.type=="Ready")].status}')
@@ -21,19 +21,20 @@ docker push gcr.io/athena-fuzzer/athena:$GIT_SHA
 
 mkdir -p /tmp/sanity/$POD_NAME
 
-# Update image to reflect sha
-# Update pod name to reflect sha
-jq '.spec.containers[2].image = "gcr.io/athena-fuzzer/athena:'$GIT_SHA'"' pods/pod_sanity_template.json | \
-    jq '.metadata.name = "'$POD_NAME'"' > /tmp/sanity/$POD_NAME/pod.json
+# Update image, pod name, target id to reflect sha
+
+jq '.spec.containers[2].image = "gcr.io/athena-fuzzer/athena:'$GIT_SHA'"' pods/sanity_template.json | \
+jq '.metadata.name = "'$POD_NAME'"' | jq '.spec.containers[2].env[0].value = "'$GIT_SHA'"'  > /tmp/sanity/$POD_NAME/pod.json
 kubectl apply -f /tmp/sanity/$POD_NAME/pod.json
 
 # Wait for pod to be created
 while [ ! "$(__is_pod_ready $POD_NAME)" = "OK" ]; do echo "Polling pod..."; sleep 1; done
 
 echo "Tail logs of client at /tmp/sanity/$POD_NAME/client"
+SECONDS=0
 (kubectl logs -f $POD_NAME athena  2>&1) > /tmp/sanity/$POD_NAME/client
 
-kubectl delete pod $POD_NAME
+#kubectl delete pod $POD_NAME
 
 # Parse the client logs for run info. Info should look like this:
 # Code Counts: {"200": 174, "404": 79, "500": 9}
@@ -43,7 +44,7 @@ kubectl delete pod $POD_NAME
 cnt=$(cat /tmp/sanity/$POD_NAME/client | grep "Code Counts" | cut -d ':' -f 2- | tr -d ' ' | tr -d '\r')
 cov=$(cat /tmp/sanity/$POD_NAME/client | grep "Final Coverage" | cut -d ':' -f 2 | tr -d ' ' | tr -d '\r')
 succ=$(cat /tmp/sanity/$POD_NAME/client | grep "Success Ratio" | cut -d ':' -f 2 | tr -d ' ' | tr -d '\r')
-reqs=$(cat /tmp/sanity/$POD_NAME/client | grep "Total requests" | cut -d ':' -f 2 | tr -d ' ' | tr -d '\r')
+reqs=$(cat /tmp/sanity/$POD_NAME/client | grep "Total Requests" | cut -d ':' -f 2 | tr -d ' ' | tr -d '\r')
 output="misc/sanity.txt"
 
 mkdir -p misc
@@ -59,4 +60,5 @@ echo "{}" | \
     jq ".success_rate = $succ" | \
     jq ".total_requests = $reqs" | \
     jq ".status_codes = $cnt" | \
+    jq ".seconds = \"$SECONDS\"" | \
     jq -c '.' | tee -a $output

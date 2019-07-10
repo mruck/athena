@@ -5,3 +5,4 @@ cookie
 .vscode/
 venv
 .kubeconfig
+vendor/

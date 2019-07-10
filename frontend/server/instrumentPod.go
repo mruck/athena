@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/mruck/athena/lib/log"
 	v1 "k8s.io/api/core/v1"
 )
 
@@ -78,7 +79,7 @@ func buildRailsContainer() v1.Container {
 	image := os.Getenv("RAILS_IMAGE")
 	if image == "" {
 		image = "gcr.io/athena-fuzzer/rails:dafb06189a5efeaefc32"
-		fmt.Printf("No rails image provided.  Using default image %s\n", image)
+		log.Infof("No rails image provided.  Using default image %s\n", image)
 	}
 	return v1.Container{
 		Name:  "rails-fork",

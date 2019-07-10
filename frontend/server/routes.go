@@ -3,9 +3,8 @@ package server
 import (
 	"net/http"
 
-	"github.com/mruck/athena/frontend/database"
-
 	"github.com/gorilla/mux"
+	"github.com/mruck/athena/lib/database"
 )
 
 type Route struct {
@@ -18,8 +17,7 @@ type Route struct {
 type Routes []Route
 
 func NewRouter() (*mux.Router, error) {
-	host := MustGetHost()
-	db := database.MustGetDatabase(host, "27017", "athena")
+	db := database.MustGetDatabase(database.MongoDbPort, "athena")
 	server, err := NewServer(db)
 	if err != nil {
 		return nil, err

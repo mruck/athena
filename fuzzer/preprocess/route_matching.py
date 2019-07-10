@@ -7,15 +7,18 @@ import re
 def process_routes(routes):
     processed_routes = []
     for route in routes:
-        params = re.findall("/:([^/]+)", route)
+        params = re.findall("/:([^/]+)", route) # [b, d]
 
         route_regexp = route
         for param in params:
             route_regexp = route_regexp.replace("/:" + param, "/([^/]+)")
+        # route_regexp = "/a/([^/]+)/c/([^/]+)"
         route_regexp += "$"
+        # route_regexp = "/a/([^/]+)/c/([^/]+)$"
 
         processed_routes.append(
             {"path": route, "regexp": route_regexp, "params": params}
+            # {"path": "/a/:b/c/:d", "regexp": "/a/([^/]+)/c/([^/]+)$", "params": ["b", "d"]}
         )
     return processed_routes
 

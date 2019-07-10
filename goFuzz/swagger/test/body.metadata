@@ -1,0 +1,49 @@
+[
+  {
+    "Values": [],
+    "Schema": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  {
+    "Values": [],
+    "Schema": {
+      "type": "integer",
+      "format": "int64"
+    }
+  },
+  {
+    "Values": [],
+    "Schema": {
+      "type": "integer",
+      "format": "int64"
+    }
+  },
+  {
+    "Values": [],
+    "Schema": {
+      "type": "integer",
+      "format": "int32"
+    }
+  },
+  {
+    "Values": [],
+    "Schema": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  {
+    "Values": [],
+    "Schema": {
+      "description": "Order Status",
+      "type": "string",
+      "enum": [
+        "placed",
+        "approved",
+        "delivered"
+      ]
+    }
+  }
+]

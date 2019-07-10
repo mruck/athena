@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/mruck/athena/frontend/log"
+	"github.com/mruck/athena/lib/log"
 	v1 "k8s.io/api/core/v1"
 )
 
@@ -54,7 +54,7 @@ func PodReady(containerStatuses []v1.ContainerStatus) bool {
 		return false
 	}
 	for _, containerStatus := range containerStatuses {
-		fmt.Printf("Checking %v container...Ready : %v\n", containerStatus.Name, containerStatus.Ready)
+		log.Infof("Checking %v container...Ready : %v\n", containerStatus.Name, containerStatus.Ready)
 		if containerStatus.Ready != true {
 			return false
 		}
@@ -68,7 +68,7 @@ func PollPodReady(podName string) (bool, error) {
 		time.Sleep(5 * time.Second)
 		containerStatuses, err := GetContainerStatuses(podName)
 		if err != nil {
-			fmt.Println("Failed to get container status", err)
+			log.Infof("Failed to get container status", err)
 			return false, err
 		}
 		ready := PodReady(containerStatuses)
@@ -76,7 +76,7 @@ func PollPodReady(podName string) (bool, error) {
 			return true, nil
 		}
 	}
-	fmt.Println("Pod not ready. Are there enough resources? Maybe you should delete all pods", podName)
+	log.Infof("Pod not ready. Are there enough resources? Maybe you should delete all pods", podName)
 	return false, nil
 }
 
@@ -118,7 +118,7 @@ func writePodSpecToDisc(pod *v1.Pod, dst string) error {
 		err = fmt.Errorf("error writing pod spec to disc: %v", err)
 		return err
 	}
-	fmt.Printf("Pod spec written to %s\n", dst)
+	log.Infof("Pod spec written to %s\n", dst)
 
 	return nil
 

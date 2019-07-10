@@ -7,10 +7,15 @@ MITM_TARGET ?= 3000
 
 rails:
 	GIT_SHA=$(GIT_SHA) $(MAKE) -C ../rails-fork rails
+	# Bump the sanity template rails image
+	jq '.spec.initContainers[0].image = "gcr.io/athena-fuzzer/rails:'$(GIT_SHA)'"' pods/sanity_template.json > /tmp/$(GIT_SHA) && mv /tmp/$(GIT_SHA) pods/sanity_template.json
+	# Bump the discourse template rails image
+	jq '.spec.template.spec.initContainers[0].image = "gcr.io/athena-fuzzer/rails:'$(GIT_SHA)'"' pods/discourse.deployment.json > /tmp/$(GIT_SHA) && mv /tmp/$(GIT_SHA) pods/discourse.deployment.json
 
 # Bump images in debug deployment
-debug-deployment: fuzzer-client discourse-server
-	jq '.spec.template.spec.containers[1].image = "gcr.io/athena-fuzzer/discourse:'$(GIT_SHA)'"' pods/debug.deployment.json | jq '.spec.template.spec.containers[2].image = "gcr.io/athena-fuzzer/athena:'$(GIT_SHA)'"' > /tmp/deployments/$(GIT_SHA)
+discourse-deployment: fuzzer-client
+	mkdir /tmp/deployments || true
+	jq '.spec.template.spec.containers[2].image = "gcr.io/athena-fuzzer/athena:'$(GIT_SHA)'"' pods/discourse.deployment.json | jq '.spec.template.spec.containers[2].env[0].value = "'$(GIT_SHA)'"' > /tmp/deployments/$(GIT_SHA)
 	kubectl apply -f /tmp/deployments/$(GIT_SHA)
 
 postgres-stop:
@@ -18,6 +23,13 @@ postgres-stop:
 
 postgres-start: postgres-stop
 	docker run --name my-postgres -e POSTGRES_USER="root" -d postgres
+
+# To test frontend locally, simply run mongo in a contain and run front end natively
+mongo-start:
+	docker run -d -p 27017:27017 --name my-mongo mongo:3.6.11-stretch
+
+mongo-stop:
+	docker rm -f my-mongo
 
 venv: pip-reqs.txt
 	-rm -rf $(VENV_LOCATION)
@@ -36,11 +48,11 @@ fuzzer-client:
 	docker build -f dockerfiles/client.dockerfile -t gcr.io/athena-fuzzer/athena:$(GIT_SHA) .
 	docker push gcr.io/athena-fuzzer/athena:$(GIT_SHA)
 
-frontend_img:
-	docker build -t gcr.io/athena-fuzzer/frontend:$(GIT_SHA) frontend
+frontend-img:
+	docker build -f dockerfiles/frontend.docker -t gcr.io/athena-fuzzer/frontend:$(GIT_SHA) .
 	docker push gcr.io/athena-fuzzer/frontend:$(GIT_SHA)
 
-frontend_deploy: frontend_img fuzzer-client
+frontend_deploy: frontend-img fuzzer-client
 	jq '.spec.template.spec.containers[0].image = "gcr.io/athena-fuzzer/frontend:'$(GIT_SHA)'"' frontend/k8s/frontend.daemonset.template.json | jq '.spec.template.spec.containers[0].env[0].value = "gcr.io/athena-fuzzer/athena:'$(GIT_SHA)'"' > /tmp/frontend.daemonset.json
 	kubectl apply -f /tmp/frontend.daemonset.json
 

@@ -1,0 +1,126 @@
+{
+  "swagger": "2.0",
+  "basePath": "/v2",
+  "paths": {
+    "/pet": {
+      "put": {
+        "security": [
+          {
+            "petstore_auth": [
+              "write:pets",
+              "read:pets"
+            ]
+          }
+        ],
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "tags": [
+          "pet"
+        ],
+        "summary": "Update an existing pet",
+        "operationId": "updatePet",
+        "parameters": [
+          {
+            "description": "Pet object that needs to be added to the store",
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "name",
+                "photoUrls"
+              ],
+              "properties": {
+                "category": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "xml": {
+                    "name": "Category"
+                  }
+                },
+                "id": {
+                  "type": "integer",
+                  "format": "int64"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "doggie"
+                },
+                "photoUrls": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "xml": {
+                    "name": "photoUrl",
+                    "wrapped": true
+                  }
+                },
+                "status": {
+                  "description": "pet status in the store",
+                  "type": "string",
+                  "enum": [
+                    "available",
+                    "pending",
+                    "sold"
+                  ]
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "format": "int64"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "xml": {
+                      "name": "Tag"
+                    }
+                  },
+                  "xml": {
+                    "name": "tag",
+                    "wrapped": true
+                  }
+                }
+              },
+              "xml": {
+                "name": "Pet"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Pet not found"
+          },
+          "405": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    }
+  }
+}

@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os/exec"
-	"runtime"
 
 	"github.com/google/uuid"
 )
@@ -21,17 +20,6 @@ func NewTargetID(name string) string {
 // targetName - pod - uuid
 func NewPodID(name string) string {
 	return name + "-pod-" + uuid.New().String()[:8]
-}
-
-//MustGetHost returns the host platform. Useful to tell if we are on k8s or local
-func MustGetHost() string {
-	if runtime.GOOS == "linux" {
-		return "mongodb-service"
-	}
-	if runtime.GOOS == "darwin" {
-		return "localhost"
-	}
-	panic("Unsupported OS")
 }
 
 // Capture stdout/stderr of exec.Command. If it errors, wrap the error

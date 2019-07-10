@@ -1,0 +1,822 @@
+{
+  "log": {
+    "entries": [
+      {
+        "startedDateTime": "2019-01-25T19:21:14.493Z",
+        "time": 279.3600000004517,
+        "request": {
+          "method": "GET",
+          "url": "http://localhost:50121/session/csrf?_=1548444062137",
+          "httpVersion": "HTTP/1.1",
+          "headers": [
+            {
+              "name": "Cookie",
+              "value": "__profilin=p%3Dt"
+            },
+            {
+              "name": "Accept-Encoding",
+              "value": "gzip, deflate, br"
+            },
+            {
+              "name": "X-CSRF-Token",
+              "value": "undefined"
+            },
+            {
+              "name": "Host",
+              "value": "localhost:50121"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en-US,en;q=0.9"
+            },
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36"
+            },
+            {
+              "name": "Accept",
+              "value": "*/*"
+            },
+            {
+              "name": "Referer",
+              "value": "http://localhost:50121/"
+            },
+            {
+              "name": "X-Requested-With",
+              "value": "XMLHttpRequest"
+            },
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            }
+          ],
+          "queryString": [
+            {
+              "name": "_",
+              "value": "1548444062137"
+            }
+          ],
+          "cookies": [
+            {
+              "name": "__profilin",
+              "value": "p%3Dt",
+              "expires": null,
+              "httpOnly": false,
+              "secure": false
+            }
+          ],
+          "headersSize": 426,
+          "bodySize": 0
+        },
+        "response": {
+          "status": 200,
+          "statusText": "OK",
+          "httpVersion": "HTTP/1.1",
+          "headers": [
+            {
+              "name": "Referrer-Policy",
+              "value": "strict-origin-when-cross-origin"
+            },
+            {
+              "name": "X-Permitted-Cross-Domain-Policies",
+              "value": "none"
+            },
+            {
+              "name": "X-Download-Options",
+              "value": "noopen"
+            },
+            {
+              "name": "X-Frame-Options",
+              "value": "SAMEORIGIN"
+            },
+            {
+              "name": "X-MiniProfiler-Ids",
+              "value": "[\"mi0dh1zirx1aq27nkpp7\",\"zapiuwxhv4qzn5z6i134\"]"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "name": "X-MiniProfiler-Original-Cache-Control",
+              "value": "no-cache, no-store"
+            },
+            {
+              "name": "Cache-Control",
+              "value": "no-store, must-revalidate, private, max-age=0"
+            },
+            {
+              "name": "X-Discourse-Route",
+              "value": "session/csrf"
+            },
+            {
+              "name": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "name": "Set-Cookie",
+              "value": "_forum_session=OGNuNktJeERJSDlLT29pL0lGeUM1d1I3VEZCLy9yZWw2WCt0UTVmbEJ4SFhFamZBTU4zRWxZU21zWHJ1dmdvTGdSZ2dyM1F3aWx6WXhQUFNoT2ZxZThlakxWT1RUd05xbFhvWWROTzBob3hSb09SZHd4YThjRnpNRTM0bmU0TXZkeUVVWDJsMHVlNnFrODBXaFM2MGNEK2FmalNBRzdjYkluNmFVK1gvV0tsVDN1ejZIeWozbElBQ21OM0JNeU0wLS05M1VmOEN5K2dCdmV4RlMzMkpBWWVnPT0%3D--361799b03a06c09350470a52bac09563b6c4a13c; path=/; HttpOnly; SameSite=Lax"
+            },
+            {
+              "name": "Set-Cookie",
+              "value": "__profilin=p%3Dt; path=/"
+            },
+            {
+              "name": "Transfer-Encoding",
+              "value": "chunked"
+            },
+            {
+              "name": "X-XSS-Protection",
+              "value": "1; mode=block"
+            },
+            {
+              "name": "X-Request-Id",
+              "value": "6e1ea8bd-d80a-4352-a216-6f5720e0e83e"
+            }
+          ],
+          "cookies": [
+            {
+              "name": "_forum_session",
+              "value": "OGNuNktJeERJSDlLT29pL0lGeUM1d1I3VEZCLy9yZWw2WCt0UTVmbEJ4SFhFamZBTU4zRWxZU21zWHJ1dmdvTGdSZ2dyM1F3aWx6WXhQUFNoT2ZxZThlakxWT1RUd05xbFhvWWROTzBob3hSb09SZHd4YThjRnpNRTM0bmU0TXZkeUVVWDJsMHVlNnFrODBXaFM2MGNEK2FmalNBRzdjYkluNmFVK1gvV0tsVDN1ejZIeWozbElBQ21OM0JNeU0wLS05M1VmOEN5K2dCdmV4RlMzMkpBWWVnPT0%3D--361799b03a06c09350470a52bac09563b6c4a13c",
+              "path": "/",
+              "expires": null,
+              "httpOnly": true,
+              "secure": false,
+              "sameSite": "Lax"
+            },
+            {
+              "name": "__profilin",
+              "value": "p%3Dt",
+              "path": "/",
+              "expires": null,
+              "httpOnly": false,
+              "secure": false
+            }
+          ],
+          "content": {
+            "size": 99,
+            "mimeType": "application/json",
+            "compression": -11
+          },
+          "redirectURL": "",
+          "headersSize": 1018,
+          "bodySize": 110,
+          "_transferSize": 1128
+        },
+        "cache": {},
+        "timings": {
+          "blocked": 0.706999998186715,
+          "dns": -1,
+          "ssl": -1,
+          "connect": -1,
+          "send": 0.03700000000000003,
+          "wait": 278.1880000028908,
+          "receive": 0.42799999937415123,
+          "_blocked_queueing": 0.40299999818671495
+        },
+        "serverIPAddress": "[::1]",
+        "_initiator": {
+          "type": "script",
+          "stack": {
+            "callFrames": [
+              {
+                "functionName": "send",
+                "scriptId": "43417",
+                "url": "jquery",
+                "lineNumber": 9600,
+                "columnNumber": 9
+              },
+              {
+                "functionName": "ajax",
+                "scriptId": "43417",
+                "url": "jquery",
+                "lineNumber": 9206,
+                "columnNumber": 14
+              },
+              {
+                "functionName": "",
+                "scriptId": "43621",
+                "url": "discourse/lib/ajax",
+                "lineNumber": 152,
+                "columnNumber": 20
+              },
+              {
+                "functionName": "initializePromise",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 50229,
+                "columnNumber": 6
+              },
+              {
+                "functionName": "Promise",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 50717,
+                "columnNumber": 32
+              },
+              {
+                "functionName": "ajax",
+                "scriptId": "43621",
+                "url": "discourse/lib/ajax",
+                "lineNumber": 151,
+                "columnNumber": 16
+              },
+              {
+                "functionName": "login",
+                "scriptId": "43807",
+                "url": "discourse/controllers/login",
+                "lineNumber": 112,
+                "columnNumber": 23
+              },
+              {
+                "functionName": "send",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 34219,
+                "columnNumber": 52
+              },
+              {
+                "functionName": "triggerAction",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 37939,
+                "columnNumber": 40
+              },
+              {
+                "functionName": "sendAction",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 43101,
+                "columnNumber": 13
+              },
+              {
+                "functionName": "click",
+                "scriptId": "43923",
+                "url": "discourse/components/d-button",
+                "lineNumber": 66,
+                "columnNumber": 11
+              },
+              {
+                "functionName": "trigger",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 44814,
+                "columnNumber": 22
+              },
+              {
+                "functionName": "superWrapper",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 42833,
+                "columnNumber": 21
+              },
+              {
+                "functionName": "run",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 2557,
+                "columnNumber": 22
+              },
+              {
+                "functionName": "join",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 2594,
+                "columnNumber": 22
+              },
+              {
+                "functionName": "run.join",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 24492,
+                "columnNumber": 27
+              },
+              {
+                "functionName": "",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 44944,
+                "columnNumber": 33
+              },
+              {
+                "functionName": "flaggedInstrument",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 20588,
+                "columnNumber": 13
+              },
+              {
+                "functionName": "handleEvent",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 44943,
+                "columnNumber": 27
+              },
+              {
+                "functionName": "exports.default._emberMetal.Mixin.create._Mixin$create.handleEvent",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 43842,
+                "columnNumber": 30
+              },
+              {
+                "functionName": "_bubbleEvent",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 44400,
+                "columnNumber": 18
+              },
+              {
+                "functionName": "",
+                "scriptId": "43418",
+                "url": "ember",
+                "lineNumber": 44330,
+                "columnNumber": 24
+              },
+              {
+                "functionName": "dispatch",
+                "scriptId": "43417",
+                "url": "jquery",
+                "lineNumber": 5183,
+                "columnNumber": 26
+              },
+              {
+                "functionName": "elemData.handle",
+                "scriptId": "43417",
+                "url": "jquery",
+                "lineNumber": 4991,
+                "columnNumber": 27
+              }
+            ]
+          }
+        },
+        "_priority": "High",
+        "connection": "289616",
+        "pageref": "page_11"
+      },
+      {
+        "startedDateTime": "2019-01-25T19:21:14.774Z",
+        "time": 1180.5919999969774,
+        "request": {
+          "method": "POST",
+          "url": "http://localhost:50121/session",
+          "httpVersion": "HTTP/1.1",
+          "headers": [
+            {
+              "name": "Cookie",
+              "value": "__profilin=p%3Dt; _forum_session=OGNuNktJeERJSDlLT29pL0lGeUM1d1I3VEZCLy9yZWw2WCt0UTVmbEJ4SFhFamZBTU4zRWxZU21zWHJ1dmdvTGdSZ2dyM1F3aWx6WXhQUFNoT2ZxZThlakxWT1RUd05xbFhvWWROTzBob3hSb09SZHd4YThjRnpNRTM0bmU0TXZkeUVVWDJsMHVlNnFrODBXaFM2MGNEK2FmalNBRzdjYkluNmFVK1gvV0tsVDN1ejZIeWozbElBQ21OM0JNeU0wLS05M1VmOEN5K2dCdmV4RlMzMkpBWWVnPT0%3D--361799b03a06c09350470a52bac09563b6c4a13c"
+            },
+            {
+              "name": "Origin",
+              "value": "http://localhost:50121"
+            },
+            {
+              "name": "Accept-Encoding",
+              "value": "gzip, deflate, br"
+            },
+            {
+              "name": "X-CSRF-Token",
+              "value": "HYzyrNAhfK1NwETP+mShUKUyWM4b4rO8Xq5lGPD6PHejN4YrG7F72+GRC9QX54mdqC7FT7fxMuT+swcxS3jF6A=="
+            },
+            {
+              "name": "Host",
+              "value": "localhost:50121"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en-US,en;q=0.9"
+            },
+            {
+              "name": "Discourse-Visible",
+              "value": "true"
+            },
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded; charset=UTF-8"
+            },
+            {
+              "name": "Accept",
+              "value": "*/*"
+            },
+            {
+              "name": "Referer",
+              "value": "http://localhost:50121/"
+            },
+            {
+              "name": "X-Requested-With",
+              "value": "XMLHttpRequest"
+            },
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "name": "Content-Length",
+              "value": "69"
+            }
+          ],
+          "queryString": [],
+          "cookies": [
+            {
+              "name": "__profilin",
+              "value": "p%3Dt",
+              "expires": null,
+              "httpOnly": false,
+              "secure": false
+            },
+            {
+              "name": "_forum_session",
+              "value": "OGNuNktJeERJSDlLT29pL0lGeUM1d1I3VEZCLy9yZWw2WCt0UTVmbEJ4SFhFamZBTU4zRWxZU21zWHJ1dmdvTGdSZ2dyM1F3aWx6WXhQUFNoT2ZxZThlakxWT1RUd05xbFhvWWROTzBob3hSb09SZHd4YThjRnpNRTM0bmU0TXZkeUVVWDJsMHVlNnFrODBXaFM2MGNEK2FmalNBRzdjYkluNmFVK1gvV0tsVDN1ejZIeWozbElBQ21OM0JNeU0wLS05M1VmOEN5K2dCdmV4RlMzMkpBWWVnPT0%3D--361799b03a06c09350470a52bac09563b6c4a13c",
+              "expires": null,
+              "httpOnly": false,
+              "secure": false
+            }
+          ],
+          "headersSize": 979,
+          "bodySize": 0,
+          "postData": {
+            "mimeType": "application/x-www-form-urlencoded; charset=UTF-8",
+            "text": "login=admin%40gmail.com&password=adminpassword&second_factor_method=1",
+            "params": [
+              {
+                "name": "login",
+                "value": "admin%40gmail.com"
+              },
+              {
+                "name": "password",
+                "value": "adminpassword"
+              },
+              {
+                "name": "second_factor_method",
+                "value": "1"
+              }
+            ]
+          }
+        },
+        "response": {
+          "status": 200,
+          "statusText": "OK",
+          "httpVersion": "HTTP/1.1",
+          "headers": [
+            {
+              "name": "Referrer-Policy",
+              "value": "strict-origin-when-cross-origin"
+            },
+            {
+              "name": "X-Permitted-Cross-Domain-Policies",
+              "value": "none"
+            },
+            {
+              "name": "X-Download-Options",
+              "value": "noopen"
+            },
+            {
+              "name": "X-Frame-Options",
+              "value": "SAMEORIGIN"
+            },
+            {
+              "name": "X-MiniProfiler-Ids",
+              "value": "[\"q8qejemh4tlv4qnyvjed\",\"zapiuwxhv4qzn5z6i134\"]"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "name": "X-MiniProfiler-Original-Cache-Control",
+              "value": "no-cache, no-store"
+            },
+            {
+              "name": "Cache-Control",
+              "value": "no-store, must-revalidate, private, max-age=0"
+            },
+            {
+              "name": "X-Discourse-Route",
+              "value": "session/create"
+            },
+            {
+              "name": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "name": "Set-Cookie",
+              "value": "_t=44947d8f95ced2fd76d6851bd068fc0b; path=/; expires=Tue, 26 Mar 2019 19:21:15 -0000; HttpOnly; SameSite=Lax"
+            },
+            {
+              "name": "Set-Cookie",
+              "value": "_forum_session=QUp1WVpMK0tIajNLNmd5M2RpVFh3dXoxMUZSRFl2YTdobjFrRytLZGprSVJRZ3p4U0plV0N0TnlCN0NvU3g3NkNZdXhrMFJxZDNqTFpwdFYzbXRxSW9QQmlnZXhwVHhPaHZGZ0JFL3M4RDhCZWR4ckpDQldyWWRqbmJkNDRpclhsTzdEL1Arcy9seHNDRHJ2d09CTVo0QTJYSlR2L1hDVUdMNDQ5NzBSZTZISXR4VUF2UzFFMWtOaGtyaUFlY2E4LS1xcncyVU0ycWtVREhlc0VEcUFTSEVnPT0%3D--dbbc6dbad31cdef531caaf60505e8b114e2851b0; path=/; HttpOnly; SameSite=Lax"
+            },
+            {
+              "name": "Set-Cookie",
+              "value": "__profilin=p%3Dt; path=/"
+            },
+            {
+              "name": "Transfer-Encoding",
+              "value": "chunked"
+            },
+            {
+              "name": "X-XSS-Protection",
+              "value": "1; mode=block"
+            },
+            {
+              "name": "X-Request-Id",
+              "value": "e81189c1-59b1-4a75-ab37-d9d2cd6a6d9c"
+            }
+          ],
+          "cookies": [
+            {
+              "name": "_t",
+              "value": "44947d8f95ced2fd76d6851bd068fc0b",
+              "path": "/",
+              "expires": "2019-03-26T19:21:15.000Z",
+              "httpOnly": true,
+              "secure": false,
+              "sameSite": "Lax"
+            },
+            {
+              "name": "_forum_session",
+              "value": "QUp1WVpMK0tIajNLNmd5M2RpVFh3dXoxMUZSRFl2YTdobjFrRytLZGprSVJRZ3p4U0plV0N0TnlCN0NvU3g3NkNZdXhrMFJxZDNqTFpwdFYzbXRxSW9QQmlnZXhwVHhPaHZGZ0JFL3M4RDhCZWR4ckpDQldyWWRqbmJkNDRpclhsTzdEL1Arcy9seHNDRHJ2d09CTVo0QTJYSlR2L1hDVUdMNDQ5NzBSZTZISXR4VUF2UzFFMWtOaGtyaUFlY2E4LS1xcncyVU0ycWtVREhlc0VEcUFTSEVnPT0%3D--dbbc6dbad31cdef531caaf60505e8b114e2851b0",
+              "path": "/",
+              "expires": null,
+              "httpOnly": true,
+              "secure": false,
+              "sameSite": "Lax"
+            },
+            {
+              "name": "__profilin",
+              "value": "p%3Dt",
+              "path": "/",
+              "expires": null,
+              "httpOnly": false,
+              "secure": false
+            }
+          ],
+          "content": {
+            "size": 3149,
+            "mimeType": "application/json",
+            "compression": -12
+          },
+          "redirectURL": "",
+          "headersSize": 1142,
+          "bodySize": 3161,
+          "_transferSize": 4303
+        },
+        "cache": {},
+        "timings": {
+          "blocked": 0.5859999969941564,
+          "dns": -1,
+          "ssl": -1,
+          "connect": -1,
+          "send": 0.033999999999999975,
+          "wait": 1179.2829999995627,
+          "receive": 0.6890000004204921,
+          "_blocked_queueing": 0.3349999969941564
+        },
+        "serverIPAddress": "[::1]",
+        "_initiator": {
+          "type": "script",
+          "stack": {
+            "callFrames": [
+              {
+                "functionName": "send",
+                "scriptId": "43417",
+                "url": "jquery",
+                "lineNumber": 9600,
+                "columnNumber": 9
+              },
+              {
+                "functionName": "ajax",
+                "scriptId": "43417",
+                "url": "jquery",
+                "lineNumber": 9206,
+                "columnNumber": 14
+              },
+              {
+                "functionName": "performAjax",
+                "scriptId": "43621",
+                "url": "discourse/lib/ajax",
+                "lineNumber": 143,
+                "columnNumber": 18
+              },
+              {
+                "functionName": "",
+                "scriptId": "43621",
+                "url": "discourse/lib/ajax",
+                "lineNumber": 156,
+                "columnNumber": 10
+              },
+              {
+                "functionName": "fire",
+                "scriptId": "43417",
+                "url": "jquery",
+                "lineNumber": 3268,
+                "columnNumber": 30
+              },
+              {
+                "functionName": "fireWith",
+                "scriptId": "43417",
+                "url": "jquery",
+                "lineNumber": 3398,
+                "columnNumber": 6
+              },
+              {
+                "functionName": "done",
+                "scriptId": "43417",
+                "url": "jquery",
+                "lineNumber": 9305,
+                "columnNumber": 13
+              },
+              {
+                "functionName": "",
+                "scriptId": "43417",
+                "url": "jquery",
+                "lineNumber": 9548,
+                "columnNumber": 8
+              }
+            ],
+            "parent": {
+              "description": "load",
+              "callFrames": [
+                {
+                  "functionName": "send",
+                  "scriptId": "43417",
+                  "url": "jquery",
+                  "lineNumber": 9567,
+                  "columnNumber": 15
+                },
+                {
+                  "functionName": "ajax",
+                  "scriptId": "43417",
+                  "url": "jquery",
+                  "lineNumber": 9206,
+                  "columnNumber": 14
+                },
+                {
+                  "functionName": "",
+                  "scriptId": "43621",
+                  "url": "discourse/lib/ajax",
+                  "lineNumber": 152,
+                  "columnNumber": 20
+                },
+                {
+                  "functionName": "initializePromise",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 50229,
+                  "columnNumber": 6
+                },
+                {
+                  "functionName": "Promise",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 50717,
+                  "columnNumber": 32
+                },
+                {
+                  "functionName": "ajax",
+                  "scriptId": "43621",
+                  "url": "discourse/lib/ajax",
+                  "lineNumber": 151,
+                  "columnNumber": 16
+                },
+                {
+                  "functionName": "login",
+                  "scriptId": "43807",
+                  "url": "discourse/controllers/login",
+                  "lineNumber": 112,
+                  "columnNumber": 23
+                },
+                {
+                  "functionName": "send",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 34219,
+                  "columnNumber": 52
+                },
+                {
+                  "functionName": "triggerAction",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 37939,
+                  "columnNumber": 40
+                },
+                {
+                  "functionName": "sendAction",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 43101,
+                  "columnNumber": 13
+                },
+                {
+                  "functionName": "click",
+                  "scriptId": "43923",
+                  "url": "discourse/components/d-button",
+                  "lineNumber": 66,
+                  "columnNumber": 11
+                },
+                {
+                  "functionName": "trigger",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 44814,
+                  "columnNumber": 22
+                },
+                {
+                  "functionName": "superWrapper",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 42833,
+                  "columnNumber": 21
+                },
+                {
+                  "functionName": "run",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 2557,
+                  "columnNumber": 22
+                },
+                {
+                  "functionName": "join",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 2594,
+                  "columnNumber": 22
+                },
+                {
+                  "functionName": "run.join",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 24492,
+                  "columnNumber": 27
+                },
+                {
+                  "functionName": "",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 44944,
+                  "columnNumber": 33
+                },
+                {
+                  "functionName": "flaggedInstrument",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 20588,
+                  "columnNumber": 13
+                },
+                {
+                  "functionName": "handleEvent",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 44943,
+                  "columnNumber": 27
+                },
+                {
+                  "functionName": "exports.default._emberMetal.Mixin.create._Mixin$create.handleEvent",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 43842,
+                  "columnNumber": 30
+                },
+                {
+                  "functionName": "_bubbleEvent",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 44400,
+                  "columnNumber": 18
+                },
+                {
+                  "functionName": "",
+                  "scriptId": "43418",
+                  "url": "ember",
+                  "lineNumber": 44330,
+                  "columnNumber": 24
+                },
+                {
+                  "functionName": "dispatch",
+                  "scriptId": "43417",
+                  "url": "jquery",
+                  "lineNumber": 5183,
+                  "columnNumber": 26
+                },
+                {
+                  "functionName": "elemData.handle",
+                  "scriptId": "43417",
+                  "url": "jquery",
+                  "lineNumber": 4991,
+                  "columnNumber": 27
+                }
+              ]
+            }
+          }
+        },
+        "_priority": "High",
+        "connection": "289616",
+        "pageref": "page_11"
+      }
+    ]
+  }
+}

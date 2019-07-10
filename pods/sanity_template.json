@@ -1,0 +1,192 @@
+{
+  "apiVersion": "v1",
+  "kind": "Pod",
+  "metadata": {
+    "name": "discourse-sanity",
+    "labels": {
+      "sanity": "true"
+    }
+  },
+  "spec": {
+    "volumes": [
+      {
+        "name": "rails-fork",
+        "emptyDir": {}
+      },
+      {
+        "name": "postgreslog",
+        "emptyDir": {}
+      },
+      {
+        "name": "results-dir",
+        "emptyDir": {}
+      }
+    ],
+    "initContainers": [
+      {
+        "name": "rails-fork",
+        "image": "gcr.io/athena-fuzzer/rails:11e5d56418",
+        "resources": {
+          "requests": {
+            "cpu": "0m",
+            "memory": "100Mi"
+          }
+        },
+        "volumeMounts": [
+          {
+            "name": "rails-fork",
+            "mountPath": "/rails-fork"
+          }
+        ]
+      }
+    ],
+    "containers": [
+      {
+        "name": "my-postgres",
+        "image": "postgres:10.5",
+        "args": [
+          "-c",
+          "log_destination=csvlog",
+          "-c",
+          "log_statement=all",
+          "-c",
+          "logging_collector=on",
+          "-c",
+          "log_directory=/var/log/athena/postgres",
+          "-c",
+          "log_filename=postgres.log",
+          "-c",
+          "log_file_mode=0600",
+          "-c",
+          "log_min_error_statement=debug5",
+          "-c",
+          "log_error_verbosity=verbose"
+        ],
+        "env": [
+          {
+            "name": "POSTGRES_USER",
+            "value": "root"
+          }
+        ],
+        "volumeMounts": [
+          {
+            "name": "postgreslog",
+            "mountPath": "/var/log/athena/postgres"
+          }
+        ],
+        "resources": {
+          "requests": {
+            "cpu": "0m",
+            "memory": "100Mi"
+          }
+        }
+      },
+      {
+        "name": "target",
+        "image": "gcr.io/athena-fuzzer/discourse:pgfix3",
+        "command": [
+          "./run_server.sh"
+        ],
+        "env": [
+          {
+            "name": "FUZZ_DB",
+            "value": "fuzz_db"
+          },
+          {
+            "name": "PORT",
+            "value": "8080"
+          },
+          {
+            "name": "RESULTS_PATH",
+            "value": "/tmp/results"
+          },
+          {
+            "name": "TARGET_APP_PATH",
+            "value": "/target"
+          },
+          {
+            "name": "RAILS_FORK",
+            "value": "1"
+          }
+        ],
+        "resources": {
+          "requests": {
+            "cpu": "0m",
+            "memory": "100Mi"
+          }
+        },
+        "volumeMounts": [
+          {
+            "name": "rails-fork",
+            "mountPath": "/rails-fork"
+          },
+          {
+            "name": "results-dir",
+            "mountPath": "/tmp/results"
+          }
+        ]
+      },
+      {
+        "name": "athena",
+        "image": "gcr.io/athena-fuzzer/athena:1d423db50c02d97a8371",
+        "command": [
+          "go"
+        ],
+        "args": [
+          "run",
+          "main.go"
+        ],
+        "env": [
+          {
+            "name": "TARGET_ID",
+            "value": "discourse-target-85aa0ba2"
+          },
+          {
+            "name": "TARGET_APP_PORT",
+            "value": "8080"
+          },
+          {
+            "name": "TARGET_DB_HOST",
+            "value": "localhost"
+          },
+          {
+            "name": "TARGET_DB_USER",
+            "value": "root"
+          },
+          {
+            "name": "TARGET_DB_PASSWORD",
+            "value": "mysecretpassword"
+          },
+          {
+            "name": "TARGET_DB_PORT",
+            "value": "5432"
+          },
+          {
+            "name": "TARGET_DB_NAME",
+            "value": "fuzz_db"
+          },
+          {
+            "name": "RESULTS_PATH",
+            "value": "/tmp/results"
+          }
+        ],
+        "resources": {
+          "requests": {
+            "cpu": "0m",
+            "memory": "100Mi"
+          }
+        },
+        "volumeMounts": [
+          {
+            "name": "results-dir",
+            "mountPath": "/tmp/results"
+          },
+          {
+            "name": "postgreslog",
+            "mountPath": "/var/log/athena/postgres"
+          }
+        ]
+      }
+    ]
+  }
+}
