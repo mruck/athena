@@ -43,7 +43,7 @@
     "containers": [
       {
         "name": "my-postgres",
-        "image": "postgres:10.5",
+        "image": "postgres:9.6",
         "args": [
           "-c",
           "log_destination=csvlog",
@@ -83,7 +83,7 @@
       },
       {
         "name": "target",
-        "image": "gcr.io/athena-fuzzer/discourse:pgfix3",
+        "image": "gcr.io/athena-fuzzer/discourse:ca4c6a52665445c4df5f",
         "command": [
           "./run_server.sh"
         ],

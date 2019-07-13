@@ -13,9 +13,11 @@ rails:
 	jq '.spec.template.spec.initContainers[0].image = "gcr.io/athena-fuzzer/rails:'$(GIT_SHA)'"' pods/discourse.deployment.json > /tmp/$(GIT_SHA) && mv /tmp/$(GIT_SHA) pods/discourse.deployment.json
 
 # Bump images in debug deployment
-discourse-deployment: fuzzer-client
+discourse-deployment: fuzzer-client discourse-server
 	mkdir /tmp/deployments || true
-	jq '.spec.template.spec.containers[2].image = "gcr.io/athena-fuzzer/athena:'$(GIT_SHA)'"' pods/discourse.deployment.json | jq '.spec.template.spec.containers[2].env[0].value = "'$(GIT_SHA)'"' > /tmp/deployments/$(GIT_SHA)
+	jq '.spec.template.spec.containers[2].image = "gcr.io/athena-fuzzer/athena:'$(GIT_SHA)'"' pods/discourse.deployment.json | \
+		jq '.spec.template.spec.containers[2].env[0].value = "'$(GIT_SHA)'"' | \
+		jq '.spec.template.spec.containers[1].image = "gcr.io/athena-fuzzer/discourse:'$(GIT_SHA)'"'> /tmp/deployments/$(GIT_SHA)
 	kubectl apply -f /tmp/deployments/$(GIT_SHA)
 
 postgres-stop:
@@ -57,8 +59,7 @@ frontend_deploy: frontend-img fuzzer-client
 	kubectl apply -f /tmp/frontend.daemonset.json
 
 discourse-server:
-	docker build -t gcr.io/athena-fuzzer/discourse:$(GIT_SHA) -f ../discourse-fork/Dockerfile ..
-	docker push gcr.io/athena-fuzzer/discourse:$(GIT_SHA)
+	GIT_SHA=$(GIT_SHA) $(MAKE) -C ../discourse-fork discourse
 
 medium:
 	docker build -t medium:$(GIT_SHA) -f ../dante-stories-fork/Dockerfile ..
