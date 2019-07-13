@@ -18,7 +18,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-const maxAttempts = 60
+const maxAttempts = 600
 
 // Try every 2 seconds
 const interval = 2
