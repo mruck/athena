@@ -186,6 +186,67 @@
             "mountPath": "/var/log/athena/postgres"
           }
         ]
+      },
+      {
+        "name": "sidecar-athena",
+        "image": "gcr.io/athena-fuzzer/athena:1d423db50c02d97a8371",
+        "command": [
+          "/bin/bash"
+        ],
+        "args": [
+              "-c",
+              "while true; do sleep 1000; done"
+        ],
+        "env": [
+          {
+            "name": "TARGET_ID",
+            "value": "discourse-target-85aa0ba2"
+          },
+          {
+            "name": "TARGET_APP_PORT",
+            "value": "8080"
+          },
+          {
+            "name": "TARGET_DB_HOST",
+            "value": "localhost"
+          },
+          {
+            "name": "TARGET_DB_USER",
+            "value": "root"
+          },
+          {
+            "name": "TARGET_DB_PASSWORD",
+            "value": "mysecretpassword"
+          },
+          {
+            "name": "TARGET_DB_PORT",
+            "value": "5432"
+          },
+          {
+            "name": "TARGET_DB_NAME",
+            "value": "fuzz_db"
+          },
+          {
+            "name": "RESULTS_PATH",
+            "value": "/tmp/results"
+          }
+        ],
+        "resources": {
+          "requests": {
+            "cpu": "0m",
+            "memory": "100Mi"
+          }
+        },
+        "volumeMounts": [
+          {
+            "name": "results-dir",
+            "mountPath": "/tmp/results"
+          },
+          {
+            "name": "postgreslog",
+            "mountPath": "/var/log/athena/postgres"
+          }
+        ]
       }
     ]
   }

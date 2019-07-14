@@ -22,9 +22,10 @@ docker push gcr.io/athena-fuzzer/athena:$GIT_SHA
 mkdir -p /tmp/sanity/$POD_NAME
 
 # Update image, pod name, target id to reflect sha
-
 jq '.spec.containers[2].image = "gcr.io/athena-fuzzer/athena:'$GIT_SHA'"' pods/sanity_template.json | \
-jq '.metadata.name = "'$POD_NAME'"' | jq '.spec.containers[2].env[0].value = "'$GIT_SHA'"'  > /tmp/sanity/$POD_NAME/pod.json
+jq '.spec.containers[3].image = "gcr.io/athena-fuzzer/athena:'$GIT_SHA'"' |  \
+jq '.metadata.name = "'$POD_NAME'"' | jq '.spec.containers[2].env[0].value = "'$GIT_SHA'"'  | \
+jq '.spec.containers[3].env[0].value = "'$GIT_SHA'"' > /tmp/sanity/$POD_NAME/pod.json
 kubectl apply -f /tmp/sanity/$POD_NAME/pod.json
 
 # Wait for pod to be created
