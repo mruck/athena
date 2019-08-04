@@ -14,11 +14,11 @@ Web applications are rarely self contained in today's age of microservices. More
 3) Modify postgres so that it logs all queries to a file. This log is parsed during fuzzing to check for tainted queries. Also, log all postgres errors to a file.  This requires changes various environment variables and verbosity levels which shouldn't break the target application.
 4) Inject the fuzzing container.  Ensure the fuzzing container can query the target application and get coverage information.
 
-![Cluster img](docs/cluster_architecture.png)
+<img src="docs/cluster_architecture.png" width="800">
 
 Once the steps above are complete, the target application is ready to be fuzzed.  The instrumented pod will now look like:
 
-![Fuzzing pod img](docs/fuzzing_pod.png)
+<img src="docs/fuzzing_pod.png" width="800">
 
 Notice the shared mounts between the fuzzing container and application main container.  The patched target application logs coverage information to this shared mount, and the fuzzer reads from it and uses it to inform mutations.  Likewise, there is also a shared mount bewteen Postgres and the fuzzer.  Postgres logs all queries and errors to the shared mount, and the fuzzer is responsible for parsing this information.
 
@@ -37,37 +37,28 @@ This is not mandatory, but helps identify interesting parameters that the target
 Athena patches rails so that every exception is logged to the shared mount and parsed by the fuzzer.  Benign exceptions are whitelisted, while exceptions indicating a security problem are flagged.  The backtrace, exception message and curl command for the request are stored.
 
 #### Database accesses
-Several environment variables are set for Postgres on initialization so that it logs both Postgres errors and all queries to the shared mount so the fuzzer can triage them.  Logging postgres errors gives the fuzzer visibility into whether or not the database starts misbehaving.  Logging all queries allows the fuzzer to triage them and check for user controlled data.  It also allows the fuzzer to map parameters to tables and columns in the database, so that the fuzzer can send meaningful parameters that stimulate the database.  For example, imagine a route `PUT /post` that edits a blog post and expect a body parameter `post_id` where `post_id` is a valid post.  If we can map `post_id` to the `id` column of the `posts` table, now we can simply read the `posts` table and get a valid parameter and send a meaningful request that doesn't get dropped because the id is invalid.
+Several environment variables are set for Postgres on initialization so that it logs both Postgres errors and all queries to the shared mount so the fuzzer can triage them.  Logging postgres errors gives the fuzzer visibility into whether or not the database starts misbehaving.  Logging all queries allows the fuzzer to triage them and check for user controlled data.  
+
+It also allows the fuzzer to map parameters to tables and columns in the database, so that the fuzzer can send meaningful parameters that stimulate the database.  This is done by reading in the raw sql queries and converting them to ASTs, then parsing those ASTs for the parameters.  For example, imagine a route `PUT /post` that edits a blog post and expect a body parameter `post_id` where `post_id` is a valid post.  If we can map `post_id` to the `id` column of the `posts` table, now we can simply read the `posts` table and get a valid parameter and send a meaningful request that doesn't get dropped because the id is invalid.
 
 ### The Target
-Currently, Athena only supports Ruby on Rails applications with Postgres backends.  The fuzzing engine and parameter mutation are language aganostic.  However, the instrumentation is language specific.  Athena relies on a Ruby gem to provide source code coverage, and well as patches to Rails to log exceptions.  I first tested against a Medium clone because it was open source and small (~80 endpoints).  After achieving nearly 100% code coverage with Athena on the Medium clone, I moved to Discourse.  Discourse was a good target because it was open source, rewarded bug bounties and used Swagger.
+Currently, Athena only supports Ruby on Rails applications with Postgres backends.  The fuzzing engine and parameter mutation are language aganostic.  However, the instrumentation is language specific.  As mentioned above, Athena relies on a Ruby gem to provide source code coverage, and patches to Rails to log exceptions.  All testing was done against Discourse because it is open source, rewarded bounties and used Swagger.  In the future, I plan to extend to Go and Java.
+
+### The Corpus
+Athena relies on a HAR file as the initial corpus. It seeds the fuzzing engine with real human behavior.  This solves two problems: 1) realistic parameter values 2) route sequencing.  For example, if there were 2 routes, one to edit a post and one to create a post, the human will first hit the route to create a post then hit the route to edit the post.  The fuzzer won't be able to do this ordering so having a sample set is very helpful.  In an ideal world, this corpus can be collected by proxying the QA team.  
 
 ### Future work
-Request sequencing through rest-ler: https://www.microsoft.com/en-us/research/publication/rest-ler-automatic-intelligent-rest-api-fuzzing/
-Test against Gitlab.
-Endpoints instead of shared mounts.  Athena relies on a shared mount between the fuzzing container and container with the target application to share  instrumentation information such as source code coverage and exceptions.  The shared mounts is somewhat messy because of the dependencies between the fuzzing and target containers.  Instead, a lightweight server could serve this information and Athena could query it.
-Go
-Java
+*Market Validation:*
+Athena discovered many 500s in Discourse, however it's unclear whether or not those are of value if they are not security related.
 
-### What is required from the user and why:
-*User requirement*: A k8s pod spec with your containerized rails app.  Any other microservices should be in the pod spec or exposed on a port that the target can connect to.
-*Why*: Read world web applications are usually complex and talk to databases, etc.  A pod spec captures all this information and makes the environment reproducible.  We will patch the target image to point to our custom rails fork.  This rails fork contains collect information about the application and relays it to the fuzzer so that the fuzzer can intelligently mutate parameters.  The most important metrics collected by the rails fork are:
-1) Source code coverage: this indicates whether or not the fuzzer is making progress.  If the fuzzer is making progress, it will continue mutating parameters for the given endpoint.  If not, it will try a different endpoint.
-2) Parameter accesses: this is not mandatory, but helps identify interesting parameters that the target is frequently accessing, as well as uninteresting parameters that the fuzzer shouldn't waste cycles mutating.
-3) Database accesses: this helps Athena map parameters to tables and columns in the relational database, so that Athena can send parameters that stimulate the database and observer how user tainted behavior shows up in queries.  This allows Athena to detect sql injection.
-4) Rails exceptions: Athena patches the target application so that all exceptions are logged and relayed back to the user.  Benign exceptions are whitelisted, while exceptions indicating a security problem are flagged.
+*Request Sequencing:* 
+In addition to relying on a har file for route sequencing, Athena should use Swager to build a dependency hierarchy. Lessons can be learned from Microsoft's [Rest-ler](https://www.microsoft.com/en-us/research/publication/rest-ler-automatic-intelligent-rest-api-fuzzing/).
 
-*User requirement*: The target's backend must be postgres.  Currently, Athena only supports instrumenting postgres, but this can be extended in the future.<br/>
-*Why*: This allows Athena to query the database and use values from the database to send in the parameters, which generally triggers more interesting behavior than randomly generated values.  Also as mentioned above, Athena can observe queries made by the target application to the database and look for malicious behavior.
+*Test against Gitlab:* 
+Gitlab is another excellent target because it is an open source, enterprise application. Unfortunately, adopting Swagger has proven a contentious topic, and their Swagger is incomplete.  However, it seemed good enough for Microsoft to test against with Rest-ler.
 
-*User requirement*: Login script.<br/>
-*Why*: The fuzzer can run unauthenticated, but only a small percentage of the application space will be explored.  More interesting behavior will be discovered if the fuzzer is logged in.
-
-*User requirement*: HAR file.<br/>
-*Why*: This is used as the "initial corpus", it seeds the fuzzing engine with real human behavior.  This solves two problems: 1) realistic parameter values 2) route sequencing.  For example, if there were 2 routes, one to edit a post and one to create a post, the human will first hit the route to create a post then hit the route to edit the post.  The fuzzer won't be able to do this ordering so having a sample set is very helpful.  In an ideal world, this corpus can be collected by proxying the QA team.
-
-*User requirement*: Swagger spec.<br/>
-*Why*: This tells the fuzzer the expected parameter types for each route, so its requests look closer to what a UI might send, and we are more likely to get through the different layers of input validation that a random HTTP fuzzer would not.
+*Endpoints instead of shared mounts:*
+Athena relies on a shared mount between the fuzzing container and container with the target application to share  instrumentation information such as source code coverage and exceptions.  The shared mounts is somewhat messy because of the dependencies between the fuzzing and target containers.  Instead, a lightweight server could serve this information and Athena could query it.
 
 ### Trophies
 A security vulnerability was detected in Discourse and fixed in commits: [e2bcf5](https://github.com/discourse/discourse/commit/e2bcf55077be701a42f25651b26c4ac7028233c7),  [cac80cd](https://github.com/discourse/discourse/commit/cac80cdc3b5f847cfca6bf678e5a4c5e2837bbf3), [152238](https://github.com/discourse/discourse/commit/152238b4cff7ab4c4ce63ba26abd23b0abf05129).
