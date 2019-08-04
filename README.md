@@ -1,5 +1,5 @@
 # Athena
-Athena is a prototype web application fuzzer.  It instruments the target application to collect metrics that inform parameter mutations, with the goal of detecting security violations.  Currently, Athena identifies SQL injection and unhandled Rails exceptions, flagging those that are potentially dangerous.
+Athena is a prototype web application fuzzer. It instruments the target application to collect metrics that inform parameter mutations, with the goal of detecting security violations. Currently, Athena identifies SQL injection and unhandled exceptions, flagging those that are potentially dangerous. Athena only runs against Rails targets, but in the future I expect to extend to Go and Java.
 
 ### Architecture
 Athena relies on an OpenAPI spec (aka Swagger) to understand the endpoints that are exposed by the application, and create appropriate http requests that match the schema provided.  Specific swagger benefits include:
@@ -22,6 +22,8 @@ Once the steps above are complete, the target application is ready to be fuzzed.
 
 Notice the shared mounts between the fuzzing container and application main container.  The patched target application logs coverage information to this shared mount, and the fuzzer reads from it and uses it to inform mutations.  Likewise, there is also a shared mount bewteen Postgres and the fuzzer.  Postgres logs all queries and errors to the shared mount, and the fuzzer is responsible for parsing this information.
 
+Also note in the above two diagrams the Mongo DB instance.  When the user wants information on a fuzz run, they can query the API server, which in turn queries Mongo DB.  Also results are stored by the fuzzer in Mongo DB.
+
 ### Instrumentation
 Athena instruments both the database and the target application while it is fuzzing. Instrumentation is beneficial for 2 reasons 1) it is indicative of progress 2) detecting misbehaving applications.  New code coverage, queries, parameter accesses and exceptions all indicate the application is exercersing new behavior.  When Athena stops seeing new behavior, it decides it has exhausted coverage for the route and moves on to the next endpoint.  Instrumentation also allows us to detect runtime exceptions in the app, and potentially malicious queries. Below are the different kinds of metrics that Athena uses to be smart about coverage:
 
@@ -31,21 +33,21 @@ Code coverage metrics show what percentage of the code is tested and untested.  
 #### Parameter accesses
 This is not mandatory, but helps identify interesting parameters that the target is frequently accessing, as well as uninteresting parameters that the fuzzer shouldn't waste cycles mutating.  Swagger allows the fuzzer to know all possible parameters beforehand, but knowing which parameters are accessed when is also powerful because it indicates the parameters are stimulating different behavior.  The parameter accesses are tracked by patching rails to hook the `params` keyword.  On each access, a callback is triggered which logs accesses to a shared mount between the fuzzing and target application container for the fuzzer to read from.
 
-#### Database accesses
-This allows Athena to map paramters to tables and columns in the database, so that Athena can send meaningful parameters that stimulate the database.  It also allows Athena to observe user tainted input showing up in queries and detect sql injection.
+#### Rails exceptions
+Athena patches rails so that every exception is logged to the shared mount and parsed by the fuzzer.  Benign exceptions are whitelisted, while exceptions indicating a security problem are flagged.  The backtrace, exception message and curl command for the request are stored.
 
-##### Rails exceptions
-Athena patches the target application so that all exceptions are logged and relayed back to the user.  Benign exceptions are whitelisted, while exceptions indicating a security problem are flagged.
+#### Database accesses
+Several environment variables are set for Postgres on initialization so that it logs both Postgres errors and all queries to the shared mount so the fuzzer can triage them.  Logging postgres errors gives the fuzzer visibility into whether or not the database starts misbehaving.  Logging all queries allows the fuzzer to triage them and check for user controlled data.  It also allows the fuzzer to map parameters to tables and columns in the database, so that the fuzzer can send meaningful parameters that stimulate the database.  For example, imagine a route `PUT /post` that edits a blog post and expect a body parameter `post_id` where `post_id` is a valid post.  If we can map `post_id` to the `id` column of the `posts` table, now we can simply read the `posts` table and get a valid parameter and send a meaningful request that doesn't get dropped because the id is invalid.
 
 ### The Target
 Currently, Athena only supports Ruby on Rails applications with Postgres backends.  The fuzzing engine and parameter mutation are language aganostic.  However, the instrumentation is language specific.  Athena relies on a Ruby gem to provide source code coverage, and well as patches to Rails to log exceptions.  I first tested against a Medium clone because it was open source and small (~80 endpoints).  After achieving nearly 100% code coverage with Athena on the Medium clone, I moved to Discourse.  Discourse was a good target because it was open source, rewarded bug bounties and used Swagger.
-
-### The Workflow
 
 ### Future work
 Request sequencing through rest-ler: https://www.microsoft.com/en-us/research/publication/rest-ler-automatic-intelligent-rest-api-fuzzing/
 Test against Gitlab.
 Endpoints instead of shared mounts.  Athena relies on a shared mount between the fuzzing container and container with the target application to share  instrumentation information such as source code coverage and exceptions.  The shared mounts is somewhat messy because of the dependencies between the fuzzing and target containers.  Instead, a lightweight server could serve this information and Athena could query it.
+Go
+Java
 
 ### What is required from the user and why:
 *User requirement*: A k8s pod spec with your containerized rails app.  Any other microservices should be in the pod spec or exposed on a port that the target can connect to.
