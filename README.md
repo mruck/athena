@@ -14,9 +14,12 @@ Web applications are rarely self contained in today's age of microservices. More
 3) Modify postgres so that it logs all queries to a file. This log is parsed during fuzzing to check for tainted queries. Also, log all postgres errors to a file.  This requires changes various environment variables and verbosity levels which shouldn't break the target application.
 4) Inject the fuzzing container.  Ensure the fuzzing container can query the target application and get coverage information.
 
-![Cluster img](https://raw.githubusercontent.com/mruck/athena/master/docs/cluster_architecture.png?token=AASJED7X6GU6YVNBN4EAL6S5I5DAU)
+![Cluster img](docs/cluster_architecture.png)
+
 Once the steps above are complete, the target application is ready to be fuzzed.  The instrumented pod will now look like:
-![Fuzzing pod img](https://raw.githubusercontent.com/mruck/athena/master/docs/fuzzing_pod.png?token=AASJED5YCVIJARSISENQ3PK5I5CEC)
+
+![Fuzzing pod img](docs/fuzzing_pod.png)
+
 Notice the shared mounts between the fuzzing container and application main container.  The patched target application logs coverage information to this shared mount, and the fuzzer reads from it and uses it to inform mutations.  Likewise, there is also a shared mount bewteen Postgres and the fuzzer.  Postgres logs all queries and errors to the shared mount, and the fuzzer is responsible for parsing this information.
 
 ### Instrumentation
